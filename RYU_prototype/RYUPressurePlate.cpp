@@ -16,7 +16,11 @@ ARYUPressurePlate::ARYUPressurePlate()
 	BorderMesh = CreateDefaultSubobject<UStaticMeshComponent>("BorderMesh");
 	PressurePlateMesh = CreateDefaultSubobject<UStaticMeshComponent>("PressurePlateMesh");
 	
+	
+
 	MovingPlateComp = CreateDefaultSubobject<UPlateMovingComponent>("MovingComponent");
+
+	TriggerZone = CreateDefaultSubobject<UBoxComponent>("Triggerzone");
 
 	auto PressurePlateMeshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Assets/3d_model/blockOut/blockOut_Pressure_plate_mond.blockOut_Pressure_plate_mond'"));
 	auto BorderMeshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Assets/3d_model/blockOut/blockOut_CutOutPlate.blockOut_CutOutPlate'"));
@@ -26,7 +30,7 @@ ARYUPressurePlate::ARYUPressurePlate()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("PRESSUREPLATEMESHASSET SET."))
 		PressurePlateMesh->SetStaticMesh(PressurePlateMeshAsset.Object);
-		
+				
 	}
 
 	if (BorderMeshAsset.Object != nullptr)
@@ -36,8 +40,7 @@ ARYUPressurePlate::ARYUPressurePlate()
 	}
 
 	
-	BorderMesh->SetRelativeLocation(FVector((-1)*1, (-1) * 1, (-1) * 1));
-	PressurePlateMesh->SetRelativeLocation(FVector((-1) * 1, (-1) * 1, (-1) * 30));
+	
 	/*
 	if (Symbol.GetValue == "Moon")
 	{
@@ -55,6 +58,10 @@ ARYUPressurePlate::ARYUPressurePlate()
 void ARYUPressurePlate::BeginPlay()
 {
 	Super::BeginPlay();
+	BorderMesh->SetRelativeLocation(FVector(0, 0, 0));
+	PressurePlateMesh->SetRelativeLocation(MovingPlateComp->PositionPlateOffset);
+	TriggerZone->SetRelativeLocation(FVector(0, 0, 0));
+	
 			
 }
 

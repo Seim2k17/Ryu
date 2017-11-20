@@ -26,7 +26,11 @@ public:
 		bool MoveDown;
 	UPROPERTY()
 		bool MoveUp;
+	UPROPERTY()
+		bool ActivateSomething;
 
+	UPROPERTY(EditDefaultsOnly)
+		FVector PositionPlateOffset;
 
 protected:
 	// Called when the game starts

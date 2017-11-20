@@ -18,7 +18,7 @@ public:
 	// Sets default values for this actor's properties
 	ARYUPressurePlate();
 
-	UPROPERTY(EditDefaultsonly)
+	UPROPERTY(EditDefaultsOnly)
 		USceneComponent* SceneComp;
 	UPROPERTY(EditDefaultsOnly)
 		UStaticMeshComponent* BorderMesh;
@@ -33,6 +33,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* TriggerZone;
 
+	
 		
 
 protected:

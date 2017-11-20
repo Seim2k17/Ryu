@@ -2,7 +2,15 @@
 
 #include "PlateMovingComponent.h"
 #include "GameFramework/Actor.h"
+#include "Components/StaticMeshComponent.h"
 #include "Runtime/Core/Public/Containers/Array.h"
+
+/* ISSUES
+
+- as constructed the Components won´t set its relative Position to (0/0/0)
+- the Triggerbox should automatically surrounds the PressurplateMesh + Offset
+- only Activate when a certain Symbol is on top of the pressure plate (Sun/Moon ...)
+*/
 
 
 // Sets default values for this component's properties
@@ -12,9 +20,12 @@ UPlateMovingComponent::UPlateMovingComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	MoveDistance = 20;
+	PositionPlateOffset = FVector(0,0,25);
 	MoveStep = 0.25f;
 	OriginLocation = FVector(0, 0, 30);
 	MoveDown = false;
+	MoveUp = false;
+	ActivateSomething = false;
 	// ...
 }
 
@@ -44,14 +55,7 @@ void UPlateMovingComponent::BeginPlay()
 			PressurePlateMeshComp = StaticMeshComps[i];
 		}
 	}
-	/*
-	if (PressurePlateMeshComp != nullptr)
-	{
-		FTransform trans = PressurePlateMeshComp->GetRelativeTransform();
-		OriginLocation = trans.GetLocation();
-	}
-	*/
-	
+		
 }
 
 
@@ -69,12 +73,24 @@ void UPlateMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		{
 			MovePlateDown();
 		}
+		if (trans.GetLocation().Z - MoveStep <= OriginLocation.Z - MoveDistance) {
+			if (ActivateSomething == false)
+			{
+				ActivateSomething = true;
+				UE_LOG(LogTemp, Warning, TEXT("You hear a click."));
+			}
+		}
+			
 	}
 
 	if (MoveUp)
 	{
 		if (trans.GetLocation().Z + MoveStep < OriginLocation.Z)
 		{
+			if (ActivateSomething) {
+				ActivateSomething = false;
+				UE_LOG(LogTemp, Warning, TEXT("You hear a RE-click."));
+			}
 			MovePlateUp();
 		}
 	}
@@ -85,26 +101,15 @@ void UPlateMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 void UPlateMovingComponent::MovePlateDown()
 {
-	//AActor* meshC = GetOwner();
-	//FVector const trans = PressurePlateMeshComp->GetActorLocation();
+	
 	FTransform trans = PressurePlateMeshComp->GetRelativeTransform();
-	//UE_LOG(LogTemp, Warning, TEXT("GOT IT: %s"),*trans.ToString());
-	
-	//UE_LOG(LogTemp, Display, TEXT("Owner is %s and located %s"), *meshC->GetName(), *trans.ToString());
 	PressurePlateMeshComp->SetRelativeLocation(FVector(trans.GetLocation().X, trans.GetLocation().Y, trans.GetLocation().Z - MoveStep));
-	
-
 	
 }
 
 void UPlateMovingComponent::MovePlateUp()
 {
-	/*
-	AActor* meshC = GetOwner();
-	FVector const trans = meshC->GetActorLocation();
-	UE_LOG(LogTemp, Display, TEXT("Owner is %s and located %s"), *meshC->GetName(), *trans.ToString());
-	meshC->SetActorLocation(FVector(trans.X, trans.Y, trans.Z + MoveStep));
-	*/
+	
 	FTransform trans = PressurePlateMeshComp->GetRelativeTransform();
 	PressurePlateMeshComp->SetRelativeLocation(FVector(trans.GetLocation().X, trans.GetLocation().Y, trans.GetLocation().Z + MoveStep));
 
