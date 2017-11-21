@@ -33,7 +33,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* TriggerZone;
 
-	
+private:
+	UPROPERTY()
+		//static AActor* ActorInTrigger;
 		
 
 protected:
@@ -50,7 +52,8 @@ public:
 	UFUNCTION()
 		virtual void NotifyActorEndOverlap(AActor* otherActor) override;
 
-
+	UFUNCTION()
+		AActor* GetTriggeredActor()
 	
 	
 };

@@ -3,6 +3,7 @@
 #include "PlateMovingComponent.h"
 #include "GameFramework/Actor.h"
 #include "Components/StaticMeshComponent.h"
+#include "RYUPressurePlate.h"
 #include "Runtime/Core/Public/Containers/Array.h"
 
 /* ISSUES
@@ -76,8 +77,9 @@ void UPlateMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		if (trans.GetLocation().Z - MoveStep <= OriginLocation.Z - MoveDistance) {
 			if (ActivateSomething == false)
 			{
+				AActor* ActorInTrigger = Cast<AActor>(ARYUPressurePlate::GetTriggeredActor().GetActor());
 				ActivateSomething = true;
-				UE_LOG(LogTemp, Warning, TEXT("You hear a click."));
+				UE_LOG(LogTemp, Warning, TEXT("You hear a click. "));
 			}
 		}
 			
