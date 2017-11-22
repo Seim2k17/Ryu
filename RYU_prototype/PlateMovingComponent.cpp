@@ -67,6 +67,7 @@ void UPlateMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 	// ...
 	
+	
 	FTransform trans = PressurePlateMeshComp->GetRelativeTransform();
 	if (MoveDown)
 	{
@@ -84,17 +85,22 @@ void UPlateMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 			
 	}
 
-	if (MoveUp)
-	{
-		if (trans.GetLocation().Z + MoveStep < OriginLocation.Z)
+	//checking if a box still stands on the plate, then no MoveUp !
+	//if (TriggeredActor != nullptr)
+	//{
+
+		if (MoveUp)
 		{
-			if (ActivateSomething) {
-				ActivateSomething = false;
-				UE_LOG(LogTemp, Warning, TEXT("You hear a RE-click."));
+			if (trans.GetLocation().Z + MoveStep < OriginLocation.Z)
+			{
+				if (ActivateSomething) {
+					ActivateSomething = false;
+					UE_LOG(LogTemp, Warning, TEXT("You hear a RE-click."));
+				}
+				MovePlateUp();
 			}
-			MovePlateUp();
 		}
-	}
+	//}
 		
 
 	
