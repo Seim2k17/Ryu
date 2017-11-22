@@ -44,6 +44,8 @@ public:
 		void MovePlateDown();
 	UFUNCTION(BlueprintCallable)
 		void MovePlateUp();
+	UFUNCTION()
+		void SetTriggeredActor(AActor* otherActor);
 
 private:
 	
@@ -52,6 +54,9 @@ private:
 
 	UPROPERTY()
 		UStaticMeshComponent* PressurePlateMeshComp;
+
+	UPROPERTY()
+		AActor* TriggeredActor;
 
 		
 	

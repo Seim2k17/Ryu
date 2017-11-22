@@ -77,9 +77,8 @@ void UPlateMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		if (trans.GetLocation().Z - MoveStep <= OriginLocation.Z - MoveDistance) {
 			if (ActivateSomething == false)
 			{
-				AActor* ActorInTrigger = Cast<AActor>(ARYUPressurePlate::GetTriggeredActor().GetActor());
 				ActivateSomething = true;
-				UE_LOG(LogTemp, Warning, TEXT("You hear a click. "));
+				UE_LOG(LogTemp, Warning, TEXT("You hear a click, inside Trigger is: %s "),*TriggeredActor->GetName());
 			}
 		}
 			
@@ -115,5 +114,10 @@ void UPlateMovingComponent::MovePlateUp()
 	FTransform trans = PressurePlateMeshComp->GetRelativeTransform();
 	PressurePlateMeshComp->SetRelativeLocation(FVector(trans.GetLocation().X, trans.GetLocation().Y, trans.GetLocation().Z + MoveStep));
 
+}
+
+void UPlateMovingComponent::SetTriggeredActor(AActor* otherActor)
+{
+	TriggeredActor = otherActor;
 }
 

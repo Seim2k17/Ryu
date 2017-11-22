@@ -78,8 +78,8 @@ void ARYUPressurePlate::NotifyActorBeginOverlap(AActor* otherActor)
 
 	MovingPlateComp->MoveDown=true;
 	MovingPlateComp->MoveUp = false;
-
-	ActorInTrigger = otherActor;
+	MovingPlateComp->SetTriggeredActor(otherActor);
+	
 }
 
 void ARYUPressurePlate::NotifyActorEndOverlap(AActor* otherActor)
@@ -87,13 +87,7 @@ void ARYUPressurePlate::NotifyActorEndOverlap(AActor* otherActor)
 	UE_LOG(LogTemp, Display, TEXT("Actor left Triggerzone: %s"), *otherActor->GetName());
 	MovingPlateComp->MoveDown = false;
 	MovingPlateComp->MoveUp = true;
-
-	ActorInTrigger = nullptr;
-}
-
-static AActor* ARYUPressurePlate::GetTriggeredActor()
-{
-	return ActorInTrigger;
+	MovingPlateComp->SetTriggeredActor(nullptr);
 }
 
 

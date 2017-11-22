@@ -33,11 +33,6 @@ public:
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* TriggerZone;
 
-private:
-	UPROPERTY()
-		//static AActor* ActorInTrigger;
-		
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -52,8 +47,4 @@ public:
 	UFUNCTION()
 		virtual void NotifyActorEndOverlap(AActor* otherActor) override;
 
-	UFUNCTION()
-		AActor* GetTriggeredActor()
-	
-	
 };
