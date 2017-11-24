@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "RYUENUM_SymbolNames.h"
 #include "PlateMovingComponent.generated.h"
 
 
@@ -57,7 +58,4 @@ private:
 
 	UPROPERTY()
 		AActor* TriggeredActor;
-
-		
-	
 };

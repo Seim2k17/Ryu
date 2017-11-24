@@ -33,9 +33,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* TriggerZone;
 
-	UPROPERTY()
-		SymbolNames* TriggeredSymbol;
-
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -27,6 +27,7 @@ UPlateMovingComponent::UPlateMovingComponent()
 	MoveDown = false;
 	MoveUp = false;
 	ActivateSomething = false;
+	
 	// ...
 }
 
@@ -78,8 +79,11 @@ void UPlateMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		if (trans.GetLocation().Z - MoveStep <= OriginLocation.Z - MoveDistance) {
 			if (ActivateSomething == false)
 			{
-				ActivateSomething = true;
-				UE_LOG(LogTemp, Warning, TEXT("You hear a click, inside Trigger is: %s "),*TriggeredActor->GetName());
+				if (true)
+				{
+					ActivateSomething = true;
+					UE_LOG(LogTemp, Warning, TEXT("You hear a click, inside Trigger is: %s "), *TriggeredActor->GetName());
+				}
 			}
 		}
 			
@@ -126,4 +130,3 @@ void UPlateMovingComponent::SetTriggeredActor(AActor* otherActor)
 {
 	TriggeredActor = otherActor;
 }
-
