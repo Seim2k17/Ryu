@@ -33,6 +33,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		FVector PositionPlateOffset;
 
+	UPROPERTY()
+		uint16 ActorsOnPlate;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

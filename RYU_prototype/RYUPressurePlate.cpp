@@ -15,12 +15,10 @@ ARYUPressurePlate::ARYUPressurePlate()
 
 	BorderMesh = CreateDefaultSubobject<UStaticMeshComponent>("BorderMesh");
 	PressurePlateMesh = CreateDefaultSubobject<UStaticMeshComponent>("PressurePlateMesh");
-	
-	
-
+		
 	MovingPlateComp = CreateDefaultSubobject<UPlateMovingComponent>("MovingComponent");
 
-	TriggerZone = CreateDefaultSubobject<UBoxComponent>("Triggerzone");
+	//TriggerZone = CreateDefaultSubobject<UBoxComponent>("Triggerzone");
 
 	auto PressurePlateMeshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Assets/3d_model/blockOut/blockOut_Pressure_plate_mond.blockOut_Pressure_plate_mond'"));
 	auto BorderMeshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Assets/3d_model/blockOut/blockOut_CutOutPlate.blockOut_CutOutPlate'"));
@@ -60,7 +58,12 @@ void ARYUPressurePlate::BeginPlay()
 	Super::BeginPlay();
 	BorderMesh->SetRelativeLocation(FVector(0, 0, 0));
 	PressurePlateMesh->SetRelativeLocation(MovingPlateComp->PositionPlateOffset);
-	TriggerZone->SetRelativeLocation(FVector(0, 0, 0));
+	/*
+	if (TriggerZone != nullptr)
+	{
+		TriggerZone->SetRelativeLocation(FVector(0, 0, 0));
+	}
+	*/
 	
 			
 }
@@ -74,20 +77,27 @@ void ARYUPressurePlate::Tick(float DeltaTime)
 
 void ARYUPressurePlate::NotifyActorBeginOverlap(AActor* otherActor)
 {
+	++MovingPlateComp->ActorsOnPlate;
 	UE_LOG(LogTemp, Display, TEXT("Actor entered Triggerzone: %s"), *otherActor->GetName());
-
-	MovingPlateComp->MoveDown=true;
-	MovingPlateComp->MoveUp = false;
-	MovingPlateComp->SetTriggeredActor(otherActor);
+	if (MovingPlateComp->ActorsOnPlate == 1)
+	{
+		MovingPlateComp->MoveDown = true;
+		MovingPlateComp->MoveUp = false;
+		MovingPlateComp->SetTriggeredActor(otherActor);
+	}
 	
 }
 
 void ARYUPressurePlate::NotifyActorEndOverlap(AActor* otherActor)
 {
+	--MovingPlateComp->ActorsOnPlate;
 	UE_LOG(LogTemp, Display, TEXT("Actor left Triggerzone: %s"), *otherActor->GetName());
-	MovingPlateComp->MoveDown = false;
-	MovingPlateComp->MoveUp = true;
-	MovingPlateComp->SetTriggeredActor(nullptr);
+	if (MovingPlateComp->ActorsOnPlate == 0)
+	{
+		MovingPlateComp->MoveDown = false;
+		MovingPlateComp->MoveUp = true;
+		MovingPlateComp->SetTriggeredActor(nullptr);
+	}
 }
 
 

@@ -18,6 +18,8 @@ class RYU_PROTOTYPE_API ARYUGameMode : public AGameModeBase
 	
 public:
 
+	ARYUGameMode();
+
 	FStandardDelegateSignature RYUStandardSignature;
 	
 	
