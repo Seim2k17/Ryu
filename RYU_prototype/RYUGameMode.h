@@ -20,7 +20,7 @@ public:
 
 	ARYUGameMode();
 
-	FStandardDelegateSignature RYUStandardSignature;
+	FStandardDelegateSignature RYUStandardDelegate;
 	
 	
 };
