@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Delegate.h"
 #include "RYUGameMode.generated.h"
 
 
 DECLARE_DELEGATE(FStandardDelegateSignature)
+DECLARE_DELEGATE_OneParam(FParamDelegateListener, FString)
+
 /**
  * 
  */
@@ -21,6 +24,8 @@ public:
 	ARYUGameMode();
 
 	FStandardDelegateSignature RYUStandardDelegate;
+
+	FParamDelegateListener RYUBlockTypeDelegate;
 	
 	
 };

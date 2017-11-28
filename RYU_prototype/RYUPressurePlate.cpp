@@ -3,6 +3,9 @@
 #include "RYUPressurePlate.h"
 #include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
 #include "ConstructorHelpers.h"
+#include "RYUGameMode.h"
+#include "Runtime/Engine/Classes/GameFramework/GameMode.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -36,8 +39,6 @@ ARYUPressurePlate::ARYUPressurePlate()
 		UE_LOG(LogTemp, Warning, TEXT("BORDERMESHASSET SET."));
 		BorderMesh->SetStaticMesh(BorderMeshAsset.Object);
 	}
-
-	
 	
 	/*
 	if (Symbol.GetValue == "Moon")
@@ -64,7 +65,18 @@ void ARYUPressurePlate::BeginPlay()
 		TriggerZone->SetRelativeLocation(FVector(0, 0, 0));
 	}
 	*/
+
+	auto TheWorld = (UObject*)GetWorld();
 	
+	if (TheWorld != nullptr)
+	{
+		AGameModeBase* GameMode = UGameplayStatics::GetGameMode(TheWorld);
+		ARYUGameMode* RYUGameMode = (ARYUGameMode*)(GameMode);
+		if (RYUGameMode != nullptr)
+		{
+			RYUGameMode->RYUBlockTypeDelegate.BindUObject(this, &ARYUPressurePlate::SetBoxTypeOnPlate);
+		}
+	}
 			
 }
 
@@ -85,6 +97,15 @@ void ARYUPressurePlate::NotifyActorBeginOverlap(AActor* otherActor)
 		MovingPlateComp->MoveUp = false;
 		MovingPlateComp->SetTriggeredActor(otherActor);
 	}
+
+	auto TheWorld = (UObject*)GetWorld();
+
+	if (TheWorld != nullptr)
+	{
+		AGameModeBase *GameMode = UGameplayStatics::GetGameMode(TheWorld);
+		ARYUGameMode *RYUGameMode = (ARYUGameMode*)(GameMode);
+		RYUGameMode->RYUStandardDelegate.ExecuteIfBound();
+	}
 	
 }
 
@@ -98,6 +119,11 @@ void ARYUPressurePlate::NotifyActorEndOverlap(AActor* otherActor)
 		MovingPlateComp->MoveUp = true;
 		MovingPlateComp->SetTriggeredActor(nullptr);
 	}
+}
+
+void ARYUPressurePlate::SetBoxTypeOnPlate(FString symbolOnBox)
+{
+	UE_LOG(LogTemp, Display, TEXT("Symbol on Box : %s"),*symbolOnBox);
 }
 
 

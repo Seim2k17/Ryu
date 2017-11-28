@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Runtime/Engine/Classes/Components/PointLightComponent.h"
+#include "RYUGameMode.h"
 #include "RYUDelegateListener.generated.h"
 
 UCLASS()
@@ -25,6 +26,7 @@ public:
 
 
 protected:
+	//ARYUDelegateListener();
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

@@ -48,4 +48,7 @@ public:
 	UFUNCTION()
 		virtual void NotifyActorEndOverlap(AActor* otherActor) override;
 
+	UFUNCTION()
+		void SetBoxTypeOnPlate(FString symbolOnBox);
+
 };

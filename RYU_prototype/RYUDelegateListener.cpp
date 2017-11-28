@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RYUDelegateListener.h"
-#include "RYUGameMode.h"
 #include "Runtime/Engine/Classes/GameFramework/GameMode.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
@@ -25,8 +24,8 @@ void ARYUDelegateListener::BeginPlay()
 
 	if (TheWorld != nullptr)
 	{
-		AGameModeBase *GameMode = UGameplayStatics::GetGameMode(TheWorld);
-		ARYUGameMode *RYUGameMode = (ARYUGameMode*)(GameMode);
+		AGameModeBase* GameMode = UGameplayStatics::GetGameMode(TheWorld);
+		ARYUGameMode* RYUGameMode = (ARYUGameMode*)(GameMode);
 		if (RYUGameMode != nullptr)
 		{
 			RYUGameMode->RYUStandardDelegate.BindUObject(this, &ARYUDelegateListener::EnableLight);
@@ -45,6 +44,7 @@ void ARYUDelegateListener::Tick(float DeltaTime)
 
 void ARYUDelegateListener::EnableLight()
 {
-
+	UE_LOG(LogTemp, Display, TEXT("Turn Light On"));
+	PointLight->SetVisibility(true);
 }
 
