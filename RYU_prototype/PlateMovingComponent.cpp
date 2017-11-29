@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/StaticMeshComponent.h"
 #include "RYUPressurePlate.h"
+#include "PushableBoxDelegatSymbol.h"
 #include "Runtime/Core/Public/Containers/Array.h"
 
 /* ISSUES
@@ -80,7 +81,16 @@ void UPlateMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		if (trans.GetLocation().Z - MoveStep <= OriginLocation.Z - MoveDistance) {
 			if (ActivateSomething == false)
 			{
-				//if (true)
+				/**comp muss vorhanden sein sonst crash
+				TArray<UPushableBoxDelegatSymbol*> ActorComps;
+				TriggeredActor->GetComponents<UPushableBoxDelegatSymbol>(ActorComps);
+
+				if (ActorComps[0] != nullptr)
+				**/
+				//RECHECK conditions before --> triggert trotzdem nicht
+				auto* comp = TriggeredActor->FindComponentByClass<UPushableBoxDelegatSymbol>();
+				if (comp != nullptr)
+				
 				{
 					ActivateSomething = true;
 					UE_LOG(LogTemp, Warning, TEXT("You hear a click, inside Trigger is: %s "), *TriggeredActor->GetName());

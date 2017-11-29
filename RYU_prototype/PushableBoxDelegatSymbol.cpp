@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PushableBoxDelegatSymbol.h"
+#include "Runtime/Engine/Classes/GameFramework/Actor.h"
 
 
 // Sets default values for this component's properties
@@ -18,7 +19,6 @@ UPushableBoxDelegatSymbol::UPushableBoxDelegatSymbol()
 void UPushableBoxDelegatSymbol::BeginPlay()
 {
 	Super::BeginPlay();
-
 	// ...
 	
 }

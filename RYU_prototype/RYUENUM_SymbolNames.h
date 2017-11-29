@@ -2,7 +2,7 @@
 
 UENUM()
 
-enum SymbolNames
+enum class ESymbolNames : uint8
 {
 	none UMETA(DisplayName = "none"),
 	Sun	UMETA(DisplayName = "Sun"),

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "RYUENUM_SymbolNames.h"
 #include "PushableBoxDelegatSymbol.generated.h"
 
 
@@ -24,6 +25,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Preferences)
+	ESymbolNames Symbol;
 		
 	
 };

@@ -28,7 +28,7 @@ public:
 		UPlateMovingComponent* MovingPlateComp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Preferences)
-		TEnumAsByte<SymbolNames> Symbol;
+		ESymbolNames Symbol;
 
 	UPROPERTY(EditAnywhere)
 		UBoxComponent* TriggerZone;
