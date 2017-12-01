@@ -50,6 +50,8 @@ public:
 		void MovePlateUp();
 	UFUNCTION()
 		void SetTriggeredActor(AActor* otherActor);
+	UFUNCTION()
+		AActor* GetTriggeredActor();
 
 private:
 	

@@ -4,6 +4,7 @@
 #include "Runtime/Engine/Classes/Components/StaticMeshComponent.h"
 #include "ConstructorHelpers.h"
 #include "RYUGameMode.h"
+#include "PushableBoxDelegatSymbol.h"
 #include "Runtime/Engine/Classes/GameFramework/GameMode.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
@@ -91,11 +92,16 @@ void ARYUPressurePlate::NotifyActorBeginOverlap(AActor* otherActor)
 {
 	++MovingPlateComp->ActorsOnPlate;
 	UE_LOG(LogTemp, Display, TEXT("Actor entered Triggerzone: %s"), *otherActor->GetName());
+	auto* comp = otherActor->FindComponentByClass<UPushableBoxDelegatSymbol>();
+	if (comp != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TriggerdActor is: %s "), *otherActor->GetName());
+		MovingPlateComp->SetTriggeredActor(otherActor);
+	}
 	if (MovingPlateComp->ActorsOnPlate == 1)
 	{
 		MovingPlateComp->MoveDown = true;
 		MovingPlateComp->MoveUp = false;
-		MovingPlateComp->SetTriggeredActor(otherActor);
 	}
 
 	auto TheWorld = (UObject*)GetWorld();
@@ -113,6 +119,18 @@ void ARYUPressurePlate::NotifyActorEndOverlap(AActor* otherActor)
 {
 	--MovingPlateComp->ActorsOnPlate;
 	UE_LOG(LogTemp, Display, TEXT("Actor left Triggerzone: %s"), *otherActor->GetName());
+	auto* comp = otherActor->FindComponentByClass<UPushableBoxDelegatSymbol>();
+	if (comp != nullptr)
+	{
+		if (MovingPlateComp->ActivateSomething)
+		{
+			MovingPlateComp->SetTriggeredActor(nullptr);
+			MovingPlateComp->ActivateSomething = false;
+			UE_LOG(LogTemp, Warning, TEXT("You hear a RE-click."));
+		}
+	}
+	
+
 	if (MovingPlateComp->ActorsOnPlate == 0)
 	{
 		MovingPlateComp->MoveDown = false;

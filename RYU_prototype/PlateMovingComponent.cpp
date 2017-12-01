@@ -78,47 +78,33 @@ void UPlateMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 		{
 			MovePlateDown();
 		}
-		if (trans.GetLocation().Z - MoveStep <= OriginLocation.Z - MoveDistance) {
-			if (ActivateSomething == false)
-			{
-				/**comp muss vorhanden sein sonst crash
-				TArray<UPushableBoxDelegatSymbol*> ActorComps;
-				TriggeredActor->GetComponents<UPushableBoxDelegatSymbol>(ActorComps);
+	}
 
-				if (ActorComps[0] != nullptr)
-				**/
-				//RECHECK conditions before --> triggert trotzdem nicht
+	if (trans.GetLocation().Z - MoveStep <= OriginLocation.Z - MoveDistance) {
+		if (ActivateSomething == false)
+		{
+			//comp muss vorhanden sein sonst crash
+			if (TriggeredActor != nullptr)
+			{
 				auto* comp = TriggeredActor->FindComponentByClass<UPushableBoxDelegatSymbol>();
 				if (comp != nullptr)
-				
+
 				{
 					ActivateSomething = true;
 					UE_LOG(LogTemp, Warning, TEXT("You hear a click, inside Trigger is: %s "), *TriggeredActor->GetName());
 				}
 			}
+		
 		}
-			
 	}
 
-	//checking if a box still stands on the plate, then no MoveUp !
-	//if (TriggeredActor != nullptr)
-	//{
-
-		if (MoveUp)
+	if (MoveUp)
 		{
 			if (trans.GetLocation().Z + MoveStep < OriginLocation.Z)
 			{
-				if (ActivateSomething) {
-					ActivateSomething = false;
-					UE_LOG(LogTemp, Warning, TEXT("You hear a RE-click."));
-				}
 				MovePlateUp();
 			}
 		}
-	//}
-		
-
-	
 }
 
 void UPlateMovingComponent::MovePlateDown()
@@ -140,4 +126,9 @@ void UPlateMovingComponent::MovePlateUp()
 void UPlateMovingComponent::SetTriggeredActor(AActor* otherActor)
 {
 	TriggeredActor = otherActor;
+}
+
+AActor* UPlateMovingComponent::GetTriggeredActor()
+{
+	return TriggeredActor;
 }
