@@ -88,10 +88,13 @@ void UPlateMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 			{
 				auto* comp = TriggeredActor->FindComponentByClass<UPushableBoxDelegatSymbol>();
 				if (comp != nullptr)
-
 				{
-					ActivateSomething = true;
-					UE_LOG(LogTemp, Warning, TEXT("You hear a click, inside Trigger is: %s "), *TriggeredActor->GetName());
+					ARYUPressurePlate* MyOwner = (ARYUPressurePlate*)this->GetOwner();
+					if (comp->Symbol == MyOwner->Symbol)
+					{
+						ActivateSomething = true;
+						UE_LOG(LogTemp, Warning, TEXT("You hear a click, inside Trigger is: %s "), *TriggeredActor->GetName());
+					}
 				}
 			}
 		

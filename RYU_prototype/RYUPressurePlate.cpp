@@ -17,12 +17,13 @@ ARYUPressurePlate::ARYUPressurePlate()
 
 	SceneComp = CreateDefaultSubobject<USceneComponent>("Scene");
 
+	SceneComp = RootComponent;
+
+	TriggerZone = CreateDefaultSubobject<UBoxComponent>("Triggerzone");
 	BorderMesh = CreateDefaultSubobject<UStaticMeshComponent>("BorderMesh");
 	PressurePlateMesh = CreateDefaultSubobject<UStaticMeshComponent>("PressurePlateMesh");
 		
 	MovingPlateComp = CreateDefaultSubobject<UPlateMovingComponent>("MovingComponent");
-
-	//TriggerZone = CreateDefaultSubobject<UBoxComponent>("Triggerzone");
 
 	auto PressurePlateMeshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Assets/3d_model/blockOut/blockOut_Pressure_plate_mond.blockOut_Pressure_plate_mond'"));
 	auto BorderMeshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Assets/3d_model/blockOut/blockOut_CutOutPlate.blockOut_CutOutPlate'"));
@@ -60,12 +61,12 @@ void ARYUPressurePlate::BeginPlay()
 	Super::BeginPlay();
 	BorderMesh->SetRelativeLocation(FVector(0, 0, 0));
 	PressurePlateMesh->SetRelativeLocation(MovingPlateComp->PositionPlateOffset);
-	/*
+	
 	if (TriggerZone != nullptr)
 	{
-		TriggerZone->SetRelativeLocation(FVector(0, 0, 0));
+		//TriggerZone->SetRelativeLocation(FVector(0, 0, 0));
 	}
-	*/
+	
 
 	auto TheWorld = (UObject*)GetWorld();
 	
@@ -115,6 +116,16 @@ void ARYUPressurePlate::NotifyActorBeginOverlap(AActor* otherActor)
 	
 }
 
+/*
+FText ARYUPressurePlate::GetSymbolEnumAsString(ESymbolNames EnumValue)
+{
+	const UEnum* EnumPtr = FindObject<UEnum>(ANY_PACKAGE, TEXT("EVictoryEnum"), true);
+	if (!EnumPtr) return NSLOCTEXT("Invalid", "Invalid", "Invalid");
+
+	return EnumPtr->GetDisplayNameText(EnumValue);
+}
+*/
+
 void ARYUPressurePlate::NotifyActorEndOverlap(AActor* otherActor)
 {
 	--MovingPlateComp->ActorsOnPlate;
@@ -123,11 +134,12 @@ void ARYUPressurePlate::NotifyActorEndOverlap(AActor* otherActor)
 	if (comp != nullptr)
 	{
 		if (MovingPlateComp->ActivateSomething)
-		{
-			MovingPlateComp->SetTriggeredActor(nullptr);
-			MovingPlateComp->ActivateSomething = false;
-			UE_LOG(LogTemp, Warning, TEXT("You hear a RE-click."));
-		}
+			{
+				MovingPlateComp->SetTriggeredActor(nullptr);
+				MovingPlateComp->ActivateSomething = false;
+				UE_LOG(LogTemp, Warning, TEXT("You hear a RE-click."));
+			}
+		
 	}
 	
 

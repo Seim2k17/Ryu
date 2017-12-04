@@ -30,7 +30,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Preferences)
 		ESymbolNames Symbol;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditDefaultsOnly)
 		UBoxComponent* TriggerZone;
 
 	
@@ -50,5 +50,9 @@ public:
 
 	UFUNCTION()
 		void SetBoxTypeOnPlate(FString symbolOnBox);
+/*
+private:
+	FText GetSymbolEnumAsString(ESymbolNames EnumValue);
+*/
 
 };
