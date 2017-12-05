@@ -10,6 +10,7 @@
 
 DECLARE_DELEGATE(FStandardDelegateSignature)
 DECLARE_DELEGATE_OneParam(FParamDelegateListener, FString)
+DECLARE_MULTICAST_DELEGATE(FMulticastDelegateSignature)
 
 /**
  * 
@@ -26,6 +27,8 @@ public:
 	FStandardDelegateSignature RYUStandardDelegate;
 
 	FParamDelegateListener RYUBlockTypeDelegate;
+
+	FMulticastDelegateSignature RYUOpenCloseDoorDelegate;
 	
 	
 };

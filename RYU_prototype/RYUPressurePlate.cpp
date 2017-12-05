@@ -42,17 +42,6 @@ ARYUPressurePlate::ARYUPressurePlate()
 		BorderMesh->SetStaticMesh(BorderMeshAsset.Object);
 	}
 	
-	/*
-	if (Symbol.GetValue == "Moon")
-	{
-		auto PressurePlateMeshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Assets/3d_model/blockOut/blockOut_Pressure_plate_mond.blockOut_Pressure_plate_mond'"));
-	}
-
-	if (Symbol.GetValue == "Sun")
-	{
-		auto PressurePlateMeshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Assets/3d_model/blockOut/blockOut_Pressure_plate_sonne.blockOut_Pressure_plate_sonne'"));
-	}
-*/
 }
 
 // Called when the game starts or when spawned
@@ -64,7 +53,8 @@ void ARYUPressurePlate::BeginPlay()
 	
 	if (TriggerZone != nullptr)
 	{
-		//TriggerZone->SetRelativeLocation(FVector(0, 0, 0));
+		TriggerZone->SetRelativeLocation(FVector(0, 0, 30));
+		TriggerZone->SetRelativeScale3D(FVector(2.5, 2.5, 1.0));
 	}
 	
 

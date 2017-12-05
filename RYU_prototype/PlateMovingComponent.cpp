@@ -90,7 +90,9 @@ void UPlateMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 				if (comp != nullptr)
 				{
 					ARYUPressurePlate* MyOwner = (ARYUPressurePlate*)this->GetOwner();
-					if (comp->Symbol == MyOwner->Symbol)
+					//UE_LOG(LogTemp, Warning, TEXT("Symbol Box: %d "), (int)comp->Symbol);
+					//UE_LOG(LogTemp, Warning, TEXT("Symbol Plate: %d "), (int)MyOwner->Symbol);
+					if ((int)comp->Symbol == (int)MyOwner->Symbol)
 					{
 						ActivateSomething = true;
 						UE_LOG(LogTemp, Warning, TEXT("You hear a click, inside Trigger is: %s "), *TriggeredActor->GetName());
