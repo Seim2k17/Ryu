@@ -28,8 +28,8 @@ public:
 
 	UFUNCTION()
 		void OpenCloseDoor();
-	//UFUNCTION()
-	//	virtual void EndPlay(constEEndPlayReason::Type EndPlayReason) override;
+	UFUNCTION()
+		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	bool DoorIsOpen;

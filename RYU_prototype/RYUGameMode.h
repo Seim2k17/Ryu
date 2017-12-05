@@ -28,6 +28,7 @@ public:
 
 	FParamDelegateListener RYUBlockTypeDelegate;
 
+	//UPROPERTY(BlueprintReadWrite)
 	FMulticastDelegateSignature RYUOpenCloseDoorDelegate;
 	
 	
