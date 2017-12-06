@@ -5,13 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Delegate.h"
+#include "CoreMinimal.h"
 #include "RYUGameMode.generated.h"
 
 
-DECLARE_DELEGATE(FStandardDelegateSignature)
-DECLARE_DELEGATE_OneParam(FParamDelegateListener, FString)
-DECLARE_MULTICAST_DELEGATE(FMulticastDelegateSignature)
-//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpenCloseDoor)
+DECLARE_DELEGATE(FStandardDelegateSignature);
+DECLARE_DELEGATE_OneParam(FParamDelegateListener, FString);
+//DECLARE_MULTICAST_DELEGATE(FMulticastDelegateSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpenCloseDoor);
 
 UCLASS()
 class RYU_PROTOTYPE_API ARYUGameMode : public AGameModeBase
@@ -27,10 +28,10 @@ public:
 	FParamDelegateListener RYUBlockTypeDelegate;
 
 	//UPROPERTY(BlueprintReadWrite)
-	FMulticastDelegateSignature RYUOpenCloseDoorDelegate;
+	//FMulticastDelegateSignature RYUOpenCloseDoorDelegate;
 
-	//UPROPERTY(BlueprintAssignable)
-	//FOnOpenCloseDoor RYUOpenCloseDoorDelegate;
+	UPROPERTY(BlueprintAssignable)
+	FOnOpenCloseDoor RYUOpenCloseDoorDelegate;
 	
 	
 

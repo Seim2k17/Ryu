@@ -28,7 +28,8 @@ void ASingleDoorActor::BeginPlay()
 		ARYUGameMode* RYUGameMode = (ARYUGameMode*)(GameMode);
 		if (RYUGameMode != nullptr)
 		{
-			OpenCloseDoorDelegate = RYUGameMode->RYUOpenCloseDoorDelegate.AddUObject(this, &ASingleDoorActor::OpenCloseDoor);
+			//not dynamic
+			//OpenCloseDoorDelegate = RYUGameMode->RYUOpenCloseDoorDelegate.AddUObject(this, &ASingleDoorActor::OpenCloseDoor);
 		}
 	}
 	
@@ -64,7 +65,7 @@ void ASingleDoorActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		ARYUGameMode* RYUGameMode = (ARYUGameMode*)(GameMode);
 		if (RYUGameMode != nullptr)
 		{
-			RYUGameMode->RYUOpenCloseDoorDelegate.Remove(OpenCloseDoorDelegate);
+			//RYUGameMode->RYUOpenCloseDoorDelegate.Remove(OpenCloseDoorDelegate);
 		}
 	}
 }
