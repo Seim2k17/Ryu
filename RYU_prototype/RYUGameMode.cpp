@@ -22,6 +22,3 @@ ARYUGameMode::ARYUGameMode()
 	PlayerControllerClass = ASomePlayerController::StaticClass();
 	*/
 }
-
-
-

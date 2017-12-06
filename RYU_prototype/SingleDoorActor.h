@@ -16,6 +16,7 @@ public:
 	ASingleDoorActor();
 
 	FDelegateHandle OpenCloseDoorDelegate;
+	
 
 
 protected:
