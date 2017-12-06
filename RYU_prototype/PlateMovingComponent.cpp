@@ -6,6 +6,9 @@
 #include "RYUPressurePlate.h"
 #include "PushableBoxDelegatSymbol.h"
 #include "Runtime/Core/Public/Containers/Array.h"
+#include "RYUGameMode.h"
+#include "Runtime/Engine/Classes/GameFramework/GameMode.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 /* ISSUES
 
@@ -95,7 +98,19 @@ void UPlateMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 					if ((int)comp->Symbol == (int)MyOwner->Symbol)
 					{
 						ActivateSomething = true;
-						UE_LOG(LogTemp, Warning, TEXT("You hear a click, inside Trigger is: %s "), *TriggeredActor->GetName());
+						auto TheWorld = (UObject*)GetWorld();
+						
+						if (TheWorld != nullptr)
+						{
+							AGameModeBase* GameMode = UGameplayStatics::GetGameMode(TheWorld);
+							ARYUGameMode* RYUGameMode = (ARYUGameMode*)(GameMode);
+							if (RYUGameMode != nullptr)
+							{
+								RYUGameMode->RYUOpenCloseDoorDelegate.Broadcast();
+								UE_LOG(LogTemp, Warning, TEXT("You hear a click, inside Trigger is: %s "), *TriggeredActor->GetName());
+							}
+						}
+						
 					}
 				}
 			}

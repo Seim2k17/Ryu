@@ -53,3 +53,19 @@ void ASingleDoorActor::OpenCloseDoor()
 	}
 }
 
+void ASingleDoorActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	auto TheWorld = (UObject*)GetWorld();
+
+	if (TheWorld != nullptr)
+	{
+		AGameModeBase* GameMode = UGameplayStatics::GetGameMode(TheWorld);
+		ARYUGameMode* RYUGameMode = (ARYUGameMode*)(GameMode);
+		if (RYUGameMode != nullptr)
+		{
+			RYUGameMode->RYUOpenCloseDoorDelegate.Remove(OpenCloseDoorDelegate);
+		}
+	}
+}
+
