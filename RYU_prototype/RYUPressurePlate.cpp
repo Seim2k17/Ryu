@@ -7,6 +7,7 @@
 #include "PushableBoxDelegatSymbol.h"
 #include "Runtime/Engine/Classes/GameFramework/GameMode.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "SingleDoorActor.h"
 
 
 // Sets default values
@@ -127,6 +128,14 @@ void ARYUPressurePlate::NotifyActorEndOverlap(AActor* otherActor)
 			{
 				MovingPlateComp->SetTriggeredActor(nullptr);
 				MovingPlateComp->ActivateSomething = false;
+
+				auto TheWorld = (UObject*)GetWorld();
+				AGameModeBase* GameMode = UGameplayStatics::GetGameMode(TheWorld);
+				ARYUGameMode* RYUGameMode = (ARYUGameMode*)(GameMode);
+				if (RYUGameMode != nullptr)
+				{
+					RYUGameMode->RYUOpenCloseDoorDelegate.Broadcast();
+				}
 				UE_LOG(LogTemp, Warning, TEXT("You hear a RE-click."));
 			}
 		

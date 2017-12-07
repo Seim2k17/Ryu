@@ -28,8 +28,10 @@ void ASingleDoorActor::BeginPlay()
 		ARYUGameMode* RYUGameMode = (ARYUGameMode*)(GameMode);
 		if (RYUGameMode != nullptr)
 		{
-			//not dynamic
+			//only for not dynamic delegates
 			//OpenCloseDoorDelegate = RYUGameMode->RYUOpenCloseDoorDelegate.AddUObject(this, &ASingleDoorActor::OpenCloseDoor);
+			//we can Bind the Delegate directly in the Blueprint ! How to do in c++ ? i dont know atm
+			//OpenCloseDoorDelegate = RYUGameMode->RYUOpenCloseDoorDelegate.BindUObject(this,&ASingleDoorActor::OpenCloseDoor);
 		}
 	}
 	

@@ -8,6 +8,7 @@
 #include "Runtime/Core/Public/Containers/Array.h"
 #include "RYUGameMode.h"
 #include "Runtime/Engine/Classes/GameFramework/GameMode.h"
+#include "SingleDoorActor.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 
 /* ISSUES
