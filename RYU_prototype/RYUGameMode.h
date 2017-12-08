@@ -11,8 +11,7 @@
 
 DECLARE_DELEGATE(FStandardDelegateSignature);
 DECLARE_DELEGATE_OneParam(FParamDelegateListener, FString);
-//DECLARE_MULTICAST_DELEGATE(FMulticastDelegateSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpenCloseDoor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTriggerSomething);
 
 UCLASS()
 class RYU_PROTOTYPE_API ARYUGameMode : public AGameModeBase
@@ -31,7 +30,8 @@ public:
 	//FMulticastDelegateSignature RYUOpenCloseDoorDelegate;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnOpenCloseDoor RYUOpenCloseDoorDelegate;
+	//FOnOpenCloseDoor RYUOpenCloseDoorDelegate;
+	FOnTriggerSomething RYUTriggerSomething;
 	
 	
 

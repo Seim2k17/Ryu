@@ -107,7 +107,7 @@ void UPlateMovingComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 							ARYUGameMode* RYUGameMode = (ARYUGameMode*)(GameMode);
 							if (RYUGameMode != nullptr)
 							{
-								RYUGameMode->RYUOpenCloseDoorDelegate.Broadcast();
+								RYUGameMode->RYUTriggerSomething.Broadcast();
 								UE_LOG(LogTemp, Warning, TEXT("You hear a click, inside Trigger is: %s "), *TriggeredActor->GetName());
 							}
 						}

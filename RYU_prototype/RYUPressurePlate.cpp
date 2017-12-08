@@ -54,8 +54,8 @@ void ARYUPressurePlate::BeginPlay()
 	
 	if (TriggerZone != nullptr)
 	{
-		TriggerZone->SetRelativeLocation(FVector(0, 0, 30));
-		TriggerZone->SetRelativeScale3D(FVector(2.5, 2.5, 1.0));
+		TriggerZone->SetRelativeLocation(FVector(0, 0, 54));
+		TriggerZone->SetRelativeScale3D(FVector(2.0, 2.0, 1.0));
 	}
 	
 
@@ -134,7 +134,7 @@ void ARYUPressurePlate::NotifyActorEndOverlap(AActor* otherActor)
 				ARYUGameMode* RYUGameMode = (ARYUGameMode*)(GameMode);
 				if (RYUGameMode != nullptr)
 				{
-					RYUGameMode->RYUOpenCloseDoorDelegate.Broadcast();
+					RYUGameMode->RYUTriggerSomething.Broadcast();
 				}
 				UE_LOG(LogTemp, Warning, TEXT("You hear a RE-click."));
 			}
