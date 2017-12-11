@@ -27,8 +27,11 @@ public:
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Preferences)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MeshPreferences)
 	ESymbolNames Symbol;
-		
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MeshPreferences)
+		uint8 sizeX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MeshPreferences)
+		uint8 sizeY;
 	
 };
