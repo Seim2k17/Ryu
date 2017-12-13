@@ -12,6 +12,7 @@ UPushableBoxDelegatSymbol::UPushableBoxDelegatSymbol()
 	PrimaryComponentTick.bCanEverTick = true;
 	sizeX = 0;
 	sizeY = 0;
+	sizeZ = 0;
 	// ...
 }
 
