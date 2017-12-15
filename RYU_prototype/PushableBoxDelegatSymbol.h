@@ -30,10 +30,10 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = MeshPreferences)
 	ESymbolNames Symbol;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = MeshPreferences)
-		uint8 sizeX;
+		float sizeX;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = MeshPreferences)
-		uint8 sizeY;
+		float sizeY;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = MeshPreferences)
-		uint8 sizeZ;
+		float sizeZ;
 	
 };
