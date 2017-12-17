@@ -26,7 +26,7 @@ ARYUPressurePlate::ARYUPressurePlate()
 		
 	MovingPlateComp = CreateDefaultSubobject<UPlateMovingComponent>("MovingComponent");
 
-	auto PressurePlateMeshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Assets/3d_model/blockOut/blockOut_Pressure_plate_mond.blockOut_Pressure_plate_mond'"));
+	auto PressurePlateMeshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Assets/3d_model/blockOut/blockOut_Pressure_plate_normal.blockOut_Pressure_plate_normal'"));
 	auto BorderMeshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Assets/3d_model/blockOut/blockOut_CutOutPlate.blockOut_CutOutPlate'"));
 	
 
@@ -55,7 +55,7 @@ void ARYUPressurePlate::BeginPlay()
 	if (TriggerZone != nullptr)
 	{
 		TriggerZone->SetRelativeLocation(FVector(0, 0, 54));
-		TriggerZone->SetRelativeScale3D(FVector(2.0, 2.0, 1.0));
+		TriggerZone->SetRelativeScale3D(FVector(3.0, 3.0, 1.0));
 	}
 	
 
