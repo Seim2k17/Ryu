@@ -17,6 +17,8 @@ ARYUGameMode::ARYUGameMode()
 		PlayerControllerClass = (UClass*)PlayerController_BP.Object->GeneratedClass;
 	}
 
+	// AddDynamic( ... FOneEnterCollider RYUEnterSplineCollider; ) um Funktionalitaet zu binden ....
+
 	/* Standard C++ 
 	DefaultPawnClass = ASidescroll::StaticClass();
 	PlayerControllerClass = ASomePlayerController::StaticClass();
