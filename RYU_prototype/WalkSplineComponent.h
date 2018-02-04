@@ -27,6 +27,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		UActorComponent* connectedSpline;
+
+	UFUNCTION()
+		void setCharacterToSpline();
 		
 	
 };

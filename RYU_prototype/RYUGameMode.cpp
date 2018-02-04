@@ -2,6 +2,7 @@
 
 #include "RYUGameMode.h"
 #include "ConstructorHelpers.h"
+#include "WalkSplineComponent.h"
 #include "Runtime/Engine/Classes/Engine/Blueprint.h"
 
 ARYUGameMode::ARYUGameMode()

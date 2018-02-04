@@ -12,7 +12,7 @@
 DECLARE_DELEGATE(FStandardDelegateSignature);
 DECLARE_DELEGATE_OneParam(FParamDelegateListener, FString);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTriggerSomething);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOneEnterCollider);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnterCollider);
 
 UCLASS()
 class RYU_PROTOTYPE_API ARYUGameMode : public AGameModeBase
@@ -35,7 +35,7 @@ public:
 	FOnTriggerSomething RYUTriggerSomething;
 
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOneEnterCollider RYUEnterSplineCollider;
+	FOnEnterCollider RYUEnterSplineCollider;
 	
 	
 
