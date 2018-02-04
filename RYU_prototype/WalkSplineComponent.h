@@ -16,6 +16,7 @@ class RYU_PROTOTYPE_API UWalkSplineComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UWalkSplineComponent();
+	void getReferences();
 
 protected:
 	// Called when the game starts
@@ -30,6 +31,9 @@ public:
 
 	UFUNCTION()
 		void setCharacterToSpline();
+
+	UPROPERTY()
+		APawn* MyCharacter; 
 		
 	
 };
