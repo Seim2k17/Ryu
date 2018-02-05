@@ -30,7 +30,7 @@ public:
 	//UPROPERTY(BlueprintReadWrite)
 	//FMulticastDelegateSignature RYUOpenCloseDoorDelegate;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	//FOnOpenCloseDoor RYUOpenCloseDoorDelegate;
 	FOnTriggerSomething RYUTriggerSomething;
 

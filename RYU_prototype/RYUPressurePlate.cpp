@@ -135,8 +135,9 @@ void ARYUPressurePlate::NotifyActorEndOverlap(AActor* otherActor)
 				if (RYUGameMode != nullptr)
 				{
 					RYUGameMode->RYUTriggerSomething.Broadcast();
+					UE_LOG(LogTemp, Warning, TEXT("You hear a RE-click."));
 				}
-				UE_LOG(LogTemp, Warning, TEXT("You hear a RE-click."));
+				
 			}
 		
 	}
