@@ -18,14 +18,17 @@ public:
 	// Sets default values for this actor's properties
 	ARYUPressurePlate();
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 		USceneComponent* SceneComp;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 		UStaticMeshComponent* BorderMesh;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 		UStaticMeshComponent* PressurePlateMesh;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 		UPlateMovingComponent* MovingPlateComp;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+		UBoxComponent* TestBox;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Preferences)
 		ESymbolNames Symbol;

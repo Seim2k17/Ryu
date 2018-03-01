@@ -18,12 +18,20 @@ ARYUPressurePlate::ARYUPressurePlate()
 
 	SceneComp = CreateDefaultSubobject<USceneComponent>("Scene");
 
-	SceneComp = RootComponent;
-
+	RootComponent = SceneComp;
+	
 	TriggerZone = CreateDefaultSubobject<UBoxComponent>("Triggerzone");
+	TriggerZone->SetupAttachment(SceneComp);
+	
 	BorderMesh = CreateDefaultSubobject<UStaticMeshComponent>("BorderMesh");
+	BorderMesh->SetupAttachment(SceneComp);
 	PressurePlateMesh = CreateDefaultSubobject<UStaticMeshComponent>("PressurePlateMesh");
-		
+	PressurePlateMesh->SetupAttachment(SceneComp);
+	//
+	
+	//TestBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TESTBOX"));
+	//TestBox->SetupAttachment(TriggerZone);
+
 	MovingPlateComp = CreateDefaultSubobject<UPlateMovingComponent>("MovingComponent");
 
 	auto PressurePlateMeshAsset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/Assets/3d_model/blockOut/blockOut_Pressure_plate_normal.blockOut_Pressure_plate_normal'"));
@@ -41,6 +49,7 @@ ARYUPressurePlate::ARYUPressurePlate()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("BORDERMESHASSET SET."));
 		BorderMesh->SetStaticMesh(BorderMeshAsset.Object);
+		
 	}
 	
 }
@@ -137,6 +146,7 @@ void ARYUPressurePlate::NotifyActorEndOverlap(AActor* otherActor)
 					RYUGameMode->RYUTriggerSomething.Broadcast();
 				}
 				UE_LOG(LogTemp, Warning, TEXT("You hear a RE-click."));
+				//ClientMessage("CLICK-CLICK");
 			}
 		
 	}
