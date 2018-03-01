@@ -35,6 +35,7 @@ void UWalkSplineComponent::BeginPlay()
 			ARYUGameMode* RYUGameMode = (ARYUGameMode*)(gm);
 			if (RYUGameMode != nullptr)
 			{
+				// #AlignChar
 				RYUGameMode->RYUEnterSplineCollider.AddDynamic(this, &UWalkSplineComponent::setCharacterToSpline);
 				getReferences();
 
@@ -58,6 +59,7 @@ void UWalkSplineComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	// ...
 }
 
+// #AlignChar
 void UWalkSplineComponent::setCharacterToSpline()
 {
 
@@ -69,6 +71,7 @@ void UWalkSplineComponent::setCharacterToSpline()
 
 void UWalkSplineComponent::getReferences()
 {
+	// #References
 	//setting Reference to mainchar
 	auto* world = GetWorld();
 	MyCharacter = UGameplayStatics::GetPlayerPawn(world,0);
