@@ -7,7 +7,7 @@
 #include "ShowWidgetActor.generated.h"
 
 class UBoxComponent;
-class UWidgetComponent;
+class UUserWidget;
 
 UCLASS()
 class RYU_PROTOTYPE_API AShowWidgetActor : public AActor
