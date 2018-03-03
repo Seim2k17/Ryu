@@ -4,11 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Components/Widget.h"
 #include "ShowWidgetActor.generated.h"
 
 class UBoxComponent;
-class UWidget;
+class UWidgetComponent;
 
 UCLASS()
 class RYU_PROTOTYPE_API AShowWidgetActor : public AActor
@@ -27,11 +26,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Components")
 	UBoxComponent* TriggerBox;
 
-
+	
 public:	
 	
-	UPROPERTY(EditAnywhere, Category = "HUD")
-	UWidget* WidgetToShow;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+	TSubclassOf<class UUserWidget> WidgetToShow;
+
+	//Variable to hold widget the widget
+	UUserWidget* MissionWidgetText;
 
 	UFUNCTION()
 		void HandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
@@ -39,10 +41,15 @@ public:
 	UFUNCTION()
 		void HandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	//for functionality extended in BPs
+	UFUNCTION(BlueprintImplementableEvent, Category = "HUD")
+	void MissionCompleted();
 
-	//why no working ?
-	//UFUNCTION(BlueprintImplementableEvent, Category = "HUD")
-	//void MissionCompleted;
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+		void ShowUserWidget();
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+		void HideUserWidget();
 
 
 

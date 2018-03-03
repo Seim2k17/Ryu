@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "ShowWidgetActor.h"
+#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "Components/BoxComponent.h"
 
 
@@ -23,11 +24,15 @@ void AShowWidgetActor::BeginPlay()
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this,&AShowWidgetActor::HandleBeginOverlap);
 
 	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &AShowWidgetActor::HandleEndOverlap);
+
+	
+
 }
 
 void AShowWidgetActor::HandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	UE_LOG(LogTemp, Log, TEXT("Char jumped off"));
+	ShowUserWidget();
 }
 
 void AShowWidgetActor::HandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
@@ -36,3 +41,24 @@ void AShowWidgetActor::HandleEndOverlap(UPrimitiveComponent* OverlappedComponent
 
 }
 
+void AShowWidgetActor::ShowUserWidget()
+{
+	if (WidgetToShow)
+	{
+		MissionWidgetText = CreateWidget<UUserWidget>(GetWorld(), WidgetToShow);
+
+		if (MissionWidgetText)
+		{
+			MissionWidgetText->AddToViewport();
+			MissionCompleted();
+		}
+	}
+	else UE_LOG(LogTemp, Warning, TEXT("No User Widget-Reference linked."));
+
+}
+
+void AShowWidgetActor::HideUserWidget()
+{
+	MissionWidgetText->RemoveFromViewport();
+
+}
