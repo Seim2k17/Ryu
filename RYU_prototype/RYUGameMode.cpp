@@ -8,7 +8,8 @@
 ARYUGameMode::ARYUGameMode()
 {
 	
-	static ConstructorHelpers::FObjectFinder<UBlueprint> SideScroller_BP(TEXT("Blueprint'/Game/SideScrollerBP/Blueprints/SideScrollerCharacter.SideScrollerCharacter'"));
+	//static ConstructorHelpers::FObjectFinder<UBlueprint> SideScroller_BP(TEXT("Blueprint'/Game/SideScrollerBP/Blueprints/SideScrollerCharacter.SideScrollerCharacter'"));
+	static ConstructorHelpers::FObjectFinder<UBlueprint> SideScroller_BP(TEXT("Blueprint'/Game/Blueprints/Character/RYU_Character/BP_Character_base.BP_Character_base'"));
 	if (SideScroller_BP.Object) {
 		DefaultPawnClass = (UClass*)SideScroller_BP.Object->GeneratedClass;
 	}
