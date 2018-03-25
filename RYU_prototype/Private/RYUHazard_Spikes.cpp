@@ -4,6 +4,7 @@
 #include "Components/BoxComponent.h"
 
 
+
 // Sets default values
 ARYUHazard_Spikes::ARYUHazard_Spikes()
 {
@@ -17,6 +18,10 @@ ARYUHazard_Spikes::ARYUHazard_Spikes()
 	TriggerArea->SetupAttachment(Spikes);
 	TriggerArea->SetBoxExtent(FVector(50,50,100));
 
+	//what happen when overlapping
+	TriggerArea->OnComponentBeginOverlap.AddDynamic(this, &ARYUHazard_Spikes::SpikesBeginOverlap);
+
+
 }
 
 // Called when the game starts or when spawned
@@ -28,13 +33,12 @@ void ARYUHazard_Spikes::BeginPlay()
 
 
 // 
-void ARYUHazard_Spikes::NotifyActorBeginOverlap(AActor* OtherActor)
+void ARYUHazard_Spikes::SpikesBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
  	UE_LOG(LogTemp, Log, TEXT("YOU DIED"));
  	if (OtherActor != NULL)
  	{
-		//cant cast to blueprint --> make a C++ character !!! HMPF
-		//auto character = Cast<ASideScrollerCharacter>();
+	
  	}
 }
 
