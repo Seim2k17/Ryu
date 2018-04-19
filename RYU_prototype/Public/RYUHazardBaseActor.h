@@ -12,6 +12,7 @@ class UBoxComponent;
 class UDamageType;
 class UParticleSystem;
 class USoundBase;
+class UAudioComponent;
 
 UCLASS()
 class RYU_PROTOTYPE_API ARYUHazardBaseActor : public AActor
@@ -57,6 +58,9 @@ protected:
 
 	/** Stop the PainCausingSound*/
 	void StopSoundEffect();
+
+	UPROPERTY()
+	UAudioComponent*  SFXReference;
 	
 public:	
 	// Called every frame

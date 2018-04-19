@@ -7,6 +7,7 @@
 #include "TimerManager.h"
 #include "GameFramework/Pawn.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 
 
 
@@ -126,9 +127,10 @@ void ARYUHazardBaseActor::PlaySpecialEffect()
 
 void ARYUHazardBaseActor::PlaySoundEffect()
 {
-	if (HazardSFX != nullptr)
+	if (HazardSFX != nullptr )
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, HazardSFX, GetActorLocation());
+		UE_LOG(LogTemp, Log, TEXT("PLAY SFX !"));
+		SFXReference = UGameplayStatics::SpawnSound2D(this, HazardSFX);
 	}
 }
 
@@ -136,6 +138,10 @@ void ARYUHazardBaseActor::PlaySoundEffect()
 void ARYUHazardBaseActor::StopSoundEffect()
 {
 	UE_LOG(LogTemp, Log, TEXT("SFX DIE !!!"));
+	if (SFXReference)
+	{
+		SFXReference->Stop();
+	}
 }
 
 void ARYUHazardBaseActor::CausePainTo(class AActor* Other)
@@ -180,11 +186,13 @@ void ARYUHazardBaseActor::HandleTriggerOverlap(UPrimitiveComponent* OverlappedCo
 
 void ARYUHazardBaseActor::HandleMeshEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	UE_LOG(LogTemp, Log, TEXT("Overlap out (MeshCollision)"));
 	StopSoundEffect();
 }
 
 void ARYUHazardBaseActor::HandleTriggerEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	UE_LOG(LogTemp, Log, TEXT("Overlap out (BoxCollision)"));
 	StopSoundEffect();
 }
 
