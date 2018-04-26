@@ -4,3 +4,5 @@
 
 #include "CoreMinimal.h"
 
+#define RYU_BLUEPRINTPATH_PLAYERCONTROLLER "Blueprint'/Game/Blueprints/Controller/RYU_PlayerController_BP.RYU_PlayerController_BP'"
+

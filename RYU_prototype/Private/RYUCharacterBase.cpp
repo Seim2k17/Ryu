@@ -49,6 +49,9 @@ ARYUCharacterBase::ARYUCharacterBase()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
+	//InitStuff eigene Function
+
+	PlayerActive = ERYUPlayerActive::Player1;
 
 }
 
@@ -93,12 +96,38 @@ void ARYUCharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	// set up gameplay key bindings
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	//Axis-Bindings
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARYUCharacterBase::MoveRight);
 
+	//Actions
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	
+	PlayerInputComponent->BindAction("ChangePlayer",IE_Pressed, this, &ARYUCharacterBase::ChangePlayer);
+
+
+	//Predefined Bindings
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &ARYUCharacterBase::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &ARYUCharacterBase::TouchStopped);
-
 }
+
+void ARYUCharacterBase::ChangePlayer()
+{
+	switch (PlayerActive)
+	{
+	case ERYUPlayerActive::Player1:
+		PlayerActive = ERYUPlayerActive::Player2;
+		break;
+	case ERYUPlayerActive::Player2:
+		PlayerActive = ERYUPlayerActive::Player1;
+		break;
+	default:
+		break;
+	}
+
+	OnPlayerActive.Broadcast();
+}
+
+
+
 

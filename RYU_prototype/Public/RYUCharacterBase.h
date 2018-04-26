@@ -4,7 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "RYUENUM_PlayerActive.h"
 #include "RYUCharacterBase.generated.h"
+
+
+class UUserWidget;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChangeActivePlayer);
 
 UCLASS(config = Game)
 class RYU_PROTOTYPE_API ARYUCharacterBase : public ACharacter
@@ -37,6 +43,12 @@ protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
 	// End of APawn interface
 
+	UFUNCTION()
+	void ChangePlayer();
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+	FChangeActivePlayer OnPlayerActive;
+
 
 public:
 	// Sets default values for this character's properties
@@ -50,11 +62,16 @@ public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
+
+	/** THIS WILL BECOME A COMPONENT FOR DAMAGEDEALING ETC*/
 	//Base Parameter every Character should have in RYU
 	UPROPERTY(EditAnywhere, Category = "Character Status")
-		float Health;
+	float Health;
 
 	UPROPERTY(EditAnywhere, Category = "Character Status")
-		float Energy;
+	float Energy;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerChange")
+	ERYUPlayerActive PlayerActive;
 	
 };
