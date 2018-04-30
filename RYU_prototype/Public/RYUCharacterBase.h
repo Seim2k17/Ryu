@@ -17,6 +17,31 @@ class RYU_PROTOTYPE_API ARYUCharacterBase : public ACharacter
 {
 	GENERATED_BODY()
 
+public:
+	// Sets default values for this character's properties
+	ARYUCharacterBase();
+
+	
+	/** METHODS*/
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	/** Returns SideViewCameraComponent subobject **/
+	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
+	void Jump() override;
+
+	/** MEMBERS */
+
+	UPROPERTY(EditAnywhere, Category = "Character Status")
+	float Energy;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerChange")
+	ERYUPlayerActive PlayerActive;
+	
 	/** Side view camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* SideViewCameraComponent;
@@ -26,6 +51,8 @@ class RYU_PROTOTYPE_API ARYUCharacterBase : public ACharacter
 	class USpringArmComponent* CameraBoom;
 
 protected:
+
+	/** METHODS */
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -46,32 +73,15 @@ protected:
 	UFUNCTION()
 	void ChangePlayer();
 
+	/** MEMBERS */
+
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FChangeActivePlayer OnPlayerActive;
 
 
-public:
-	// Sets default values for this character's properties
-	ARYUCharacterBase();
+private:
+	/** METHODS */
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	/** Returns SideViewCameraComponent subobject **/
-	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-
-
-	/** THIS WILL BECOME A COMPONENT FOR DAMAGEDEALING ETC*/
-	//Base Parameter every Character should have in RYU
-	UPROPERTY(EditAnywhere, Category = "Character Status")
-	float Health;
-
-	UPROPERTY(EditAnywhere, Category = "Character Status")
-	float Energy;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerChange")
-	ERYUPlayerActive PlayerActive;
+	void InitializeCharacterValues();
 	
 };
