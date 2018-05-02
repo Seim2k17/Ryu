@@ -2,7 +2,7 @@
 
 UENUM(BlueprintType)
 
-enum class EMovementMode : uint8
+enum class ERYUEMovementMode : uint8
 {
 	Stand UMETA(DisplayName = "Standing"),
 	Walking UMETA(DisplayName = "Walking"),

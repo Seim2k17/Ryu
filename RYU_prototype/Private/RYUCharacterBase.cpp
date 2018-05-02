@@ -97,10 +97,14 @@ void ARYUCharacterBase::Tick(float DeltaTime)
 
 
 
-void ARYUCharacterBase::Jump()
-{
-	UE_LOG(LogTemp, Log, TEXT("Char: %s Starts Jumping"), *GetName());
-}
+// void ARYUCharacterBase::Jump()
+// {
+// 	UE_LOG(LogTemp, Log, TEXT("Char: %s Starts Jumping"), *GetName());
+// 	Jump();
+// 	//pseudocode
+// 	//pos += vel + d(t) + 1 / 2 * acc*d(t)*d(t);
+// 	//vel += acc * d(t);
+// }
 
 //////////////////////////////////////////////////////////////////////////
 // Input

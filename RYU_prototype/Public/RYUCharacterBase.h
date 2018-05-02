@@ -32,7 +32,7 @@ public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
-	void Jump() override;
+	//void Jump() override;
 
 	/** MEMBERS */
 
