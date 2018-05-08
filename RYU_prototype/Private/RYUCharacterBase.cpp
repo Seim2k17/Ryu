@@ -104,6 +104,15 @@ void ARYUCharacterBase::Tick(float DeltaTime)
 // 	//pseudocode
 // 	//pos += vel + d(t) + 1 / 2 * acc*d(t)*d(t);
 // 	//vel += acc * d(t);
+
+//look character Jump Sheet for customization when level up
+//Jump Z - Velocity: "wie stark sprint char in die Höhe -> make it flexible (je laenger button gepresst desto hoeher springt er ); std-wert: zw. 600 und 700 --> can improve through SkillTree ?
+//std-value: 500 : Hoehe: ~1m
+//1000: JH: 2,5m
+// 670: : JH: 1,5m
+
+//Air control: [0..1] 0: no while falling, 1-full control at full speed -> 0.4 - 0.5 ?
+
 // }
 
 //////////////////////////////////////////////////////////////////////////
