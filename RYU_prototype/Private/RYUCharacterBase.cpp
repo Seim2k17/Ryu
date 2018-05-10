@@ -97,10 +97,10 @@ void ARYUCharacterBase::Tick(float DeltaTime)
 
 
 
-// void ARYUCharacterBase::Jump()
-// {
-// 	UE_LOG(LogTemp, Log, TEXT("Char: %s Starts Jumping"), *GetName());
-// 	Jump();
+void ARYUCharacterBase::Jump()
+{
+ 	UE_LOG(LogTemp, Log, TEXT("Char: %s Starts Jumping"), *GetName());
+ 	Super::Jump();
 // 	//pseudocode
 // 	//pos += vel + d(t) + 1 / 2 * acc*d(t)*d(t);
 // 	//vel += acc * d(t);
@@ -113,7 +113,13 @@ void ARYUCharacterBase::Tick(float DeltaTime)
 
 //Air control: [0..1] 0: no while falling, 1-full control at full speed -> 0.4 - 0.5 ?
 
-// }
+ }
+
+void ARYUCharacterBase::StopJumping()
+{
+	UE_LOG(LogTemp, Log, TEXT("Char: %s Starts Jumping"), *GetName());
+	Super::StopJumping();
+}
 
 //////////////////////////////////////////////////////////////////////////
 // Input
@@ -129,8 +135,8 @@ void ARYUCharacterBase::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARYUCharacterBase::MoveRight);
 
 	//Actions
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARYUCharacterBase::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARYUCharacterBase::StopJumping);
 	
 	PlayerInputComponent->BindAction("ChangePlayer",IE_Pressed, this, &ARYUCharacterBase::ChangePlayer);
 
