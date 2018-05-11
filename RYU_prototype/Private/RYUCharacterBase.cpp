@@ -6,6 +6,7 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Runtime/Engine/Classes/Engine/Engine.h"
 
 
 // Sets default values
@@ -56,11 +57,19 @@ void ARYUCharacterBase::InitializeCharacterValues()
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Face in the direction we are moving..
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f); // ...at this rotation rate
 	GetCharacterMovement()->GravityScale = 2.f;
-	GetCharacterMovement()->AirControl = 0.80f;
-	GetCharacterMovement()->JumpZVelocity = 1000.f;
+	GetCharacterMovement()->AirControl = 0.40f;
+	GetCharacterMovement()->JumpZVelocity = 650.f;
 	GetCharacterMovement()->GroundFriction = 3.f;
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	GetCharacterMovement()->MaxFlySpeed = 600.f;
+	//starts slowly until reach full speed
+	GetCharacterMovement()->MaxAcceleration = 850.f;
+	//if character should stop, it needs some time, not instant
+	GetCharacterMovement()->BrakingDecelerationWalking = 50.0f;
+	//the Higher the friction the faster the character stops
+	GetCharacterMovement()->GroundFriction = 2.0f;
+
+	bDebugOutputActive = true;
 
 }
 
@@ -93,14 +102,42 @@ void ARYUCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bDebugOutputActive)
+	{
+		DrawDebugInfosOnScreen();
+	}
+
 }
 
 
 
+void ARYUCharacterBase::DrawDebugInfosOnScreen()
+{
+
+	currA = GetCharacterMovement()->GetCurrentAcceleration();
+	currV = this->GetVelocity();
+  	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("V(x): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(currV.X))),false);
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("V(y): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(currV.Y))),false);
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("V(z): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(currV.Z))),false);
+
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(x): %s"), *FString::SanitizeFloat(currA.X)), false);
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(y): %s"), *FString::SanitizeFloat(currA.Y)), false);
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(z): %s"), *FString::SanitizeFloat(currA.Z)), false);
+	}
+	
+}
+
 void ARYUCharacterBase::Jump()
 {
  	UE_LOG(LogTemp, Log, TEXT("Char: %s Starts Jumping"), *GetName());
- 	Super::Jump();
+	
+	//Super::Jump() :
+	bPressedJump = true;
+	JumpKeyHoldTime = 0.0f;
+
+ 	
 // 	//pseudocode
 // 	//pos += vel + d(t) + 1 / 2 * acc*d(t)*d(t);
 // 	//vel += acc * d(t);
@@ -117,8 +154,12 @@ void ARYUCharacterBase::Jump()
 
 void ARYUCharacterBase::StopJumping()
 {
-	UE_LOG(LogTemp, Log, TEXT("Char: %s Starts Jumping"), *GetName());
-	Super::StopJumping();
+	UE_LOG(LogTemp, Log, TEXT("Char: %s Release Jumping button."), *GetName());
+
+	//Super::StopJumping();
+	bPressedJump = false;
+	Super::ResetJumpState();
+	
 }
 
 //////////////////////////////////////////////////////////////////////////

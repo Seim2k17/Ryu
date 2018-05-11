@@ -27,6 +27,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void DrawDebugInfosOnScreen();
+
 	/** Returns SideViewCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
 	/** Returns CameraBoom subobject **/
@@ -85,5 +87,10 @@ private:
 	/** METHODS */
 
 	void InitializeCharacterValues();
+
+	bool bDebugOutputActive;
+
+	FVector currA;
+	FVector currV;
 	
 };
