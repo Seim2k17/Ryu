@@ -38,6 +38,10 @@ public:
 
 	void StopJumping() override;
 
+#if WITH_EDITOR
+	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif
+
 	/** MEMBERS */
 
 	UPROPERTY(EditAnywhere, Category = "Character Status")
@@ -53,6 +57,12 @@ public:
 	/** Camera boom positioning the camera beside the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
+		float AddFallingMultiplierNumber;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
+		float GravityScaleMaximum;
 
 protected:
 
@@ -92,5 +102,9 @@ private:
 
 	FVector currA;
 	FVector currV;
+
+	float DefaultGravityScale;
+
+	bool bJumpJustStarted;
 	
 };

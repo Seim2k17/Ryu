@@ -71,6 +71,12 @@ void ARYUCharacterBase::InitializeCharacterValues()
 
 	bDebugOutputActive = true;
 
+	//JumpKeyHoldTime = 1.5f;
+
+	DefaultGravityScale = GetCharacterMovement()->GravityScale;
+
+	GravityScaleMaximum = 3.0f;
+
 }
 
 // Called when the game starts or when spawned
@@ -107,6 +113,27 @@ void ARYUCharacterBase::Tick(float DeltaTime)
 		DrawDebugInfosOnScreen();
 	}
 
+ 	if (GetCharacterMovement()->IsMovingOnGround() == false)
+	{
+		if (bJumpJustStarted == false) bJumpJustStarted = true;
+		if (GetVelocity().Z < 0)
+		{
+			//if(GetCharacterMovement()->GravityScale < GravityScaleMaximum) 
+			UE_LOG(LogTemp, Log, TEXT("GravScale: %s"),*FString::SanitizeFloat(GetCharacterMovement()->GravityScale));
+			GetCharacterMovement()->GravityScale += AddFallingMultiplierNumber;
+		}
+	}
+	else
+	{
+		if (bJumpJustStarted)
+		{
+			bJumpJustStarted = false;
+			GetCharacterMovement()->GravityScale = DefaultGravityScale;
+		}
+	}
+	
+
+
 }
 
 
@@ -125,6 +152,8 @@ void ARYUCharacterBase::DrawDebugInfosOnScreen()
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(x): %s"), *FString::SanitizeFloat(currA.X)), false);
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(y): %s"), *FString::SanitizeFloat(currA.Y)), false);
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(z): %s"), *FString::SanitizeFloat(currA.Z)), false);
+
+		//UE_LOG(LogTemp, Log, TEXT("V(z): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(currV.Z)));
 	}
 	
 }
@@ -161,6 +190,18 @@ void ARYUCharacterBase::StopJumping()
 	Super::ResetJumpState();
 	
 }
+
+#if WITH_EDITOR
+//#include "Editor.h"
+//changes in CharacterMovement are not directly applied, so to avoid making a own charactermovementcomp you need to change st in actors class to apply defaultgravityscale in editor
+void ARYUCharacterBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	DefaultGravityScale = GetCharacterMovement()->GravityScale;
+	UE_LOG(LogTemp, Log, TEXT("Default: %s; GravityEditor: %s"),*FString::SanitizeFloat(DefaultGravityScale), *FString::SanitizeFloat(GetCharacterMovement()->GravityScale));
+}
+#endif
 
 //////////////////////////////////////////////////////////////////////////
 // Input
