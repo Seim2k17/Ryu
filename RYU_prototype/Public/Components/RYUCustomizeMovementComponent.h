@@ -31,8 +31,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
 		float AddFallingMultiplierNumber;
 
+	/**if 0 then Char->GravityMaximumStd (3) is used*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
 		float GravityScaleMaximum;
+
+	/** Jump Force added when pressing Jump*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
+		FVector JumpForce;
 		
 	
 };

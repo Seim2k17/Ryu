@@ -103,6 +103,7 @@ private:
 	FVector currV;
 
 	float DefaultGravityScale;
+	float MaxGravityScaleStd;
 
 	bool bJumpJustStarted;
 	

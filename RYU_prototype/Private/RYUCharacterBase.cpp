@@ -26,6 +26,8 @@ ARYUCharacterBase::ARYUCharacterBase()
 	SideViewCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("SideViewCamera"));
 	SideViewCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 
+	CustMovementComp = CreateDefaultSubobject<URYUCustomizeMovementComponent>(TEXT("RYUCustomizeMovementData"));
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
@@ -75,8 +77,7 @@ void ARYUCharacterBase::InitializeCharacterValues()
 	//JumpKeyHoldTime = 1.5f;
 
 	DefaultGravityScale = GetCharacterMovement()->GravityScale;
-
-	CustMovementComp->SetGravityScaleMaximum(3.0f);
+	MaxGravityScaleStd = 3.0;
 
 }
 
@@ -84,7 +85,10 @@ void ARYUCharacterBase::InitializeCharacterValues()
 void ARYUCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	if (CustMovementComp->GravityScaleMaximum == 0)
+	{
+		CustMovementComp->SetGravityScaleMaximum(MaxGravityScaleStd);
+	}
 }
 
 void ARYUCharacterBase::MoveRight(float Val)
@@ -116,6 +120,8 @@ void ARYUCharacterBase::Tick(float DeltaTime)
 
  	if (GetCharacterMovement()->IsMovingOnGround() == false)
 	{
+		this->AddMovementInput(FVector::RightVector, -1.0f);
+
 		if (bJumpJustStarted == false) bJumpJustStarted = true;
 		if (GetVelocity().Z < 0)
 		{
@@ -172,8 +178,7 @@ void ARYUCharacterBase::Jump()
 
 	float InputY = GetInputAxisValue("MoveRight");
 	UE_LOG(LogTemp, Log, TEXT("Y: %s"), *FString::SanitizeFloat(InputY));
-
- 	
+	
 // 	//pseudocode
 // 	//pos += vel + d(t) + 1 / 2 * acc*d(t)*d(t);
 // 	//vel += acc * d(t);
