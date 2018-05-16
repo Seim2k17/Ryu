@@ -9,6 +9,7 @@
 
 
 class UUserWidget;
+class URYUCustomizeMovementComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChangeActivePlayer);
 
@@ -58,11 +59,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
-		float AddFallingMultiplierNumber;
+	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly)
+	URYUCustomizeMovementComponent* CustMovementComp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
-		float GravityScaleMaximum;
 
 protected:
 

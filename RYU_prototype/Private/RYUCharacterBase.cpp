@@ -4,6 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/RYUCustomizeMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
@@ -75,7 +76,7 @@ void ARYUCharacterBase::InitializeCharacterValues()
 
 	DefaultGravityScale = GetCharacterMovement()->GravityScale;
 
-	GravityScaleMaximum = 3.0f;
+	CustMovementComp->SetGravityScaleMaximum(3.0f);
 
 }
 
@@ -118,9 +119,12 @@ void ARYUCharacterBase::Tick(float DeltaTime)
 		if (bJumpJustStarted == false) bJumpJustStarted = true;
 		if (GetVelocity().Z < 0)
 		{
-			//if(GetCharacterMovement()->GravityScale < GravityScaleMaximum) 
-			UE_LOG(LogTemp, Log, TEXT("GravScale: %s"),*FString::SanitizeFloat(GetCharacterMovement()->GravityScale));
-			GetCharacterMovement()->GravityScale += AddFallingMultiplierNumber;
+			if (GetCharacterMovement()->GravityScale < CustMovementComp->GravityScaleMaximum)
+			{
+				GetCharacterMovement()->GravityScale += CustMovementComp->AddFallingMultiplierNumber;
+			}
+			//UE_LOG(LogTemp, Log, TEXT("GravScale: %s"),*FString::SanitizeFloat(GetCharacterMovement()->GravityScale));
+			
 		}
 	}
 	else
@@ -160,11 +164,14 @@ void ARYUCharacterBase::DrawDebugInfosOnScreen()
 
 void ARYUCharacterBase::Jump()
 {
- 	UE_LOG(LogTemp, Log, TEXT("Char: %s Starts Jumping"), *GetName());
+ 	//UE_LOG(LogTemp, Log, TEXT("Char: %s Starts Jumping"), *GetName());
 	
 	//Super::Jump() :
 	bPressedJump = true;
 	JumpKeyHoldTime = 0.0f;
+
+	float InputY = GetInputAxisValue("MoveRight");
+	UE_LOG(LogTemp, Log, TEXT("Y: %s"), *FString::SanitizeFloat(InputY));
 
  	
 // 	//pseudocode
