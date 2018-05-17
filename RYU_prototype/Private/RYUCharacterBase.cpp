@@ -79,6 +79,8 @@ void ARYUCharacterBase::InitializeCharacterValues()
 	DefaultGravityScale = GetCharacterMovement()->GravityScale;
 	MaxGravityScaleStd = 3.0;
 
+	CharMaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+
 }
 
 // Called when the game starts or when spawned
@@ -121,6 +123,8 @@ void ARYUCharacterBase::Tick(float DeltaTime)
  	if (GetCharacterMovement()->IsMovingOnGround() == false)
 	{
 		this->AddMovementInput(FVector::RightVector, -1.0f);
+
+		GetCharacterMovement()->MaxWalkSpeed = CharMaxWalkSpeed * 3.0f;
 
 		if (bJumpJustStarted == false) bJumpJustStarted = true;
 		if (GetVelocity().Z < 0)

@@ -106,5 +106,7 @@ private:
 	float MaxGravityScaleStd;
 
 	bool bJumpJustStarted;
+
+	float CharMaxWalkSpeed;
 	
 };
