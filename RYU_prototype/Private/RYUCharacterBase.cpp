@@ -122,7 +122,7 @@ void ARYUCharacterBase::Tick(float DeltaTime)
 
  	if (GetCharacterMovement()->IsMovingOnGround() == false)
 	{
-		this->AddMovementInput(FVector::RightVector, -1.0f);
+		//this->AddMovementInput(FVector::RightVector, -1.0f);
 
 		GetCharacterMovement()->MaxWalkSpeed = CharMaxWalkSpeed * 3.0f;
 
@@ -177,10 +177,11 @@ void ARYUCharacterBase::Jump()
  	//UE_LOG(LogTemp, Log, TEXT("Char: %s Starts Jumping"), *GetName());
 	
 	//Super::Jump() :
+	//CharMoveComp->DoJump(
 	bPressedJump = true;
 	JumpKeyHoldTime = 0.0f;
-
 	float InputY = GetInputAxisValue("MoveRight");
+	GetCharacterMovement()->Velocity.Y = CustMovementComp->JumpForce.Y * InputY * (-1.0f);
 	UE_LOG(LogTemp, Log, TEXT("Y: %s"), *FString::SanitizeFloat(InputY));
 	
 // 	//pseudocode
