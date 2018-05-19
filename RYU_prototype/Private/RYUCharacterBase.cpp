@@ -110,6 +110,7 @@ void ARYUCharacterBase::TouchStopped(const ETouchIndex::Type FingerIndex, const 
 	StopJumping();
 }
 
+
 // Called every frame
 void ARYUCharacterBase::Tick(float DeltaTime)
 {
@@ -120,34 +121,8 @@ void ARYUCharacterBase::Tick(float DeltaTime)
 		DrawDebugInfosOnScreen();
 	}
 
- 	if (GetCharacterMovement()->IsMovingOnGround() == false)
-	{
-		//this->AddMovementInput(FVector::RightVector, -1.0f);
-
-		GetCharacterMovement()->MaxWalkSpeed = CharMaxWalkSpeed * 3.0f;
-
-		if (bJumpJustStarted == false) bJumpJustStarted = true;
-		if (GetVelocity().Z < 0)
-		{
-			if (GetCharacterMovement()->GravityScale < CustMovementComp->GravityScaleMaximum)
-			{
-				GetCharacterMovement()->GravityScale += CustMovementComp->AddFallingMultiplierNumber;
-			}
-			//UE_LOG(LogTemp, Log, TEXT("GravScale: %s"),*FString::SanitizeFloat(GetCharacterMovement()->GravityScale));
-			
-		}
-	}
-	else
-	{
-		if (bJumpJustStarted)
-		{
-			bJumpJustStarted = false;
-			GetCharacterMovement()->GravityScale = DefaultGravityScale;
-		}
-	}
-	
-
-
+	//check preferences after Jump is pressed
+	AfterJumpButtonPressed();
 }
 
 
@@ -196,7 +171,7 @@ void ARYUCharacterBase::Jump()
 
 //Air control: [0..1] 0: no while falling, 1-full control at full speed -> 0.4 - 0.5 ?
 
- }
+}
 
 void ARYUCharacterBase::StopJumping()
 {
@@ -207,6 +182,46 @@ void ARYUCharacterBase::StopJumping()
 	Super::ResetJumpState();
 	
 }
+
+//called in Tick
+void ARYUCharacterBase::AfterJumpButtonPressed()
+{
+	//we suppose Jumping occurred
+	if (GetCharacterMovement()->IsMovingOnGround() == false)
+	{
+		if (bJumpJustStarted == false) bJumpJustStarted = true;
+		if (GetVelocity().Z < 0)
+		{
+			//fall straight down
+			if (GetInputAxisValue("MoveRight") == 0)
+			{
+				GetCharacterMovement()->Velocity.Y = 0;
+			}
+			//increase gravity (fall down faster)
+			if (GetCharacterMovement()->GravityScale < CustMovementComp->GravityScaleMaximum)
+			{
+				GetCharacterMovement()->GravityScale += CustMovementComp->AddFallingMultiplierNumber;
+			}
+			//UE_LOG(LogTemp, Log, TEXT("GravScale: %s"),*FString::SanitizeFloat(GetCharacterMovement()->GravityScale));
+
+		}
+	}
+	else
+	{
+		if (bJumpJustStarted)
+		{
+			//@ToDo: check direction (ForwardVector)
+			//Add little Velocity after hitting the ground
+			GetCharacterMovement()->Velocity.Y = 450 * (-1.0f);
+			bJumpJustStarted = false;
+			GetCharacterMovement()->GravityScale = DefaultGravityScale;
+		}
+		return;
+	}
+
+}
+
+
 
 #if WITH_EDITOR
 //#include "Editor.h"
