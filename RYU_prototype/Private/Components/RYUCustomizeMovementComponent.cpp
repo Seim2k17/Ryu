@@ -6,17 +6,27 @@
 // Sets default values for this component's properties
 URYUCustomizeMovementComponent::URYUCustomizeMovementComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
-	VelocityAfterJumping.Y = 450.0f;
-
-	if (JumpHoldDivider.Y == 0)
-	{
-		JumpHoldDivider.Y = 10.0f;
-	}
 	
-	// ...
+	//mostly just a Data Component
+	VelocityAfterJumping.X = 0.0f;
+	VelocityAfterJumping.Y = 450.0f;
+	VelocityAfterJumping.Z = 0.0f;
+	
+
+	AfterJumpTreshold.X = 0.0f;
+	AfterJumpTreshold.Y = 100.0f;
+	AfterJumpTreshold.Z = -950.0f;
+
+	JumpForce.X = 0.0f;
+	JumpForce.Y = 300.0f;
+	JumpForce.Z = 0.0f;
+
+	JumpForceRun.X = 0.0f;
+	JumpForceRun.Y = 0.0f;
+	JumpForceRun.Z = 0.0f;
+
+	AddFallingMultiplierNumber = 0.05f;
+	GravityScaleMaximum = 4.0f;
 }
 
 
@@ -25,18 +35,9 @@ void URYUCustomizeMovementComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
 }
 
 
-// Called every frame
-void URYUCustomizeMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
 
 void URYUCustomizeMovementComponent::SetGravityScaleMaximum(float GravScale)
 {

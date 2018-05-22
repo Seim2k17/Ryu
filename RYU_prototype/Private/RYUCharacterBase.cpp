@@ -60,8 +60,8 @@ void ARYUCharacterBase::InitializeCharacterValues()
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Face in the direction we are moving..
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f); // ...at this rotation rate
 	GetCharacterMovement()->GravityScale = 2.f;
-	GetCharacterMovement()->AirControl = 1.0f;
-	GetCharacterMovement()->JumpZVelocity = 650.0f;
+	GetCharacterMovement()->AirControl = 0.8f;
+	GetCharacterMovement()->JumpZVelocity = 325.0f;
 	GetCharacterMovement()->GroundFriction = 3.f;
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	GetCharacterMovement()->MaxFlySpeed = 600.f;
@@ -80,9 +80,13 @@ void ARYUCharacterBase::InitializeCharacterValues()
 
 	CharMaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 
-	StartJumpZVelocity = GetCharacterMovement()->JumpZVelocity;
+	StartJumpVelocity.X = 0;
+	StartJumpVelocity.Y = 0;
+	StartJumpVelocity.Z = GetCharacterMovement()->JumpZVelocity;
 
 	tmpCheck = false;
+
+	FallCheck = false;
 }
 
 // Called when the game starts or when spawned
@@ -162,35 +166,31 @@ void ARYUCharacterBase::DrawDebugInfosOnScreen()
 
 void ARYUCharacterBase::Jump()
 {
- 	//UE_LOG(LogTemp, Log, TEXT("Char: %s Starts Jumping"), *GetName());
+ 	//Super::Jump() : CharMoveComp->DoJump
+	//How Long adding Velocity when maxHoldTime applied! -> maxHoldTime, but Velocity stays the same of course
 	
-	//Super::Jump() :
-	//CharMoveComp->DoJump(
-
-	//@ToDo: Check How Long adding Velocity when maxHoldTime applied!
-	//TimeDelta = GetSecond
-
 	bPressedJump = true;
 	
-	float InputY = GetInputAxisValue("MoveRight");
-	GetCharacterMovement()->Velocity.Y = CustMovementComp->JumpForce.Y * InputY * (-1.0f);
-	UE_LOG(LogTemp, Log, TEXT("Y: %s"), *FString::SanitizeFloat(InputY));
-
 	float JumpKeyMaxTime = JumpMaxHoldTime * 1000;
 	UE_LOG(LogTemp, Log, TEXT("JumpKeyMaxTime ms: %s"), *FString::SanitizeFloat(JumpKeyMaxTime));
 	
-	//Jumping inits
-	if (JumpMaxHoldTime > 0.0f)
+	float InputY = GetInputAxisValue("MoveRight");
+	//@ToDo calc begin Velocity
+	//add Jump-Y-Velocity aus Stand
+	UE_LOG(LogTemp, Log, TEXT("Y(start): %s"), *FString::SanitizeFloat(GetCharacterMovement()->Velocity.Y));
+	StartJumpVelocity.Y = GetCharacterMovement()->Velocity.Y;
+	if (FMath::Abs(StartJumpVelocity.Y) < 30.0f)
 	{
-		//normal add 1 Frame JumpZ:
-		//jetzt X Frames auf Dauer MaxHoldTime -> 
-		float JZFrames = currentFPS * JumpMaxHoldTime;
-		//GetCharacterMovement()->JumpZVelocity = StartJumpZVelocity / JZFrames;
-		//UE_LOG(LogTemp, Log, TEXT("JumpZVeloc: %s over %s Frames."), *FString::SanitizeFloat(GetCharacterMovement()->JumpZVelocity),*FString::SanitizeFloat(JZFrames));
-		//GetCharacterMovement()->JumpZVelocity = GetCharacterMovement()->JumpZVelocity / CustMovementComp->JumpHoldDivider.Y;
+		GetCharacterMovement()->Velocity.Y = CustMovementComp->JumpForce.Y * InputY * (-1.0f);
 	}
+	else
+	{
+		//AddMoreVelocity ?
+		GetCharacterMovement()->Velocity.Y = GetCharacterMovement()->Velocity.Y + CustMovementComp->JumpForceRun.Y;
+	}
+	UE_LOG(LogTemp, Log, TEXT("Y(final): %s"), *FString::SanitizeFloat(StartJumpVelocity.Y));
 
-
+	
 // 	//pseudocode
 // 	//pos += vel + d(t) + 1 / 2 * acc*d(t)*d(t);
 // 	//vel += acc * d(t);
@@ -224,13 +224,21 @@ void ARYUCharacterBase::AfterJumpButtonPressed()
 	//we suppose Jumping occurred
 	if (GetCharacterMovement()->IsMovingOnGround() == false)
 	{
-		if (bJumpJustStarted == false) bJumpJustStarted = true;
-		if (GetVelocity().Z < 0)
+		if (bJumpJustStarted == false)
+		{
+			TimeDeltaStart = GetWorld()->GetTimeSeconds();
+			bJumpJustStarted = true;
+		}
+
+		//falling Down; grappy est. difference more than 30
+		if ((GetVelocity().Z - GetCharacterMovement()->JumpZVelocity) < - 40)
 		{
 			if (tmpCheck == false)
 			{
-				UE_LOG(LogTemp, Log, TEXT("Peak reached"), *FString::FromInt(JumpCurrentCount));
+				TimeDeltaEnd = GetWorld()->GetTimeSeconds();
+				UE_LOG(LogTemp, Log, TEXT("Peak reached: %s after: %s "), *FString::FromInt(JumpCurrentCount),*FString::SanitizeFloat(TimeDeltaEnd-TimeDeltaStart));
 				tmpCheck = true;
+				
 			}
 			
 			//fall straight down
@@ -245,22 +253,28 @@ void ARYUCharacterBase::AfterJumpButtonPressed()
 				GetCharacterMovement()->GravityScale += CustMovementComp->AddFallingMultiplierNumber;
 			}
 			//UE_LOG(LogTemp, Log, TEXT("GravScale: %s"),*FString::SanitizeFloat(GetCharacterMovement()->GravityScale));
-		
 		}
-		
 
-		
+		//when character falls over certain Heigth
+		if (GetVelocity().Z <= CustMovementComp->AfterJumpTreshold.Z) FallCheck = true;
 	}
 	else
 	{
 		if (bJumpJustStarted)
 		{
-			//@ToDo: check direction (ForwardVector)
-			float directionV = (GetCapsuleComponent()->GetForwardVector().Y > 0) ? 1.0f : -1.0f;
-
-			//Add little Velocity after hitting the ground
-			GetCharacterMovement()->Velocity.Y = CustMovementComp->VelocityAfterJumping.Y * (directionV);
 			bJumpJustStarted = false;
+			
+			float directionV = (GetCapsuleComponent()->GetForwardVector().Y > 0) ? 1.0f : -1.0f;
+			//Wenn Char schnell gelaufen ist oder aus grosser Höhe gefallen, @ToDo BigHeigth
+			if ((FMath::Abs(StartJumpVelocity.Y) > CustMovementComp->AfterJumpTreshold.Y) || FallCheck)
+			{
+				//Add little Velocity after hitting the ground
+				GetCharacterMovement()->Velocity.Y = CustMovementComp->VelocityAfterJumping.Y * (directionV);
+			}
+				
+			FallCheck = false;
+			//if fall on the ground earlier than MaxJumpButtonHoldTime
+			StopJumping();
 			//GetCharacterMovement()->GravityScale = DefaultGravityScale;
 		}
 		return;
@@ -278,7 +292,7 @@ void ARYUCharacterBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
 	DefaultGravityScale = GetCharacterMovement()->GravityScale;
-	GetCharacterMovement()->JumpZVelocity = GetCharacterMovement()->JumpZVelocity / CustMovementComp->JumpHoldDivider.Y;
+	
 
 	UE_LOG(LogTemp, Log, TEXT("Default: %s; GravityEditor: %s"),*FString::SanitizeFloat(DefaultGravityScale), *FString::SanitizeFloat(GetCharacterMovement()->GravityScale));
 	UE_LOG(LogTemp, Log, TEXT("JumpZVelocity: %s"), *FString::SanitizeFloat(GetCharacterMovement()->JumpZVelocity));

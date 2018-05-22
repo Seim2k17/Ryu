@@ -93,6 +93,8 @@ protected:
 	FChangeActivePlayer OnPlayerActive;
 
 
+
+
 private:
 	/** METHODS */
 
@@ -113,9 +115,13 @@ private:
 	float currentFPS;
 
 	float StartJumpZVelocity;
+	FVector StartJumpVelocity;
 
 	bool tmpCheck;
+	bool FallCheck;
 
-	float TimeDelta;
+	//4 calc JumpTimeNeeded
+	float TimeDeltaStart;
+	float TimeDeltaEnd;
 	
 };

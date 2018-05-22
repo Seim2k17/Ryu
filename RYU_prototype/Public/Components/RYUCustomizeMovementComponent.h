@@ -16,9 +16,6 @@ public:
 	// Sets default values for this component's properties
 	URYUCustomizeMovementComponent();
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	UFUNCTION(BlueprintCallable, Category = "CharacterMovement")
 		void SetGravityScaleMaximum(float GravScale);
 
@@ -35,16 +32,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
 		float GravityScaleMaximum;
 
-	/** Jump Force added when pressing Jump*/
+	/** Jump Force added when pressing Jump from Stand (V(y) == 0*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
 		FVector JumpForce;
 
-	/** Divider to JumpZVelocity If JumpHoldMaxTime > 0 , increase MaxHoldTime means to increase Divider to keep Jumphigh*/ 
+	/** Jump Force added when pressing Jump while Running*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
-		FVector JumpHoldDivider;
+		FVector JumpForceRun;
 
+	/**Treshhold to activate VelocityAfterJumping, Y: vertical Velocity, Z: Falling Treshold */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
+		FVector AfterJumpTreshold;
+
+	/** Velocity added after Jump ends (if StartedVelocity > AfterJumpTreshold)*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
 		FVector VelocityAfterJumping;
-		
 	
 };
