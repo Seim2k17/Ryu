@@ -62,7 +62,6 @@ public:
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly)
 	URYUCustomizeMovementComponent* CustMovementComp;
 
-
 protected:
 
 	/** METHODS */
@@ -110,5 +109,13 @@ private:
 	bool bJumpJustStarted;
 
 	float CharMaxWalkSpeed;
+
+	float currentFPS;
+
+	float StartJumpZVelocity;
+
+	bool tmpCheck;
+
+	float TimeDelta;
 	
 };

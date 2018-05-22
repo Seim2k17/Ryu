@@ -60,8 +60,8 @@ void ARYUCharacterBase::InitializeCharacterValues()
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Face in the direction we are moving..
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 720.0f, 0.0f); // ...at this rotation rate
 	GetCharacterMovement()->GravityScale = 2.f;
-	GetCharacterMovement()->AirControl = 0.40f;
-	GetCharacterMovement()->JumpZVelocity = 650.f;
+	GetCharacterMovement()->AirControl = 1.0f;
+	GetCharacterMovement()->JumpZVelocity = 650.0f;
 	GetCharacterMovement()->GroundFriction = 3.f;
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	GetCharacterMovement()->MaxFlySpeed = 600.f;
@@ -74,23 +74,28 @@ void ARYUCharacterBase::InitializeCharacterValues()
 
 	bDebugOutputActive = true;
 
-	//JumpKeyHoldTime = 1.5f;
-
+	
 	DefaultGravityScale = GetCharacterMovement()->GravityScale;
 	MaxGravityScaleStd = 3.0;
 
 	CharMaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
 
+	StartJumpZVelocity = GetCharacterMovement()->JumpZVelocity;
+
+	tmpCheck = false;
 }
 
 // Called when the game starts or when spawned
 void ARYUCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+
 	if (CustMovementComp->GravityScaleMaximum == 0)
 	{
 		CustMovementComp->SetGravityScaleMaximum(MaxGravityScaleStd);
 	}
+
+	
 }
 
 void ARYUCharacterBase::MoveRight(float Val)
@@ -115,6 +120,8 @@ void ARYUCharacterBase::TouchStopped(const ETouchIndex::Type FingerIndex, const 
 void ARYUCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	currentFPS = 1 / DeltaTime;
 
 	if (bDebugOutputActive)
 	{
@@ -142,7 +149,13 @@ void ARYUCharacterBase::DrawDebugInfosOnScreen()
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(y): %s"), *FString::SanitizeFloat(currA.Y)), false);
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(z): %s"), *FString::SanitizeFloat(currA.Z)), false);
 
-		//UE_LOG(LogTemp, Log, TEXT("V(z): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(currV.Z)));
+		UE_LOG(LogTemp, Log, TEXT("V(z): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(currV.Z)));
+
+		if (bJumpJustStarted)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("V(z): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(currV.Z))), false);
+			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("JumpZV(z): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(GetCharacterMovement()->JumpZVelocity))), false);
+		}
 	}
 	
 }
@@ -153,12 +166,31 @@ void ARYUCharacterBase::Jump()
 	
 	//Super::Jump() :
 	//CharMoveComp->DoJump(
+
+	//@ToDo: Check How Long adding Velocity when maxHoldTime applied!
+	//TimeDelta = GetSecond
+
 	bPressedJump = true;
-	JumpKeyHoldTime = 0.0f;
+	
 	float InputY = GetInputAxisValue("MoveRight");
 	GetCharacterMovement()->Velocity.Y = CustMovementComp->JumpForce.Y * InputY * (-1.0f);
 	UE_LOG(LogTemp, Log, TEXT("Y: %s"), *FString::SanitizeFloat(InputY));
+
+	float JumpKeyMaxTime = JumpMaxHoldTime * 1000;
+	UE_LOG(LogTemp, Log, TEXT("JumpKeyMaxTime ms: %s"), *FString::SanitizeFloat(JumpKeyMaxTime));
 	
+	//Jumping inits
+	if (JumpMaxHoldTime > 0.0f)
+	{
+		//normal add 1 Frame JumpZ:
+		//jetzt X Frames auf Dauer MaxHoldTime -> 
+		float JZFrames = currentFPS * JumpMaxHoldTime;
+		//GetCharacterMovement()->JumpZVelocity = StartJumpZVelocity / JZFrames;
+		//UE_LOG(LogTemp, Log, TEXT("JumpZVeloc: %s over %s Frames."), *FString::SanitizeFloat(GetCharacterMovement()->JumpZVelocity),*FString::SanitizeFloat(JZFrames));
+		//GetCharacterMovement()->JumpZVelocity = GetCharacterMovement()->JumpZVelocity / CustMovementComp->JumpHoldDivider.Y;
+	}
+
+
 // 	//pseudocode
 // 	//pos += vel + d(t) + 1 / 2 * acc*d(t)*d(t);
 // 	//vel += acc * d(t);
@@ -176,9 +208,12 @@ void ARYUCharacterBase::Jump()
 void ARYUCharacterBase::StopJumping()
 {
 	UE_LOG(LogTemp, Log, TEXT("Char: %s Release Jumping button."), *GetName());
-
+	float JumpKeyTime = JumpKeyHoldTime * 1000;
+	UE_LOG(LogTemp, Log, TEXT("JumpKeypressed ms: %s"), *FString::SanitizeFloat(JumpKeyTime));
+	UE_LOG(LogTemp, Log, TEXT("JumpKeyCount: %s"), *FString::FromInt(JumpCurrentCount));
 	//Super::StopJumping();
 	bPressedJump = false;
+	
 	Super::ResetJumpState();
 	
 }
@@ -192,10 +227,17 @@ void ARYUCharacterBase::AfterJumpButtonPressed()
 		if (bJumpJustStarted == false) bJumpJustStarted = true;
 		if (GetVelocity().Z < 0)
 		{
+			if (tmpCheck == false)
+			{
+				UE_LOG(LogTemp, Log, TEXT("Peak reached"), *FString::FromInt(JumpCurrentCount));
+				tmpCheck = true;
+			}
+			
 			//fall straight down
 			if (GetInputAxisValue("MoveRight") == 0)
 			{
 				GetCharacterMovement()->Velocity.Y = 0;
+				//? GetCharacterMovement()->Velocity.Y = GetCharacterMovement()->Velocity.Y / 20.0f;
 			}
 			//increase gravity (fall down faster)
 			if (GetCharacterMovement()->GravityScale < CustMovementComp->GravityScaleMaximum)
@@ -203,18 +245,23 @@ void ARYUCharacterBase::AfterJumpButtonPressed()
 				GetCharacterMovement()->GravityScale += CustMovementComp->AddFallingMultiplierNumber;
 			}
 			//UE_LOG(LogTemp, Log, TEXT("GravScale: %s"),*FString::SanitizeFloat(GetCharacterMovement()->GravityScale));
-
+		
 		}
+		
+
+		
 	}
 	else
 	{
 		if (bJumpJustStarted)
 		{
 			//@ToDo: check direction (ForwardVector)
+			float directionV = (GetCapsuleComponent()->GetForwardVector().Y > 0) ? 1.0f : -1.0f;
+
 			//Add little Velocity after hitting the ground
-			GetCharacterMovement()->Velocity.Y = 450 * (-1.0f);
+			GetCharacterMovement()->Velocity.Y = CustMovementComp->VelocityAfterJumping.Y * (directionV);
 			bJumpJustStarted = false;
-			GetCharacterMovement()->GravityScale = DefaultGravityScale;
+			//GetCharacterMovement()->GravityScale = DefaultGravityScale;
 		}
 		return;
 	}
@@ -231,7 +278,10 @@ void ARYUCharacterBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
 	DefaultGravityScale = GetCharacterMovement()->GravityScale;
+	GetCharacterMovement()->JumpZVelocity = GetCharacterMovement()->JumpZVelocity / CustMovementComp->JumpHoldDivider.Y;
+
 	UE_LOG(LogTemp, Log, TEXT("Default: %s; GravityEditor: %s"),*FString::SanitizeFloat(DefaultGravityScale), *FString::SanitizeFloat(GetCharacterMovement()->GravityScale));
+	UE_LOG(LogTemp, Log, TEXT("JumpZVelocity: %s"), *FString::SanitizeFloat(GetCharacterMovement()->JumpZVelocity));
 }
 #endif
 

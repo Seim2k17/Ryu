@@ -38,6 +38,13 @@ public:
 	/** Jump Force added when pressing Jump*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
 		FVector JumpForce;
+
+	/** Divider to JumpZVelocity If JumpHoldMaxTime > 0 , increase MaxHoldTime means to increase Divider to keep Jumphigh*/ 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
+		FVector JumpHoldDivider;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
+		FVector VelocityAfterJumping;
 		
 	
 };
