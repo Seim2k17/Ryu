@@ -28,8 +28,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void DrawDebugInfosOnScreen();
-
 	/** Returns SideViewCameraComponent subobject **/
 	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
 	/** Returns CameraBoom subobject **/
@@ -39,17 +37,10 @@ public:
 
 	void StopJumping() override;
 
-#if WITH_EDITOR
-	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-#endif
-
 	/** MEMBERS */
 
 	UPROPERTY(EditAnywhere, Category = "Character Status")
 	float Energy;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerChange")
-	ERYUPlayerActive PlayerActive;
 	
 	/** Side view camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -59,8 +50,7 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
 
-	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly)
-	URYUCustomizeMovementComponent* CustMovementComp;
+
 
 protected:
 
@@ -78,50 +68,10 @@ protected:
 	/** Handle touch stop event. */
 	void TouchStopped(const ETouchIndex::Type FingerIndex, const FVector Location);
 
-	void AfterJumpButtonPressed();
-
-	// APawn interface
-	virtual void SetupPlayerInputComponent(class UInputComponent* InputComponent) override;
-	// End of APawn interface
-
-	UFUNCTION()
-	void ChangePlayer();
-
-	/** MEMBERS */
-
-	UPROPERTY(BlueprintAssignable, Category = "Events")
-	FChangeActivePlayer OnPlayerActive;
-
 
 
 
 private:
-	/** METHODS */
 
-	void InitializeCharacterValues();
-
-	bool bDebugOutputActive;
-
-	FVector currA;
-	FVector currV;
-
-	float DefaultGravityScale;
-	float MaxGravityScaleStd;
-
-	bool bJumpJustStarted;
-
-	float CharMaxWalkSpeed;
-
-	float currentFPS;
-
-	float StartJumpZVelocity;
-	FVector StartJumpVelocity;
-
-	bool tmpCheck;
-	bool FallCheck;
-
-	//4 calc JumpTimeNeeded
-	float TimeDeltaStart;
-	float TimeDeltaEnd;
 	
 };
