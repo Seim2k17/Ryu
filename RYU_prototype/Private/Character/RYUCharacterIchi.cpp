@@ -77,6 +77,10 @@ void ARYUCharacterIchi::InitializeCharacterValues()
 	tmpCheck = false;
 
 	FallCheck = false;
+
+	CoyoteTime = 300;
+
+	CoyoteJumpPossible = false;
 }
 
 // Called when the game starts or when spawned
@@ -187,6 +191,12 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 	//we suppose Jumping occurred
 	if (GetCharacterMovement()->IsMovingOnGround() == false)
 	{
+		//Coyote Time
+		CoyoteJumpPossible = true;
+		JumpMaxCount++;
+		UE_LOG(LogTemp, Log, TEXT("JumpMaxCount: %s "), *FString::FromInt(JumpMaxCount));
+		GetWorldTimerManager().SetTimer(Timerhandle_CoyoteTime, this, &ARYUCharacterIchi::DeactivateJumpPossible, CoyoteTime, false);
+	
 		if (bJumpJustStarted == false)
 		{
 			TimeDeltaStart = GetWorld()->GetTimeSeconds();
@@ -284,6 +294,12 @@ void ARYUCharacterIchi::ChangePlayer()
 	OnPlayerActive.Broadcast();
 }
 
+
+void ARYUCharacterIchi::DeactivateJumpPossible()
+{
+	JumpMaxCount--;
+	CoyoteJumpPossible = false;
+}
 
 void ARYUCharacterIchi::MoveRight(float Val)
 {

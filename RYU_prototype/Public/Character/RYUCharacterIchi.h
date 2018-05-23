@@ -40,6 +40,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerChange")
 		ERYUPlayerActive PlayerActive;
+	
+	/**Time allowed to jump when falling of a ledge*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jumping" )
+	float CoyoteTime;
 
 protected:
 
@@ -56,6 +60,9 @@ protected:
 	UFUNCTION()
 		void ChangePlayer();
 
+	UFUNCTION()
+		void DeactivateJumpPossible();
+
 	/** MEMBERS */
 
 	UPROPERTY(BlueprintAssignable, Category = "Events")
@@ -63,6 +70,8 @@ protected:
 
 	/** Called for side to side input */
 	void MoveRight(float Val);
+
+	FTimerHandle Timerhandle_CoyoteTime;
 
 
 private:
@@ -94,4 +103,7 @@ private:
 	//4 calc JumpTimeNeeded
 	float TimeDeltaStart;
 	float TimeDeltaEnd;
+
+	//CoyoteTimeJump
+	bool CoyoteJumpPossible;
 };
