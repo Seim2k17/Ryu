@@ -1,10 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RYUCustomizeMovementComponent.h"
+#include "GameFramework/Character.h"
+#include "Runtime/Engine/Classes/Engine/Engine.h"
 
 
 // Sets default values for this component's properties
-URYUCustomizeMovementComponent::URYUCustomizeMovementComponent()
+URYUCustomizeMovementComponent::URYUCustomizeMovementComponent(const class FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer)
 {
 	
 	//mostly just a Data Component
@@ -27,6 +30,13 @@ URYUCustomizeMovementComponent::URYUCustomizeMovementComponent()
 
 	AddFallingMultiplierNumber = 0.05f;
 	GravityScaleMaximum = 4.0f;
+
+	CoyoteTime = 0.3;
+
+	CoyoteTimeActive = true;
+
+	
+
 }
 
 
@@ -38,6 +48,40 @@ void URYUCustomizeMovementComponent::BeginPlay()
 }
 
 
+
+void URYUCustomizeMovementComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+}
+
+
+bool URYUCustomizeMovementComponent::DoJump(bool bReplayingMoves)
+{
+	
+	if (CharacterOwner && CharacterOwner->CanJump() || (GetOwner()->GetWorldTimerManager().GetTimerRemaining(Timerhandle_CoyoteTime) > 0.0f))
+	{
+		// Don't jump if we can't move up/down.
+		if (!bConstrainToPlane || FMath::Abs(PlaneConstraintNormal.Z) != 1.f )
+		{
+			Velocity.Z = JumpZVelocity;
+			SetMovementMode(MOVE_Falling);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void URYUCustomizeMovementComponent::SetNormalMaxJumpCount(int32 MaxJumps)
+{
+	NormalMaxJumpCount = MaxJumps;
+}
+
+
+int32 URYUCustomizeMovementComponent::GetNormalMaxJumpCount()
+{
+	return NormalMaxJumpCount;
+}
 
 void URYUCustomizeMovementComponent::SetGravityScaleMaximum(float GravScale)
 {

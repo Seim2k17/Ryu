@@ -11,21 +11,26 @@
 
 
 // Sets default values
-ARYUCharacterIchi::ARYUCharacterIchi()
+ARYUCharacterIchi::ARYUCharacterIchi(const class FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<URYUCustomizeMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	CustMovementComp = CreateDefaultSubobject<URYUCustomizeMovementComponent>(TEXT("RYUCustomizeMovementData"));
-
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
-
 
 	PlayerActive = ERYUPlayerActive::Player1;
 
 	InitializeCharacterValues();
 
+}
+
+void ARYUCharacterIchi::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	CustMovementComp = Cast<URYUCustomizeMovementComponent>(GetCharacterMovement());
 }
 
 void ARYUCharacterIchi::InitializeCharacterValues()
@@ -78,9 +83,8 @@ void ARYUCharacterIchi::InitializeCharacterValues()
 
 	FallCheck = false;
 
-	CoyoteTime = 300;
-
 	CoyoteJumpPossible = false;
+
 }
 
 // Called when the game starts or when spawned
@@ -91,6 +95,8 @@ void ARYUCharacterIchi::BeginPlay()
 	{
 		CustMovementComp->SetGravityScaleMaximum(MaxGravityScaleStd);
 	}
+
+	CustMovementComp->SetNormalMaxJumpCount(JumpMaxCount);
 
 }
 
@@ -121,7 +127,7 @@ void ARYUCharacterIchi::DrawDebugInfosOnScreen()
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(y): %s"), *FString::SanitizeFloat(currA.Y)), false);
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(z): %s"), *FString::SanitizeFloat(currA.Z)), false);
 
-		UE_LOG(LogTemp, Log, TEXT("V(z): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(currV.Z)));
+		//UE_LOG(LogTemp, Log, TEXT("V(z): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(currV.Z)));
 
 		if (bJumpJustStarted)
 		{
@@ -137,9 +143,12 @@ void ARYUCharacterIchi::Jump()
 {
 	//Super::Jump() : CharMoveComp->DoJump
 	//How Long adding Velocity when maxHoldTime applied! -> maxHoldTime, but Velocity stays the same of course
+	StartJumpPosition = GetActorLocation();
+
+	DeactivateCoyotoeJumpPossible();
 
 	bPressedJump = true;
-
+	
 	float JumpKeyMaxTime = JumpMaxHoldTime * 1000;
 	UE_LOG(LogTemp, Log, TEXT("JumpKeyMaxTime ms: %s"), *FString::SanitizeFloat(JumpKeyMaxTime));
 
@@ -188,14 +197,42 @@ void ARYUCharacterIchi::StopJumping()
 //called in Tick
 void ARYUCharacterIchi::AfterJumpButtonPressed()
 {
-	//we suppose Jumping occurred
+
+	//we suppose Jumping occurred / or falling from a ledge
 	if (GetCharacterMovement()->IsMovingOnGround() == false)
 	{
-		//Coyote Time
-		CoyoteJumpPossible = true;
-		JumpMaxCount++;
-		UE_LOG(LogTemp, Log, TEXT("JumpMaxCount: %s "), *FString::FromInt(JumpMaxCount));
-		GetWorldTimerManager().SetTimer(Timerhandle_CoyoteTime, this, &ARYUCharacterIchi::DeactivateJumpPossible, CoyoteTime, false);
+		//@ToDo: better overwriting the MovementComponent from Character. --> todo so destroy it in the Constructor and add a customized version
+		//then add CustomizedMovementData also in this Component (?), then we can remove the MultipleJump Conditions and directly ask st like:
+		//
+		// 		if (jumpInput) {
+		// 			if (onGround || graceTimer > 0) {
+		// 				jump();
+		// 			}
+		// 		}
+		// 
+		// 		//somewhere else in the code:
+		// 		public function jump() :void {
+		// 			//pretend theres more jumping logic here
+		// 			graceTimer = 0;
+
+		
+		
+		
+// 		if ((GetWorldTimerManager().GetTimerRemaining(Timerhandle_CoyoteTime) > 0) && CustMovementComp->CoyoteTimeActive)
+// 		{
+// 			CoyoteJumpPossible = true;
+// 			JumpMaxCount++;
+// 			UE_LOG(LogTemp, Log, TEXT("JumpMaxCount: %s "), *FString::FromInt(JumpMaxCount));
+// 		}
+
+		//Coyote Time, if character falls from ledge
+		if (!GetWorldTimerManager().IsTimerActive(CustMovementComp->Timerhandle_CoyoteTime) && (FMath::FloorToInt(GetActorLocation().Z) < FMath::FloorToInt(StartJumpPosition.Z)))
+		{
+			JumpMaxCount = CustMovementComp->GetNormalMaxJumpCount() + 1;
+			UE_LOG(LogTemp, Log, TEXT("Coyote-Timer Started: %s ms at: :%s , Jump started at: %s"), *FString::SanitizeFloat(CustMovementComp->CoyoteTime),*GetActorLocation().ToString(), *StartJumpPosition.ToString());
+			GetWorldTimerManager().SetTimer(CustMovementComp->Timerhandle_CoyoteTime, this, &ARYUCharacterIchi::DeactivateCoyotoeJumpPossible, CustMovementComp->CoyoteTime, false);
+		}
+		
 	
 		if (bJumpJustStarted == false)
 		{
@@ -206,10 +243,11 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 		//falling Down; grappy est. difference more than 30
 		if ((GetVelocity().Z - GetCharacterMovement()->JumpZVelocity) < -40)
 		{
+		
 			if (tmpCheck == false)
 			{
 				TimeDeltaEnd = GetWorld()->GetTimeSeconds();
-				UE_LOG(LogTemp, Log, TEXT("Peak reached: %s after: %s "), *FString::FromInt(JumpCurrentCount), *FString::SanitizeFloat(TimeDeltaEnd - TimeDeltaStart));
+				//UE_LOG(LogTemp, Log, TEXT("Peak reached: %s after: %s "), *FString::FromInt(JumpCurrentCount), *FString::SanitizeFloat(TimeDeltaEnd - TimeDeltaStart));
 				tmpCheck = true;
 
 			}
@@ -247,6 +285,7 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 
 			FallCheck = false;
 			//if fall on the ground earlier than MaxJumpButtonHoldTime
+			CoyoteJumpPossible = false;
 			StopJumping();
 			//GetCharacterMovement()->GravityScale = DefaultGravityScale;
 		}
@@ -295,10 +334,23 @@ void ARYUCharacterIchi::ChangePlayer()
 }
 
 
-void ARYUCharacterIchi::DeactivateJumpPossible()
+void ARYUCharacterIchi::DeactivateCoyotoeJumpPossible()
 {
-	JumpMaxCount--;
-	CoyoteJumpPossible = false;
+	if (CoyoteJumpPossible)
+	{
+		if (JumpMaxCount > CustMovementComp->GetNormalMaxJumpCount())
+		{
+			JumpMaxCount = CustMovementComp->GetNormalMaxJumpCount();
+		}
+
+		if (GetWorldTimerManager().IsTimerActive(CustMovementComp->Timerhandle_CoyoteTime))
+		{
+			GetWorldTimerManager().ClearTimer(CustMovementComp->Timerhandle_CoyoteTime);
+			UE_LOG(LogTemp, Log, TEXT("ClearCoyoteTimer"));
+		}
+	}
+	return;
+	
 }
 
 void ARYUCharacterIchi::MoveRight(float Val)

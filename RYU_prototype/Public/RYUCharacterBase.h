@@ -9,7 +9,6 @@
 
 
 class UUserWidget;
-class URYUCustomizeMovementComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChangeActivePlayer);
 
@@ -21,6 +20,8 @@ class RYU_PROTOTYPE_API ARYUCharacterBase : public ACharacter
 public:
 	// Sets default values for this character's properties
 	ARYUCharacterBase();
+
+	ARYUCharacterBase(const class FObjectInitializer& ObjectInitializer);
 
 	
 	/** METHODS*/

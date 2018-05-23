@@ -5,7 +5,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/RYUCustomizeMovementComponent.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 
 
@@ -28,6 +28,24 @@ ARYUCharacterBase::ARYUCharacterBase()
 
 }
 
+
+ARYUCharacterBase::ARYUCharacterBase(const class FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer.SetDefaultSubobjectClass<URYUCustomizeMovementComponent>(ACharacter::CharacterMovementComponentName))
+{
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+
+	// Create a camera boom attached to the root (capsule)
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	CameraBoom->SetupAttachment(RootComponent);
+
+	// Create a camera and attach to boom
+	SideViewCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("SideViewCamera"));
+	SideViewCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+
+	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
+	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+}
 
 // Called when the game starts or when spawned
 void ARYUCharacterBase::BeginPlay()

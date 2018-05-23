@@ -9,6 +9,9 @@
 /**
  * 
  */
+
+class URYUCustomizeMovementComponent;
+
 UCLASS()
 class RYU_PROTOTYPE_API ARYUCharacterIchi : public ARYUCharacterBase
 {
@@ -16,10 +19,15 @@ class RYU_PROTOTYPE_API ARYUCharacterIchi : public ARYUCharacterBase
 	
 public:
 
-	ARYUCharacterIchi();
+	//ARYUCharacterIchi();
 
-	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly)
-		URYUCustomizeMovementComponent* CustMovementComp;
+	ARYUCharacterIchi(const class FObjectInitializer& ObjectInitializer);
+	
+
+	//UPROPERTY(Category = Character, VAnywhere, BlueprintReadOnly)
+	URYUCustomizeMovementComponent* CustMovementComp;
+
+	virtual void PostInitializeComponents() override;
 	
 	void Jump() override;
 
@@ -31,7 +39,6 @@ public:
 	void DrawDebugInfosOnScreen();
 
 
-
 #if WITH_EDITOR
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
@@ -41,10 +48,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerChange")
 		ERYUPlayerActive PlayerActive;
 	
-	/**Time allowed to jump when falling of a ledge*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jumping" )
-	float CoyoteTime;
-
 protected:
 
 	// Called when the game starts or when spawned
@@ -61,7 +64,7 @@ protected:
 		void ChangePlayer();
 
 	UFUNCTION()
-		void DeactivateJumpPossible();
+		void DeactivateCoyotoeJumpPossible();
 
 	/** MEMBERS */
 
@@ -70,8 +73,6 @@ protected:
 
 	/** Called for side to side input */
 	void MoveRight(float Val);
-
-	FTimerHandle Timerhandle_CoyoteTime;
 
 
 private:
@@ -106,4 +107,7 @@ private:
 
 	//CoyoteTimeJump
 	bool CoyoteJumpPossible;
+
+	//Position when Jumping
+	FVector StartJumpPosition;
 };

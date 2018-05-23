@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "RYUCustomizeMovementComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class RYU_PROTOTYPE_API URYUCustomizeMovementComponent : public UActorComponent
+class RYU_PROTOTYPE_API URYUCustomizeMovementComponent : public UCharacterMovementComponent
 {
 	GENERATED_BODY()
 
@@ -16,12 +17,19 @@ public:
 	// Sets default values for this component's properties
 	URYUCustomizeMovementComponent();
 
+	URYUCustomizeMovementComponent(const class FObjectInitializer& ObjectInitializer);
+
 	UFUNCTION(BlueprintCallable, Category = "CharacterMovement")
 		void SetGravityScaleMaximum(float GravScale);
+
+	bool DoJump(bool bReplayingMoves) override;
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	virtual void InitializeComponent() override;
+
 
 public:	
 
@@ -48,4 +56,22 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
 		FVector VelocityAfterJumping;
 	
+	/**Time allowed to jump when falling of a ledge*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
+		float CoyoteTime;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
+		bool CoyoteTimeActive;
+
+	UFUNCTION()
+		void SetNormalMaxJumpCount(int32 MaxJumps);
+
+	UFUNCTION()
+		int32 GetNormalMaxJumpCount();
+
+	FTimerHandle Timerhandle_CoyoteTime;
+
+private:
+
+	int32 NormalMaxJumpCount;
 };
