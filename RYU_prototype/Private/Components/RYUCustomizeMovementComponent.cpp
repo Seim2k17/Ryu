@@ -5,7 +5,7 @@
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 
 
-// Sets default values for this component's properties
+// Sets default values for this component's properties, derived from CharacterMovementComponent
 URYUCustomizeMovementComponent::URYUCustomizeMovementComponent(const class FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
