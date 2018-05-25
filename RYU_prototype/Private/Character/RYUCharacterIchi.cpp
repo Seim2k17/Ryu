@@ -145,17 +145,23 @@ void ARYUCharacterIchi::Jump()
 	//How Long adding Velocity when maxHoldTime applied! -> maxHoldTime, but Velocity stays the same of course
 	StartJumpPosition = GetActorLocation();
 
+	//suppose wie´re not falling -> to make it a real jump not adding JumpZVelo to Vel(Z) < 0
+	if (CoyoteJumpPossible)
+	{
+		GetCharacterMovement()->Velocity.Z = 0;
+	}
+
 	DeactivateCoyotoeJumpPossible();
 
 	bPressedJump = true;
 	
 	float JumpKeyMaxTime = JumpMaxHoldTime * 1000;
-	UE_LOG(LogTemp, Log, TEXT("JumpKeyMaxTime ms: %s"), *FString::SanitizeFloat(JumpKeyMaxTime));
+	//UE_LOG(LogTemp, Log, TEXT("JumpKeyMaxTime ms: %s"), *FString::SanitizeFloat(JumpKeyMaxTime));
 
 	float InputY = GetInputAxisValue("MoveRight");
 	//@ToDo calc begin Velocity
 	//add Jump-Y-Velocity aus Stand
-	UE_LOG(LogTemp, Log, TEXT("Y(start): %s"), *FString::SanitizeFloat(GetCharacterMovement()->Velocity.Y));
+	//UE_LOG(LogTemp, Log, TEXT("Y(start): %s"), *FString::SanitizeFloat(GetCharacterMovement()->Velocity.Y));
 	StartJumpVelocity.Y = GetCharacterMovement()->Velocity.Y;
 	if (FMath::Abs(StartJumpVelocity.Y) < 30.0f)
 	{
@@ -166,7 +172,7 @@ void ARYUCharacterIchi::Jump()
 		//AddMoreVelocity ?
 		GetCharacterMovement()->Velocity.Y = GetCharacterMovement()->Velocity.Y + CustMovementComp->JumpForceRun.Y;
 	}
-	UE_LOG(LogTemp, Log, TEXT("Y(final): %s"), *FString::SanitizeFloat(StartJumpVelocity.Y));
+	//UE_LOG(LogTemp, Log, TEXT("Y(final): %s"), *FString::SanitizeFloat(StartJumpVelocity.Y));
 
 
 	// 	//pseudocode
@@ -186,8 +192,8 @@ void ARYUCharacterIchi::StopJumping()
 {
 	UE_LOG(LogTemp, Log, TEXT("Char: %s Release Jumping button."), *GetName());
 	float JumpKeyTime = JumpKeyHoldTime * 1000;
-	UE_LOG(LogTemp, Log, TEXT("JumpKeypressed ms: %s"), *FString::SanitizeFloat(JumpKeyTime));
-	UE_LOG(LogTemp, Log, TEXT("JumpKeyCount: %s"), *FString::FromInt(JumpCurrentCount));
+	//UE_LOG(LogTemp, Log, TEXT("JumpKeypressed ms: %s"), *FString::SanitizeFloat(JumpKeyTime));
+	//UE_LOG(LogTemp, Log, TEXT("JumpKeyCount: %s"), *FString::FromInt(JumpCurrentCount));
 	//Super::StopJumping();
 	bPressedJump = false;
 
@@ -225,11 +231,15 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 // 			UE_LOG(LogTemp, Log, TEXT("JumpMaxCount: %s "), *FString::FromInt(JumpMaxCount));
 // 		}
 
-		//Coyote Time, if character falls from ledge
-		if (!GetWorldTimerManager().IsTimerActive(CustMovementComp->Timerhandle_CoyoteTime) && (FMath::FloorToInt(GetActorLocation().Z) < FMath::FloorToInt(StartJumpPosition.Z)))
+		//Coyote Time, if character falls (but should only trigger when falluing from ledge)
+		//--> move to "JumpInput"
+		
+		if (!GetWorldTimerManager().IsTimerActive(CustMovementComp->Timerhandle_CoyoteTime) && (FMath::FloorToInt(GetActorLocation().Z) < FMath::FloorToInt(StartJumpPosition.Z)) 
+			&& !CoyoteJumpPossible)
 		{
+			CoyoteJumpPossible = true;
 			JumpMaxCount = CustMovementComp->GetNormalMaxJumpCount() + 1;
-			UE_LOG(LogTemp, Log, TEXT("Coyote-Timer Started: %s ms at: :%s , Jump started at: %s"), *FString::SanitizeFloat(CustMovementComp->CoyoteTime),*GetActorLocation().ToString(), *StartJumpPosition.ToString());
+			//UE_LOG(LogTemp, Log, TEXT("Coyote-Timer Started: %s ms at: :%s , Jump started at: %s"), *FString::SanitizeFloat(CustMovementComp->CoyoteTime),*GetActorLocation().ToString(), *StartJumpPosition.ToString());
 			GetWorldTimerManager().SetTimer(CustMovementComp->Timerhandle_CoyoteTime, this, &ARYUCharacterIchi::DeactivateCoyotoeJumpPossible, CustMovementComp->CoyoteTime, false);
 		}
 		
@@ -336,19 +346,14 @@ void ARYUCharacterIchi::ChangePlayer()
 
 void ARYUCharacterIchi::DeactivateCoyotoeJumpPossible()
 {
-	if (CoyoteJumpPossible)
+	JumpMaxCount = CustMovementComp->GetNormalMaxJumpCount();
+	
+	if (GetWorldTimerManager().IsTimerActive(CustMovementComp->Timerhandle_CoyoteTime))
 	{
-		if (JumpMaxCount > CustMovementComp->GetNormalMaxJumpCount())
-		{
-			JumpMaxCount = CustMovementComp->GetNormalMaxJumpCount();
-		}
-
-		if (GetWorldTimerManager().IsTimerActive(CustMovementComp->Timerhandle_CoyoteTime))
-		{
-			GetWorldTimerManager().ClearTimer(CustMovementComp->Timerhandle_CoyoteTime);
-			UE_LOG(LogTemp, Log, TEXT("ClearCoyoteTimer"));
-		}
+		GetWorldTimerManager().ClearTimer(CustMovementComp->Timerhandle_CoyoteTime);
+		//UE_LOG(LogTemp, Log, TEXT("ClearCoyoteTimer"));
 	}
+
 	return;
 	
 }
