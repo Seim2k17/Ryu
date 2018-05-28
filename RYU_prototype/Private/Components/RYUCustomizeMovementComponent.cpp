@@ -59,7 +59,7 @@ bool URYUCustomizeMovementComponent::DoJump(bool bReplayingMoves)
 {
 	//Test JumpInput
 
-	UE_LOG(LogTemp, Warning, TEXT("JumpButton Pressed"));;
+	//UE_LOG(LogTemp, Warning, TEXT("JumpButton Pressed"));
 
 	if (CharacterOwner && CharacterOwner->CanJump() || (GetOwner()->GetWorldTimerManager().GetTimerRemaining(Timerhandle_CoyoteTime) > 0.0f))
 	{

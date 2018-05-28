@@ -4,6 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/SphereComponent.h"
 #include "Components/RYUCustomizeMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -20,9 +21,17 @@ ARYUCharacterIchi::ARYUCharacterIchi(const class FObjectInitializer& ObjectIniti
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
+	//@ToDo the SphereTracer in C++ for finding and Climbing ? , Why no Overlap ? set collision kram in c++ ?
+	SphereTracer = CreateDefaultSubobject<USphereComponent>(TEXT("SphereTracer"));
+	SphereTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	SphereTracer->SetCollisionResponseToAllChannels(ECR_Overlap);
+	SphereTracer->SetupAttachment(RootComponent);
+
 	PlayerActive = ERYUPlayerActive::Player1;
 
 	InitializeCharacterValues();
+
+
 
 }
 
@@ -85,12 +94,20 @@ void ARYUCharacterIchi::InitializeCharacterValues()
 
 	CoyoteJumpPossible = false;
 
+	SphereTracer->SetRelativeLocation(FVector(60, 0, 0));
+	SphereTracer->SetSphereRadius(100);
+
 }
 
 // Called when the game starts or when spawned
 void ARYUCharacterIchi::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//it works in BeginPlay but not in constructor: thats why in an existed Character-BP: AddDynamic gets not registered! --> entweder you need to make a new Char-BP then AddDynamic works in contructor or better you use register the Overlap Method (Adddynamic) in BeginPlay
+	SphereTracer->OnComponentBeginOverlap.AddDynamic(this, &ARYUCharacterIchi::OnSphereTracerHandleBeginOverlap);
+	SphereTracer->OnComponentEndOverlap.AddDynamic(this, &ARYUCharacterIchi::OnSphereTracerHandleEndOverlap);
+
 	if (CustMovementComp->GravityScaleMaximum == 0)
 	{
 		CustMovementComp->SetGravityScaleMaximum(MaxGravityScaleStd);
@@ -190,7 +207,7 @@ void ARYUCharacterIchi::Jump()
 
 void ARYUCharacterIchi::StopJumping()
 {
-	UE_LOG(LogTemp, Log, TEXT("Char: %s Release Jumping button."), *GetName());
+	//UE_LOG(LogTemp, Log, TEXT("Char: %s Release Jumping button."), *GetName());
 	float JumpKeyTime = JumpKeyHoldTime * 1000;
 	//UE_LOG(LogTemp, Log, TEXT("JumpKeypressed ms: %s"), *FString::SanitizeFloat(JumpKeyTime));
 	//UE_LOG(LogTemp, Log, TEXT("JumpKeyCount: %s"), *FString::FromInt(JumpCurrentCount));
@@ -325,6 +342,22 @@ void ARYUCharacterIchi::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	//Predefined Bindings
 	//PlayerInputComponent->BindTouch(IE_Pressed, this, &ARYUCharacterIchi::TouchStarted);
 	//PlayerInputComponent->BindTouch(IE_Released, this, &ARYUCharacterIchi::TouchStopped);
+}
+
+
+void ARYUCharacterIchi::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+	if (OtherActor != nullptr)
+	{
+		UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In"));
+	}
+	
+}
+
+
+void ARYUCharacterIchi::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	UE_LOG(LogTemp, Log, TEXT("SpherTracer Overlap Out"));
 }
 
 void ARYUCharacterIchi::ChangePlayer()
