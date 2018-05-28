@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RYUCharacterIchi.h"
 #include "Camera/CameraComponent.h"
@@ -97,6 +97,8 @@ void ARYUCharacterIchi::InitializeCharacterValues()
 	SphereTracer->SetRelativeLocation(FVector(60, 0, 0));
 	SphereTracer->SetSphereRadius(100);
 
+	TreshholdYWalkRun = 220.0f;
+
 }
 
 // Called when the game starts or when spawned
@@ -126,6 +128,9 @@ void ARYUCharacterIchi::Tick(float DeltaTime)
 		DrawDebugInfosOnScreen();
 	}
 
+	/** Check if a ledge is nearby to climb, or hang, or snap jumping to it*/
+	Super::CheckLedgeTracer();
+
 	//check preferences after Jump is pressed
 	AfterJumpButtonPressed();
 }
@@ -143,12 +148,38 @@ void ARYUCharacterIchi::DrawDebugInfosOnScreen()
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(x): %s"), *FString::SanitizeFloat(currA.X)), false);
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(y): %s"), *FString::SanitizeFloat(currA.Y)), false);
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(z): %s"), *FString::SanitizeFloat(currA.Z)), false);
+		
+		FString MoveMode;
+		switch (RYUMovement)
+		{
+			case ERYUMovementMode::WALK:
+				MoveMode = "WALKING";
+				break;
 
+			case ERYUMovementMode::RUN:
+				MoveMode = "RUNNING";
+				break;
+			case ERYUMovementMode::JUMP:
+				MoveMode = "JUMPING";
+				break;
+			case ERYUMovementMode::CANGRABLEDGE:
+				MoveMode = "CanGrabLedge";
+				break;
+			case ERYUMovementMode::CANTRACELEDGE:
+				MoveMode = "CanTraceLedge";
+				break;
+			default:
+				MoveMode = "STANDING";
+		}
+
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("Movement: %s"), *MoveMode), false);
+		
+		
 		//UE_LOG(LogTemp, Log, TEXT("V(z): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(currV.Z)));
 
 		if (bJumpJustStarted)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("V(z): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(currV.Z))), false);
+			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("V(z): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(currV.Z))), false);
 			//GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, FString::Printf(TEXT("JumpZV(z): %s"), *FString::SanitizeFloat(FMath::RoundToFloat(GetCharacterMovement()->JumpZVelocity))), false);
 		}
 	}
@@ -162,7 +193,7 @@ void ARYUCharacterIchi::Jump()
 	//How Long adding Velocity when maxHoldTime applied! -> maxHoldTime, but Velocity stays the same of course
 	StartJumpPosition = GetActorLocation();
 
-	//suppose wie´re not falling -> to make it a real jump not adding JumpZVelo to Vel(Z) < 0
+	//suppose wieÂ´re not falling -> to make it a real jump not adding JumpZVelo to Vel(Z) < 0
 	if (CoyoteJumpPossible)
 	{
 		GetCharacterMovement()->Velocity.Z = 0;
@@ -197,7 +228,7 @@ void ARYUCharacterIchi::Jump()
 	// 	//vel += acc * d(t);
 
 	//look character Jump Sheet for customization when level up
-	//Jump Z - Velocity: "wie stark sprint char in die Höhe -> make it flexible (je laenger button gepresst desto hoeher springt er ); std-wert: zw. 600 und 700 --> can improve through SkillTree ?
+	//Jump Z - Velocity: "wie stark sprint char in die HÃ¶he -> make it flexible (je laenger button gepresst desto hoeher springt er ); std-wert: zw. 600 und 700 --> can improve through SkillTree ?
 	//std-value: 500 : Hoehe: ~1m
 	//1000: JH: 2,5m
 	// 670: : JH: 1,5m
@@ -303,7 +334,7 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 			bJumpJustStarted = false;
 
 			float directionV = (GetCapsuleComponent()->GetForwardVector().Y > 0) ? 1.0f : -1.0f;
-			//Wenn Char schnell gelaufen ist oder aus grosser Höhe gefallen, @ToDo BigHeigth
+			//Wenn Char schnell gelaufen ist oder aus grosser HÃ¶he gefallen, @ToDo BigHeigth
 			if ((FMath::Abs(StartJumpVelocity.Y) > CustMovementComp->AfterJumpTreshold.Y) || FallCheck)
 			{
 				//Add little Velocity after hitting the ground
@@ -337,6 +368,8 @@ void ARYUCharacterIchi::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARYUCharacterIchi::StopJumping);
 
 	PlayerInputComponent->BindAction("ChangePlayer", IE_Pressed, this, &ARYUCharacterIchi::ChangePlayer);
+
+	PlayerInputComponent->BindAxis("ClimbUp", this, &ARYUCharacterIchi::Climb);
 
 	
 	//Predefined Bindings
@@ -393,8 +426,45 @@ void ARYUCharacterIchi::DeactivateCoyotoeJumpPossible()
 
 void ARYUCharacterIchi::MoveRight(float Val)
 {
+
+	//@ToDo: Move Setting MovementCode in TICK !!!! else there occure bad things when overlapping with LedgeTraces etc. and inkonsequences
+
 	// add movement in that direction
+	if (!bLedgeTracePossible)
+	{
+		if (bJumpJustStarted)
+		{
+			RYUMovement = ERYUMovementMode::JUMP;
+		}
+		else
+		{
+			if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > 0)
+			{
+				if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > TreshholdYWalkRun)
+				{
+					RYUMovement = ERYUMovementMode::RUN;
+				}
+				else
+				{
+					RYUMovement = ERYUMovementMode::WALK;
+				}
+			}
+			else
+			{
+				RYUMovement = ERYUMovementMode::STAND;
+			}
+			//== 0 --> ueberall selbst auf Stand stellen !
+		}
+	}
+	
+	
 	AddMovementInput(FVector(0.f, -1.f, 0.f), Val);
+}
+
+
+void ARYUCharacterIchi::Climb(float Val)
+{
+
 }
 
 #if WITH_EDITOR

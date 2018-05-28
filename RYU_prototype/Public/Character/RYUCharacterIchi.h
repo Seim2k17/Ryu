@@ -57,6 +57,9 @@ public:
 	UFUNCTION()
 		void OnSphereTracerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
+		float TreshholdYWalkRun;
+
 protected:
 
 	// Called when the game starts or when spawned
@@ -84,6 +87,9 @@ protected:
 
 	/** Called for side to side input */
 	void MoveRight(float Val);
+
+	/**/
+	void Climb(float Val);
 
 
 private:

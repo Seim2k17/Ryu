@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "RYUENUM_PlayerActive.h"
+#include "Character/RYUENUM_MovementMode.h"
 #include "RYUCharacterBase.generated.h"
 
 
@@ -50,7 +51,16 @@ public:
 	/** Camera boom positioning the camera beside the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* CameraBoom;
+	
+	/** State of the Character Movement*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
+	ERYUMovementMode RYUMovement;
 
+	UPROPERTY(VisibleAnywhere, Category = "Sockets")
+		FName CharacterHipSocketName;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "LedgeTrace")
+		bool bLedgeHeightInRange;
 
 
 protected:
@@ -69,10 +79,23 @@ protected:
 	/** Handle touch stop event. */
 	void TouchStopped(const ETouchIndex::Type FingerIndex, const FVector Location);
 
+	void CheckLedgeTracer();
 
+	void TraceHeightAndWallOfLedge();
 
+	void CheckClimbingLedge();
+
+	//DoOnce Repl.
+
+	bool bLedgeTracePossible;
 
 private:
 
-	
+	FVector LedgeTracerHeight;
+	FVector LedgeTracerWall;
+	FVector LedgeTracerWallNormal;
+	FVector HipSocketLocation;
+	bool bLedgeTraceInRangeChanged;
+	bool bLedgeTraceNotInRangeChanged;
+
 };

@@ -6,7 +6,11 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/RYUCustomizeMovementComponent.h"
+#include "Character/RYUENUM_MovementMode.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
+#include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
+#include "Math/UnrealMathUtility.h"
 
 
 // Sets default values
@@ -25,6 +29,9 @@ ARYUCharacterBase::ARYUCharacterBase()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+
+	RYUMovement = ERYUMovementMode::STAND;
+	CharacterHipSocketName = "HipSocket";
 
 }
 
@@ -75,6 +82,8 @@ void ARYUCharacterBase::TouchStopped(const ETouchIndex::Type FingerIndex, const 
 void ARYUCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+
 }
 
 
@@ -86,5 +95,143 @@ void ARYUCharacterBase::Jump()
 void ARYUCharacterBase::StopJumping()
 {
 	Super::ResetJumpState();
+}
+
+void ARYUCharacterBase::CheckLedgeTracer()
+{
+	switch (RYUMovement)
+	{
+	
+		case ERYUMovementMode::CANTRACELEDGE:
+		{
+			TraceHeightAndWallOfLedge();
+			break;
+		}
+		
+		case ERYUMovementMode::CANGRABLEDGE:
+		{
+			CheckClimbingLedge();
+			break;
+		}
+		
+		case ERYUMovementMode::HANGONLEDGE:
+			break;
+		case ERYUMovementMode::CLIMBLEDGE:
+			break;
+		default:
+			break;
+	}
+}
+
+//** did a 1:1 implementation of the BP Version in the Sidescroller.BP
+void ARYUCharacterBase::TraceHeightAndWallOfLedge()
+{
+	//UE_LOG(LogTemp, Log, TEXT("SphereTracer: Search Height"));
+	//1.rst SphereTracer Height 50Units
+
+
+	AActor* ActorToIgnore = this;
+	FCollisionQueryParams ColParams(FName(TEXT("LedgeHeightTracerParams")), true, ActorToIgnore);
+	ColParams.bTraceComplex = true;
+	ColParams.bReturnPhysicalMaterial = false;
+
+	FHitResult HitresultHeight;
+
+	//** see Macro "Ledge Tracer in Sidescroller.BP 
+	FVector SweepStartHeight;
+	FVector SweepEndHeight;
+	FQuat SweepRotHeight = GetActorQuat();
+
+	//cal. Start and End
+	float StartHeight = 500;
+	float EndHeight = 550;
+	SweepStartHeight = GetActorLocation();
+	SweepStartHeight.Z = SweepStartHeight.Z + StartHeight;
+
+	FVector CharForward = GetActorForwardVector();
+	CharForward = CharForward * 70.0f;
+	
+
+	SweepStartHeight = SweepStartHeight + CharForward;
+
+	SweepEndHeight = SweepStartHeight;
+	SweepEndHeight.Z = SweepEndHeight.Z - EndHeight;
+	// Macro End
+
+	/************************************************************************/
+	/* see DefaultEngine.ini:
+	+DefaultChannelResponses=(Channel=ECC_GameTraceChannel1,Name="SphereTracer",DefaultResponse=ECR_Ignore,bTraceType=False,bStaticObject=False)
+	+DefaultChannelResponses=(Channel=ECC_GameTraceChannel2,Name="LedgeTrace",DefaultResponse=ECR_Ignore,bTraceType=True,bStaticObject=False)
+	*/
+	/************************************************************************/
+	//A: if there is a possible ledge Hit in Height
+	bool HitLedgeHeight = GetWorld()->SweepSingleByChannel(HitresultHeight, SweepStartHeight, SweepEndHeight, SweepRotHeight, ECollisionChannel::ECC_EngineTraceChannel2, FCollisionShape::MakeSphere(0), ColParams);
+	if (HitLedgeHeight)
+	{
+		LedgeTracerHeight = HitresultHeight.ImpactPoint;
+		DrawDebugSphere(GetWorld(), LedgeTracerHeight, 5, 10, FColor::Green, false, 0.0f, 0, 0.0f);
+		/** Check if Ledge is in Height */
+		HipSocketLocation = GetMesh()->GetSocketLocation(CharacterHipSocketName);
+		float HipSocketZ = HipSocketLocation.Z;
+		float LedgeTracerHeightZ = LedgeTracerHeight.Z;
+
+		if (FMath::IsWithinInclusive((HipSocketZ - LedgeTracerHeightZ), -200.0f, 0.0f))
+		{
+			if (!bLedgeTraceInRangeChanged)
+			{
+				UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
+				bLedgeTraceNotInRangeChanged = false;
+				//CAUTION when Ledges Overlap ! Maybe a pimp is needable !
+				bLedgeTraceInRangeChanged= true;
+				UE_LOG(LogTemp, Log, TEXT("LedgeHeigth in Range"));
+				bLedgeHeightInRange = true;
+
+				RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+			}
+		}
+		else {
+			if (!bLedgeTraceNotInRangeChanged)
+			{
+				UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
+				bLedgeTraceNotInRangeChanged = true;
+				bLedgeTraceInRangeChanged = false;
+				UE_LOG(LogTemp, Log, TEXT("LedgeHeigth NOT in Range"));
+				bLedgeHeightInRange = false;
+
+				RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+			}
+		}
+	}
+
+	bLedgeTracePossible = HitLedgeHeight;
+
+	//** see Macro "Wall Tracer in Sidescroller.BP 
+	FHitResult HitresultWall;
+	FVector SweepStartWall;
+	FVector SweepEndWall;
+	FQuat SweepRotWall = GetActorQuat();
+
+	SweepStartWall = GetActorLocation();
+	FVector CharForwardWall = GetActorForwardVector();
+	CharForwardWall.X = CharForwardWall.X * 150.0f;
+	CharForwardWall.Y = CharForwardWall.Y * 150.0f;
+	SweepEndWall = SweepStartWall + CharForwardWall;
+
+	//Macro End
+
+	//B: if there is a possible ledge Hit in a Wall infront
+	bool HitLedgeWall = GetWorld()->SweepSingleByChannel(HitresultWall, SweepStartWall, SweepEndWall, SweepRotWall, ECollisionChannel::ECC_EngineTraceChannel2, FCollisionShape::MakeSphere(20), ColParams);
+
+	if (HitLedgeWall)
+	{
+		LedgeTracerWall = HitresultWall.ImpactPoint;
+		LedgeTracerWallNormal = HitresultWall.Normal;
+		DrawDebugSphere(GetWorld(), LedgeTracerWall, 5, 10, FColor::Green, false, 0.0f, 0, 0.0f);
+	}
+}
+
+void ARYUCharacterBase::CheckClimbingLedge()
+{
+	//@ToDo: resp. which ledge is it: Wall (= incl.Height) or Height (without a wall infront of the char) -> use appr. Animation for climbing
 }
 
