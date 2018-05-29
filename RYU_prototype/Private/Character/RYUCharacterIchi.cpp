@@ -4,10 +4,10 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
-#include "Components/SphereComponent.h"
 #include "Components/RYUCustomizeMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/SphereComponent.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 
 
@@ -21,17 +21,9 @@ ARYUCharacterIchi::ARYUCharacterIchi(const class FObjectInitializer& ObjectIniti
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
-	//@ToDo the SphereTracer in C++ for finding and Climbing ? , Why no Overlap ? set collision kram in c++ ?
-	SphereTracer = CreateDefaultSubobject<USphereComponent>(TEXT("SphereTracer"));
-	SphereTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	SphereTracer->SetCollisionResponseToAllChannels(ECR_Overlap);
-	SphereTracer->SetupAttachment(RootComponent);
-
 	PlayerActive = ERYUPlayerActive::Player1;
 
 	InitializeCharacterValues();
-
-
 
 }
 
@@ -94,12 +86,9 @@ void ARYUCharacterIchi::InitializeCharacterValues()
 
 	CoyoteJumpPossible = false;
 
-	SphereTracer->SetRelativeLocation(FVector(60, 0, 0));
-	SphereTracer->SetSphereRadius(100);
-
 	TreshholdYWalkRun = 220.0f;
 
-	bSphereTracerOverlap = false;
+	bJumpJustStarted = false;
 
 }
 
@@ -107,10 +96,10 @@ void ARYUCharacterIchi::InitializeCharacterValues()
 void ARYUCharacterIchi::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//it works in BeginPlay but not in constructor: thats why in an existed Character-BP: AddDynamic gets not registered! --> entweder you need to make a new Char-BP then AddDynamic works in contructor or better you use register the Overlap Method (Adddynamic) in BeginPlay
-	SphereTracer->OnComponentBeginOverlap.AddDynamic(this, &ARYUCharacterIchi::OnSphereTracerHandleBeginOverlap);
-	SphereTracer->OnComponentEndOverlap.AddDynamic(this, &ARYUCharacterIchi::OnSphereTracerHandleEndOverlap);
+	//it works in BeginPlay but not in constructor : thats why in an existed Character - BP : AddDynamic gets not registered!
+	//--> entweder you need to make a new Char - BP then AddDynamic works in contructor or better you use register the Overlap Method(Adddynamic) in BeginPlay
+	SphereTracer->OnComponentBeginOverlap.AddDynamic(this, &ARYUCharacterBase::OnSphereTracerHandleBeginOverlap);
+	SphereTracer->OnComponentEndOverlap.AddDynamic(this, &ARYUCharacterBase::OnSphereTracerHandleEndOverlap);
 
 	if (CustMovementComp->GravityScaleMaximum == 0)
 	{
@@ -123,60 +112,19 @@ void ARYUCharacterIchi::BeginPlay()
 
 void ARYUCharacterIchi::Tick(float DeltaTime)
 {
+	//set Movement Enum in Parent Class RYUCharacterBase !
 	Super::Tick(DeltaTime);
 
 	currentFPS = 1 / DeltaTime;
 
-	//set Moevement Enum
-	//@ToDo verfeinern 
-	if (!bSphereTracerOverlap)
-	{
-		if (bJumpJustStarted)
-		{
-			RYUMovement = ERYUMovementMode::JUMP;
-		}
-		else
-		{
-			if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > 0)
-			{
-				if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > TreshholdYWalkRun)
-				{
-					RYUMovement = ERYUMovementMode::RUN;
-				}
-				else
-				{
-					RYUMovement = ERYUMovementMode::WALK;
-				}
-			}
-			else
-			{
-				RYUMovement = ERYUMovementMode::STAND;
-			}
-			//== 0 --> ueberall selbst auf Stand stellen !
-		}
-	}
-	else
-	{
-		//@ToDo verfeinern 
-		if (bLedgeTracePossible)
-		{
-			RYUMovement = ERYUMovementMode::CANGRABLEDGE;
-		}
-		else
-		{
-			RYUMovement = ERYUMovementMode::CANTRACELEDGE;
-		}
-		
-	}
-
-	if (bDebugOutputActive)
-	{
-		DrawDebugInfosOnScreen();
-	}
-
 	/** Check if a ledge is nearby to climb, or hang, or snap jumping to it*/
 	Super::CheckLedgeTracer();
 
+ 	if (bDebugOutputActive)
+	{
+		DrawDebugInfosOnScreen();
+	}
+	
 	//check preferences after Jump is pressed
 	AfterJumpButtonPressed();
 }
@@ -214,6 +162,12 @@ void ARYUCharacterIchi::DrawDebugInfosOnScreen()
 			case ERYUMovementMode::CANTRACELEDGE:
 				MoveMode = "CanTraceLedge";
 				break;
+			case ERYUMovementMode::HANGONLEDGE:
+				MoveMode = "HangingOnLedge";
+				break;
+			case ERYUMovementMode::CLIMBLEDGE:
+				MoveMode = "ClimbingLedge";
+				break;
 			default:
 				MoveMode = "STANDING";
 		}
@@ -235,8 +189,6 @@ void ARYUCharacterIchi::DrawDebugInfosOnScreen()
 
 void ARYUCharacterIchi::Jump()
 {
-	//Super::Jump() : CharMoveComp->DoJump
-	//How Long adding Velocity when maxHoldTime applied! -> maxHoldTime, but Velocity stays the same of course
 	StartJumpPosition = GetActorLocation();
 
 	//suppose wie´re not falling -> to make it a real jump not adding JumpZVelo to Vel(Z) < 0
@@ -253,9 +205,7 @@ void ARYUCharacterIchi::Jump()
 	//UE_LOG(LogTemp, Log, TEXT("JumpKeyMaxTime ms: %s"), *FString::SanitizeFloat(JumpKeyMaxTime));
 
 	float InputY = GetInputAxisValue("MoveRight");
-	//@ToDo calc begin Velocity
-	//add Jump-Y-Velocity aus Stand
-	//UE_LOG(LogTemp, Log, TEXT("Y(start): %s"), *FString::SanitizeFloat(GetCharacterMovement()->Velocity.Y));
+	
 	StartJumpVelocity.Y = GetCharacterMovement()->Velocity.Y;
 	if (FMath::Abs(StartJumpVelocity.Y) < 30.0f)
 	{
@@ -268,18 +218,7 @@ void ARYUCharacterIchi::Jump()
 	}
 	//UE_LOG(LogTemp, Log, TEXT("Y(final): %s"), *FString::SanitizeFloat(StartJumpVelocity.Y));
 
-
-	// 	//pseudocode
-	// 	//pos += vel + d(t) + 1 / 2 * acc*d(t)*d(t);
-	// 	//vel += acc * d(t);
-
 	//look character Jump Sheet for customization when level up
-	//Jump Z - Velocity: "wie stark sprint char in die Höhe -> make it flexible (je laenger button gepresst desto hoeher springt er ); std-wert: zw. 600 und 700 --> can improve through SkillTree ?
-	//std-value: 500 : Hoehe: ~1m
-	//1000: JH: 2,5m
-	// 670: : JH: 1,5m
-
-	//Air control: [0..1] 0: no while falling, 1-full control at full speed -> 0.4 - 0.5 ?
 }
 
 void ARYUCharacterIchi::StopJumping()
@@ -301,7 +240,7 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 	//we suppose Jumping occurred / or falling from a ledge
 	if (GetCharacterMovement()->IsMovingOnGround() == false)
 	{
-		//@ToDo: better overwriting the MovementComponent from Character. --> todo so destroy it in the Constructor and add a customized version
+		//@ToDo: recheck/pimp the coyoteshitjump
 		//then add CustomizedMovementData also in this Component (?), then we can remove the MultipleJump Conditions and directly ask st like:
 		//
 		// 		if (jumpInput) {
@@ -314,16 +253,14 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 		// 		public function jump() :void {
 		// 			//pretend theres more jumping logic here
 		// 			graceTimer = 0;
-
+				
 		
-		
-		
-// 		if ((GetWorldTimerManager().GetTimerRemaining(Timerhandle_CoyoteTime) > 0) && CustMovementComp->CoyoteTimeActive)
-// 		{
-// 			CoyoteJumpPossible = true;
-// 			JumpMaxCount++;
-// 			UE_LOG(LogTemp, Log, TEXT("JumpMaxCount: %s "), *FString::FromInt(JumpMaxCount));
-// 		}
+		// 		if ((GetWorldTimerManager().GetTimerRemaining(Timerhandle_CoyoteTime) > 0) && CustMovementComp->CoyoteTimeActive)
+		// 		{
+		// 			CoyoteJumpPossible = true;
+		// 			JumpMaxCount++;
+		// 			UE_LOG(LogTemp, Log, TEXT("JumpMaxCount: %s "), *FString::FromInt(JumpMaxCount));
+		// 		}
 
 		//Coyote Time, if character falls (but should only trigger when falluing from ledge)
 		//--> move to "JumpInput"
@@ -424,23 +361,6 @@ void ARYUCharacterIchi::SetupPlayerInputComponent(class UInputComponent* PlayerI
 }
 
 
-void ARYUCharacterIchi::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
-{
-	if (OtherActor != nullptr)
-	{
-		bSphereTracerOverlap = true;
-		UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In"));
-	}
-	
-}
-
-
-void ARYUCharacterIchi::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	bSphereTracerOverlap = false;
-	UE_LOG(LogTemp, Log, TEXT("SpherTracer Overlap Out"));
-}
-
 void ARYUCharacterIchi::ChangePlayer()
 {
 	switch (PlayerActive)
@@ -479,15 +399,65 @@ void ARYUCharacterIchi::MoveRight(float Val)
 
 	// add movement in that direction
 	
+	if ((RYUMovement != ERYUMovementMode::CLIMBLADDER) && 
+		(RYUMovement != ERYUMovementMode::HANGONLEDGE) &&
+		(RYUMovement != ERYUMovementMode::CLIMBLEDGE))
+	{
+		AddMovementInput(FVector(0.f, -1.f, 0.f), Val);
+	}
 	
 	
-	AddMovementInput(FVector(0.f, -1.f, 0.f), Val);
 }
 
 
 void ARYUCharacterIchi::Climb(float Val)
 {
+	//Move up
+	if (Val > 0)
+	{
+		switch (RYUMovement)
+		{
+		case ERYUMovementMode::CANGRABLEDGE:
+			CustMovementComp->SetMovementMode(MOVE_Custom, (uint8)ERYUMovementMode::CANGRABLEDGE);
 
+			CustMovementComp->OnCanClimbLedge.Broadcast();
+
+			//OtherAnimationStuff in CustomModechanged
+			//RYUMovement = ERYUMovementMode::HANGONLEDGE;
+			break;
+		case ERYUMovementMode::HANGONLEDGE:
+			RYUMovement = ERYUMovementMode::CLIMBLEDGE;
+			break;
+		default:
+			break;
+		}
+
+		if ((RYUMovement == ERYUMovementMode::HANGONLEDGE) ||
+			(RYUMovement == ERYUMovementMode::CANGRABLEDGE)
+			)
+		{
+// 			uint8 CustMoveMent = (uint8)RYUMovement;
+// 			CustMovementComp->SetMovementMode(MOVE_Custom, CustMoveMent);
+		}
+
+	
+	}
+	if (Val < 0)
+	{
+		switch (RYUMovement)
+		{
+			case ERYUMovementMode::HANGONLEDGE:
+				RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+				break;
+		}
+	}
+}
+
+void ARYUCharacterIchi::CheckClimbingLedge()
+{
+	//@ToDo: resp. which ledge is it: Wall (= incl.Height) or Height (without a wall infront of the char) -> use appr. Animation for climbing
+	//UE_LOG(LogTemp, Log, TEXT("Can Climb ledge from derived Class"));
+	//here we can set/make stuff when we are in Position to climb a ledge (RYUMovement = ERYUMovementMode::CANGRABLEDGE), called in Super::Tick()
 }
 
 #if WITH_EDITOR

@@ -11,7 +11,6 @@
  */
 
 class URYUCustomizeMovementComponent;
-class USphereComponent;
 
 UCLASS()
 class RYU_PROTOTYPE_API ARYUCharacterIchi : public ARYUCharacterBase
@@ -49,17 +48,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerChange")
 		ERYUPlayerActive PlayerActive;
 	
-
-	UFUNCTION()
-		void OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-			bool bFromSweep, const FHitResult & SweepResult);
-
-	UFUNCTION()
-		void OnSphereTracerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
-		float TreshholdYWalkRun;
-
 protected:
 
 	// Called when the game starts or when spawned
@@ -79,9 +67,6 @@ protected:
 
 	/** MEMBERS */
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-		USphereComponent* SphereTracer;
-
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 		FChangeActivePlayer OnPlayerActive;
 
@@ -89,8 +74,10 @@ protected:
 	void MoveRight(float Val);
 
 	/**/
+	//UFUNCTION(BlueprintImplementableEvent, Category = "Climb")
 	void Climb(float Val);
 
+	void CheckClimbingLedge() override;
 
 private:
 
@@ -105,9 +92,6 @@ private:
 
 	float DefaultGravityScale;
 	float MaxGravityScaleStd;
-
-	bool bJumpJustStarted;
-	bool bSphereTracerOverlap;
 
 	float CharMaxWalkSpeed;
 

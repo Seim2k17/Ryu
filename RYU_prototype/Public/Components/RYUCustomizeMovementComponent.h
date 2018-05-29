@@ -8,6 +8,8 @@
 #include "RYUCustomizeMovementComponent.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCanClimbLedgeStartedSignature);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class RYU_PROTOTYPE_API URYUCustomizeMovementComponent : public UCharacterMovementComponent
 {
@@ -30,8 +32,12 @@ protected:
 
 	virtual void InitializeComponent() override;
 
+	virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
 
-public:	
+	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
+	
+
+public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
 		float AddFallingMultiplierNumber;
@@ -70,6 +76,9 @@ public:
 		int32 GetNormalMaxJumpCount();
 
 	FTimerHandle Timerhandle_CoyoteTime;
+
+	UPROPERTY(BlueprintAssignable, Category = "Climbing")
+		FOnCanClimbLedgeStartedSignature OnCanClimbLedge;
 
 private:
 

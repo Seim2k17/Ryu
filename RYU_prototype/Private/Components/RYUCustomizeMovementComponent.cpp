@@ -3,6 +3,7 @@
 #include "RYUCustomizeMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
+#include <stdexcept>
 
 
 // Sets default values for this component's properties, derived from CharacterMovementComponent
@@ -54,6 +55,23 @@ void URYUCustomizeMovementComponent::InitializeComponent()
 	Super::InitializeComponent();
 }
 
+
+void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode)
+{
+	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
+
+
+
+	UE_LOG(LogTemp, Log, TEXT("CustomModeChanged to %d"));
+		
+	//throw std::logic_error("The method or operation is not implemented.");
+}
+
+
+void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
+{
+	//throw std::logic_error("The method or operation is not implemented.");
+}
 
 bool URYUCustomizeMovementComponent::DoJump(bool bReplayingMoves)
 {

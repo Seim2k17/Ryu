@@ -2,6 +2,7 @@
 
 #include "RYUCharacterBase.h"
 #include "Camera/CameraComponent.h"
+#include "Components/SphereComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -18,7 +19,7 @@ ARYUCharacterBase::ARYUCharacterBase()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	// Create a camera boom attached to the root (capsule)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -27,11 +28,27 @@ ARYUCharacterBase::ARYUCharacterBase()
 	SideViewCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("SideViewCamera"));
 	SideViewCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 
+	SphereTracer = CreateDefaultSubobject<USphereComponent>(TEXT("SphereTracer"));
+	SphereTracer->SetupAttachment(RootComponent);
+
+	SphereTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	SphereTracer->SetCollisionResponseToAllChannels(ECR_Overlap);
+	SphereTracer->SetRelativeLocation(FVector(60, 0, 0));
+	SphereTracer->SetSphereRadius(100);
+	
+
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
 	RYUMovement = ERYUMovementMode::STAND;
 	CharacterHipSocketName = "HipSocket";
+
+	bSphereTracerOverlap = false;
+
+	bJumpJustStarted = false;
+
+	TreshholdYWalkRun = 220.0f;
 
 }
 
@@ -50,6 +67,14 @@ ARYUCharacterBase::ARYUCharacterBase(const class FObjectInitializer& ObjectIniti
 	SideViewCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("SideViewCamera"));
 	SideViewCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 
+	SphereTracer = CreateDefaultSubobject<USphereComponent>(TEXT("SphereTracer"));
+	SphereTracer->SetupAttachment(RootComponent);
+
+	SphereTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	SphereTracer->SetCollisionResponseToAllChannels(ECR_Overlap);
+	SphereTracer->SetRelativeLocation(FVector(60, 0, 0));
+	SphereTracer->SetSphereRadius(100);
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
@@ -58,6 +83,11 @@ ARYUCharacterBase::ARYUCharacterBase(const class FObjectInitializer& ObjectIniti
 void ARYUCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//NEED TO BIND IT IN THE DERIVED CLASSES !!!! (it works in BeginPlay but not in constructor: thats why in an existed Character-BP: AddDynamic gets not registered! 
+	//--> entweder you need to make a new Char-BP then AddDynamic works in contructor or better you use register the Overlap Method (Adddynamic) in BeginPlay)
+	// 	SphereTracer->OnComponentBeginOverlap.AddDynamic(this, &ARYUCharacterBase::OnSphereTracerHandleBeginOverlap);
+	// 	SphereTracer->OnComponentEndOverlap.AddDynamic(this, &ARYUCharacterBase::OnSphereTracerHandleEndOverlap);
 }
 
 void ARYUCharacterBase::MoveRight(float Val)
@@ -83,7 +113,8 @@ void ARYUCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
+	//set Movement Enum in private Function
+	SetMovementEnum();
 }
 
 
@@ -158,6 +189,7 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 	SweepEndHeight.Z = SweepEndHeight.Z - EndHeight;
 	// Macro End
 
+
 	/************************************************************************/
 	/* see DefaultEngine.ini:
 	+DefaultChannelResponses=(Channel=ECC_GameTraceChannel1,Name="SphereTracer",DefaultResponse=ECR_Ignore,bTraceType=False,bStaticObject=False)
@@ -166,6 +198,7 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 	/************************************************************************/
 	//A: if there is a possible ledge Hit in Height
 	bool HitLedgeHeight = GetWorld()->SweepSingleByChannel(HitresultHeight, SweepStartHeight, SweepEndHeight, SweepRotHeight, ECollisionChannel::ECC_EngineTraceChannel2, FCollisionShape::MakeSphere(0), ColParams);
+
 	if (HitLedgeHeight)
 	{
 		LedgeTracerHeight = HitresultHeight.ImpactPoint;
@@ -186,7 +219,8 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 				UE_LOG(LogTemp, Log, TEXT("LedgeHeigth in Range"));
 				bLedgeHeightInRange = true;
 
-				RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+				//done in Tick (ichi) --> move to CharBase ?
+				//RYUMovement = ERYUMovementMode::CANGRABLEDGE;
 			}
 		}
 		else {
@@ -197,10 +231,19 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 				bLedgeTraceInRangeChanged = false;
 				UE_LOG(LogTemp, Log, TEXT("LedgeHeigth NOT in Range"));
 				bLedgeHeightInRange = false;
-
-				RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+				
+				//done in Tick (ichi) --> move to CharBase ?
+				//RYUMovement = ERYUMovementMode::CANTRACELEDGE;
 			}
 		}
+	}
+	else
+	{
+		//Reset Stuff
+		bLedgeTraceInRangeChanged = false;
+		bLedgeHeightInRange = false;
+		bLedgeTraceNotInRangeChanged = false;
+		bLedgeTracePossible = false;
 	}
 
 	bLedgeTracePossible = HitLedgeHeight;
@@ -232,6 +275,73 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 
 void ARYUCharacterBase::CheckClimbingLedge()
 {
-	//@ToDo: resp. which ledge is it: Wall (= incl.Height) or Height (without a wall infront of the char) -> use appr. Animation for climbing
+	//BaseClassImplementation
+	UE_LOG(LogTemp, Log, TEXT("Can Climb ledge from BaseClass, please override in your Deriving Class"));
 }
+
+
+void ARYUCharacterBase::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+	if (OtherActor != nullptr)
+	{
+		bSphereTracerOverlap = true;
+		UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In"));
+	}
+
+}
+
+
+void ARYUCharacterBase::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	bSphereTracerOverlap = false;
+	bLedgeHeightInRange = false;
+	UE_LOG(LogTemp, Log, TEXT("SpherTracer Overlap Out"));
+}
+
+
+void ARYUCharacterBase::SetMovementEnum()
+{
+	if (!bSphereTracerOverlap)
+	{
+		if (bJumpJustStarted)
+		{
+			RYUMovement = ERYUMovementMode::JUMP;
+		}
+		else
+		{
+			if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > 0)
+			{
+				if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > TreshholdYWalkRun)
+				{
+					RYUMovement = ERYUMovementMode::RUN;
+				}
+				else
+				{
+					RYUMovement = ERYUMovementMode::WALK;
+				}
+			}
+			else
+			{
+				RYUMovement = ERYUMovementMode::STAND;
+			}
+		}
+	}
+	else
+	{
+		if ((RYUMovement != ERYUMovementMode::CLIMBLEDGE) &&
+			(RYUMovement != ERYUMovementMode::HANGONLEDGE))
+		{
+			if (bLedgeHeightInRange)
+			{
+				RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+			}
+			else
+			{
+				RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+			}
+		}
+
+	}
+}
+
 

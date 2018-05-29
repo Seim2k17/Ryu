@@ -10,6 +10,7 @@
 
 
 class UUserWidget;
+class USphereComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChangeActivePlayer);
 
@@ -39,6 +40,13 @@ public:
 
 	void StopJumping() override;
 
+	UFUNCTION()
+		void OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult & SweepResult);
+
+	UFUNCTION()
+		void OnSphereTracerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 	/** MEMBERS */
 
 	UPROPERTY(EditAnywhere, Category = "Character Status")
@@ -62,6 +70,14 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "LedgeTrace")
 		bool bLedgeHeightInRange;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
+		float TreshholdYWalkRun;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+		USphereComponent* SphereTracer;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	USphereComponent* TracerSphere;
 
 protected:
 
@@ -83,13 +99,21 @@ protected:
 
 	void TraceHeightAndWallOfLedge();
 
-	void CheckClimbingLedge();
+	virtual void CheckClimbingLedge();
 
+	
 	//DoOnce Repl.
 
 	bool bLedgeTracePossible;
 
+	bool bSphereTracerOverlap;
+
+	bool bJumpJustStarted;
+
 private:
+
+
+	void SetMovementEnum();
 
 	FVector LedgeTracerHeight;
 	FVector LedgeTracerWall;
