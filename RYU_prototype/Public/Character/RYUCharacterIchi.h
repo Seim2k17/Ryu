@@ -107,6 +107,7 @@ private:
 	float MaxGravityScaleStd;
 
 	bool bJumpJustStarted;
+	bool bSphereTracerOverlap;
 
 	float CharMaxWalkSpeed;
 

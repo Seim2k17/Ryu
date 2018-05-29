@@ -99,6 +99,8 @@ void ARYUCharacterIchi::InitializeCharacterValues()
 
 	TreshholdYWalkRun = 220.0f;
 
+	bSphereTracerOverlap = false;
+
 }
 
 // Called when the game starts or when spawned
@@ -121,7 +123,51 @@ void ARYUCharacterIchi::BeginPlay()
 
 void ARYUCharacterIchi::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+
 	currentFPS = 1 / DeltaTime;
+
+	//set Moevement Enum
+	//@ToDo verfeinern 
+	if (!bSphereTracerOverlap)
+	{
+		if (bJumpJustStarted)
+		{
+			RYUMovement = ERYUMovementMode::JUMP;
+		}
+		else
+		{
+			if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > 0)
+			{
+				if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > TreshholdYWalkRun)
+				{
+					RYUMovement = ERYUMovementMode::RUN;
+				}
+				else
+				{
+					RYUMovement = ERYUMovementMode::WALK;
+				}
+			}
+			else
+			{
+				RYUMovement = ERYUMovementMode::STAND;
+			}
+			//== 0 --> ueberall selbst auf Stand stellen !
+		}
+	}
+	else
+	{
+		//@ToDo verfeinern 
+		if (bLedgeTracePossible)
+		{
+			RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+		}
+		else
+		{
+			RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+		}
+		
+	}
 
 	if (bDebugOutputActive)
 	{
@@ -382,6 +428,7 @@ void ARYUCharacterIchi::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* Ov
 {
 	if (OtherActor != nullptr)
 	{
+		bSphereTracerOverlap = true;
 		UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In"));
 	}
 	
@@ -390,6 +437,7 @@ void ARYUCharacterIchi::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* Ov
 
 void ARYUCharacterIchi::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	bSphereTracerOverlap = false;
 	UE_LOG(LogTemp, Log, TEXT("SpherTracer Overlap Out"));
 }
 
@@ -430,32 +478,7 @@ void ARYUCharacterIchi::MoveRight(float Val)
 	//@ToDo: Move Setting MovementCode in TICK !!!! else there occure bad things when overlapping with LedgeTraces etc. and inkonsequences
 
 	// add movement in that direction
-	if (!bLedgeTracePossible)
-	{
-		if (bJumpJustStarted)
-		{
-			RYUMovement = ERYUMovementMode::JUMP;
-		}
-		else
-		{
-			if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > 0)
-			{
-				if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > TreshholdYWalkRun)
-				{
-					RYUMovement = ERYUMovementMode::RUN;
-				}
-				else
-				{
-					RYUMovement = ERYUMovementMode::WALK;
-				}
-			}
-			else
-			{
-				RYUMovement = ERYUMovementMode::STAND;
-			}
-			//== 0 --> ueberall selbst auf Stand stellen !
-		}
-	}
+	
 	
 	
 	AddMovementInput(FVector(0.f, -1.f, 0.f), Val);
