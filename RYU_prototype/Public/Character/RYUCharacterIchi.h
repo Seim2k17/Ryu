@@ -47,6 +47,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerChange")
 		ERYUPlayerActive PlayerActive;
+
 	
 protected:
 

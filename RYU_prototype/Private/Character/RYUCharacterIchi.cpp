@@ -8,6 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Character/RYUNUM_LedgePosition.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 
 
@@ -418,13 +419,17 @@ void ARYUCharacterIchi::Climb(float Val)
 		switch (RYUMovement)
 		{
 		case ERYUMovementMode::CANGRABLEDGE:
-			CustMovementComp->SetMovementMode(MOVE_Custom, (uint8)ERYUMovementMode::CANGRABLEDGE);
-
-			CustMovementComp->OnCanClimbLedge.Broadcast();
+		{
+			//@toDo: need to adjust Position at end of character / teleport ? Ask Micha/Grisha
+			//CustMovementComp->SetMovementMode(MOVE_Custom, (uint8)ERYUMovementMode::CANGRABLEDGE);
+			ERYULedgePosition LedgePosi = ERYULedgePosition::FrontWall_1m;
+			CustMovementComp->OnCanClimbLedge.Broadcast(LedgePosi);
 
 			//OtherAnimationStuff in CustomModechanged
 			//RYUMovement = ERYUMovementMode::HANGONLEDGE;
 			break;
+		}
+			
 		case ERYUMovementMode::HANGONLEDGE:
 			RYUMovement = ERYUMovementMode::CLIMBLEDGE;
 			break;
