@@ -422,6 +422,7 @@ void ARYUCharacterIchi::Climb(float Val)
 		{
 			//@toDo: need to adjust Position at end of character / teleport ? Ask Micha/Grisha
 			//CustMovementComp->SetMovementMode(MOVE_Custom, (uint8)ERYUMovementMode::CANGRABLEDGE);
+			CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBLEDGE));
 			ERYULedgePosition LedgePosi = ERYULedgePosition::FrontWall_1m;
 			CustMovementComp->OnCanClimbLedge.Broadcast(LedgePosi);
 

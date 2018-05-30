@@ -3,6 +3,8 @@
 #include "RYUCustomizeMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
+#include "RYUENUM_MovementMode.h"
+#include "RYUCharacterBase.h"
 #include <stdexcept>
 
 
@@ -70,7 +72,40 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 
 void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 {
+	if (deltaTime < MIN_TICK_TIME)
+	{
+		return;
+	}
+
+	switch (CustomMovementMode)
+	{
+	case ERYUMovementMode::CLIMBLEDGE:
+		PhysClimbingLedge(deltaTime, Iterations);
+		break;
+	case ERYUMovementMode::CLIMBLADDER:
+		PhysClimbingLadder(deltaTime, Iterations);
+		break;
+	}
 	//throw std::logic_error("The method or operation is not implemented.");
+}
+
+
+void URYUCustomizeMovementComponent::PhysClimbingLedge(float deltaTime, int32 Iterations)
+{
+	UE_LOG(LogTemp, Log, TEXT("I´m climbing the ledge!"));
+	ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
+	
+	FVector CharPos = GetActorLocation();
+ 	CharPos.Z += 1;
+ 	CharPos.Y += 1;
+
+	MyChar->SetActorLocation(CharPos);
+}
+
+
+void URYUCustomizeMovementComponent::PhysClimbingLadder(float deltaTime, int32 Iterations)
+{
+	UE_LOG(LogTemp, Log, TEXT("I´m climbing the ladder!"));
 }
 
 bool URYUCustomizeMovementComponent::DoJump(bool bReplayingMoves)
