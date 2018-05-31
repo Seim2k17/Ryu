@@ -38,6 +38,8 @@ public:
 
 	void DrawDebugInfosOnScreen();
 
+	void DebugSomething();
+
 
 #if WITH_EDITOR
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;

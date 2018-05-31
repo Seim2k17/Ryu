@@ -5,6 +5,8 @@
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 #include "RYUENUM_MovementMode.h"
 #include "RYUCharacterBase.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include <stdexcept>
 
 
@@ -62,9 +64,46 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 {
 	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
 
+	switch (CustomMovementMode)
+	{
+		case ERYUMovementMode::CLIMBLEDGE:
+		{
+			ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
+			//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
+			//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
+			MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			MyChar->SphereTracer->SetEnableGravity(false);
+			MyChar->GetMesh()->SetEnableGravity(false);
+			MyChar->GetCapsuleComponent()->SetEnableGravity(false);
+			UE_LOG(LogTemp, Log, TEXT("Mode changed to CLIMBLEDGE"));
+			break;
+		}
+		
+	default:
+		break;
+	}
 
+	switch (MovementMode)
+	{
+	case MOVE_Flying:
+	{
+		ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
+		//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
+		//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
+		MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		MyChar->SphereTracer->SetEnableGravity(false);
+		MyChar->GetMesh()->SetEnableGravity(false);
+		MyChar->GetCapsuleComponent()->SetEnableGravity(false);
+		UE_LOG(LogTemp, Log, TEXT("Mode changed to FLYING"));
+		break;
+	}
 
-	UE_LOG(LogTemp, Log, TEXT("CustomModeChanged to %d"));
+	default:
+		break;
+	}
+	
+
+	/*UE_LOG(LogTemp, Log, TEXT("CustomModeChanged to %d"));*/
 		
 	//throw std::logic_error("The method or operation is not implemented.");
 }
@@ -93,13 +132,8 @@ void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iteration
 void URYUCustomizeMovementComponent::PhysClimbingLedge(float deltaTime, int32 Iterations)
 {
 	UE_LOG(LogTemp, Log, TEXT("I´m climbing the ledge!"));
-	ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
-	
-	FVector CharPos = GetActorLocation();
- 	CharPos.Z += 1;
- 	CharPos.Y += 1;
 
-	MyChar->SetActorLocation(CharPos);
+	
 }
 
 

@@ -188,6 +188,13 @@ void ARYUCharacterIchi::DrawDebugInfosOnScreen()
 }
 
 
+void ARYUCharacterIchi::DebugSomething()
+{
+	//CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBLEDGE));
+	ERYULedgePosition LedgePosi = ERYULedgePosition::FrontWall_1m;
+	CustMovementComp->OnCanClimbLedge.Broadcast(LedgePosi);
+}
+
 void ARYUCharacterIchi::Jump()
 {
 	StartJumpPosition = GetActorLocation();
@@ -355,6 +362,8 @@ void ARYUCharacterIchi::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 	PlayerInputComponent->BindAxis("ClimbUp", this, &ARYUCharacterIchi::Climb);
 
+	PlayerInputComponent->BindAction("DebugKey_1", IE_Pressed, this, &ARYUCharacterIchi::DebugSomething);
+
 	
 	//Predefined Bindings
 	//PlayerInputComponent->BindTouch(IE_Pressed, this, &ARYUCharacterIchi::TouchStarted);
@@ -421,8 +430,9 @@ void ARYUCharacterIchi::Climb(float Val)
 		case ERYUMovementMode::CANGRABLEDGE:
 		{
 			//@toDo: need to adjust Position at end of character / teleport ? Ask Micha/Grisha
-			//CustMovementComp->SetMovementMode(MOVE_Custom, (uint8)ERYUMovementMode::CANGRABLEDGE);
-			CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBLEDGE));
+			
+			//CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBLEDGE));
+			CustMovementComp->SetMovementMode(MOVE_Flying);
 			ERYULedgePosition LedgePosi = ERYULedgePosition::FrontWall_1m;
 			CustMovementComp->OnCanClimbLedge.Broadcast(LedgePosi);
 
