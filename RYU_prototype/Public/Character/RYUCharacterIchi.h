@@ -82,6 +82,8 @@ protected:
 
 	void CheckClimbingLedge() override;
 
+	void CanGrabLedgeAndClimb();
+
 private:
 
 	/** METHODS */

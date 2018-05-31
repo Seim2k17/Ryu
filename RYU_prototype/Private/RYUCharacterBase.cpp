@@ -196,8 +196,9 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 	+DefaultChannelResponses=(Channel=ECC_GameTraceChannel2,Name="LedgeTrace",DefaultResponse=ECR_Ignore,bTraceType=True,bStaticObject=False)
 	*/
 	/************************************************************************/
-	//A: if there is a possible ledge Hit in Height
-	bool HitLedgeHeight = GetWorld()->SweepSingleByChannel(HitresultHeight, SweepStartHeight, SweepEndHeight, SweepRotHeight, ECollisionChannel::ECC_EngineTraceChannel2, FCollisionShape::MakeSphere(0), ColParams);
+	//A: if there is a possible ledge Hit in Height 
+	//@ToDo: If there are more than one ledges layered -> takes the above --> FAIL (=can´t climb)
+	bool HitLedgeHeight = GetWorld()->SweepSingleByChannel(HitresultHeight, SweepStartHeight, SweepEndHeight, SweepRotHeight, ECollisionChannel::ECC_EngineTraceChannel2, FCollisionShape::MakeSphere(2), ColParams);
 
 	if (HitLedgeHeight)
 	{

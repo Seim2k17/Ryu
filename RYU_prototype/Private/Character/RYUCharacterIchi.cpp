@@ -191,12 +191,24 @@ void ARYUCharacterIchi::DrawDebugInfosOnScreen()
 void ARYUCharacterIchi::DebugSomething()
 {
 	//CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBLEDGE));
-	ERYULedgePosition LedgePosi = ERYULedgePosition::FrontWall_1m;
+	ERYULedgePosition LedgePosi = ERYULedgePosition::Above_150cm;
 	CustMovementComp->OnCanClimbLedge.Broadcast(LedgePosi);
 }
 
 void ARYUCharacterIchi::Jump()
 {
+	switch (RYUMovement)
+		{
+		case ERYUMovementMode::CANGRABLEDGE:
+		{
+			CanGrabLedgeAndClimb();
+			break;
+		}
+		return;
+	}
+	
+	
+
 	StartJumpPosition = GetActorLocation();
 
 	//suppose wie´re not falling -> to make it a real jump not adding JumpZVelo to Vel(Z) < 0
@@ -429,15 +441,7 @@ void ARYUCharacterIchi::Climb(float Val)
 		{
 		case ERYUMovementMode::CANGRABLEDGE:
 		{
-			//@toDo: need to adjust Position at end of character / teleport ? Ask Micha/Grisha
-			
-			//CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBLEDGE));
-			CustMovementComp->SetMovementMode(MOVE_Flying);
-			ERYULedgePosition LedgePosi = ERYULedgePosition::FrontWall_1m;
-			CustMovementComp->OnCanClimbLedge.Broadcast(LedgePosi);
-
-			//OtherAnimationStuff in CustomModechanged
-			//RYUMovement = ERYUMovementMode::HANGONLEDGE;
+			CanGrabLedgeAndClimb();			
 			break;
 		}
 			
@@ -474,6 +478,38 @@ void ARYUCharacterIchi::CheckClimbingLedge()
 	//@ToDo: resp. which ledge is it: Wall (= incl.Height) or Height (without a wall infront of the char) -> use appr. Animation for climbing
 	//UE_LOG(LogTemp, Log, TEXT("Can Climb ledge from derived Class"));
 	//here we can set/make stuff when we are in Position to climb a ledge (RYUMovement = ERYUMovementMode::CANGRABLEDGE), called in Super::Tick()
+}
+
+
+void ARYUCharacterIchi::CanGrabLedgeAndClimb()
+{
+	if (!CustMovementComp->IsFalling())
+	{
+		CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBLEDGE));
+		//CustMovementComp->SetMovementMode(MOVE_Flying);
+		//select appr. Asset from height of ledge
+		UE_LOG(LogTemp, Log, TEXT("LedgeHeightVector: %s"), *LedgeTracerHeight.ToString());
+		ERYULedgePosition LedgePosi;
+
+		if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 0.0f, 101.0f))
+		{
+			LedgePosi = ERYULedgePosition::Above_080cm;
+		}
+
+		if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 101.01f, 130.0f))
+		{
+			LedgePosi = ERYULedgePosition::Above_100cm;
+		}
+
+		if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 130.01f, 180.0f))
+		{
+			LedgePosi = ERYULedgePosition::Above_150cm;
+		}
+
+		 
+		CustMovementComp->OnCanClimbLedge.Broadcast(LedgePosi);
+	}
+	
 }
 
 #if WITH_EDITOR

@@ -27,6 +27,9 @@ public:
 
 	bool DoJump(bool bReplayingMoves) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Climbing")
+		void ResetClimbingState();
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

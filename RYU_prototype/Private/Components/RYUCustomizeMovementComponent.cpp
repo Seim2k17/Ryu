@@ -83,6 +83,7 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 		break;
 	}
 
+	/**FallBack , just use Flying */
 	switch (MovementMode)
 	{
 	case MOVE_Flying:
@@ -111,6 +112,8 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 
 void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 {
+	Super::PhysCustom(deltaTime,Iterations);
+
 	if (deltaTime < MIN_TICK_TIME)
 	{
 		return;
@@ -131,7 +134,54 @@ void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iteration
 
 void URYUCustomizeMovementComponent::PhysClimbingLedge(float deltaTime, int32 Iterations)
 {
-	UE_LOG(LogTemp, Log, TEXT("I´m climbing the ledge!"));
+
+	//TODo: updates the movement take modified walking state ! ATM FlyingState active
+	//UE_LOG(LogTemp, Log, TEXT("I´m climbing the ledge!"));
+
+	/** Following is copypasted from CharacterMovementComponent::PhysFlying and ajdusted to Phyclimbing*/
+
+	RestorePreAdditiveRootMotionVelocity();
+
+
+	ApplyRootMotionToVelocity(deltaTime);
+
+	Iterations++;
+	bJustTeleported = false;
+
+	FVector OldLocation = UpdatedComponent->GetComponentLocation();
+	const FVector Adjusted = Velocity * deltaTime;
+	FHitResult Hit(1.f);
+	SafeMoveUpdatedComponent(Adjusted, UpdatedComponent->GetComponentQuat(), true, Hit);
+
+	if (Hit.Time < 1.f)
+	{
+		const FVector GravDir = FVector(0.f, 0.f, -1.f);
+		const FVector VelDir = Velocity.GetSafeNormal();
+		const float UpDown = GravDir | VelDir;
+
+		bool bSteppedUp = false;
+		if ((FMath::Abs(Hit.ImpactNormal.Z) < 0.2f) && (UpDown < 0.5f) && (UpDown > -0.2f) && CanStepUp(Hit))
+		{
+			float stepZ = UpdatedComponent->GetComponentLocation().Z;
+			bSteppedUp = StepUp(GravDir, Adjusted * (1.f - Hit.Time), Hit);
+			if (bSteppedUp)
+			{
+				OldLocation.Z = UpdatedComponent->GetComponentLocation().Z + (OldLocation.Z - stepZ);
+			}
+		}
+
+		if (!bSteppedUp)
+		{
+			//adjust and try again
+			HandleImpact(Hit, deltaTime, Adjusted);
+			SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);
+		}
+	}
+
+	if (!bJustTeleported && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+	{
+		Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
+	}
 
 	
 }
@@ -160,6 +210,19 @@ bool URYUCustomizeMovementComponent::DoJump(bool bReplayingMoves)
 	}
 
 	return false;
+}
+
+
+void URYUCustomizeMovementComponent::ResetClimbingState()
+{
+	ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
+	//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
+	//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
+	MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	MyChar->SphereTracer->SetEnableGravity(true);
+	MyChar->GetMesh()->SetEnableGravity(true);
+	MyChar->GetCapsuleComponent()->SetEnableGravity(true);
+	SetMovementMode(MOVE_Walking);
 }
 
 void URYUCustomizeMovementComponent::SetNormalMaxJumpCount(int32 MaxJumps)
