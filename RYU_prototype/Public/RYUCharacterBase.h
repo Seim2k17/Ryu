@@ -110,8 +110,12 @@ protected:
 
 	bool bJumpJustStarted;
 
+
+
 	FVector LedgeTracerHeight;
 	FVector LedgeTracerWall;
+
+	AActor* SphereOverlappedActor;
 
 private:
 

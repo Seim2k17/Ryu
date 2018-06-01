@@ -147,7 +147,7 @@ void ARYUCharacterBase::CheckLedgeTracer()
 		
 		case ERYUMovementMode::HANGONLEDGE:
 			break;
-		case ERYUMovementMode::CLIMBLEDGE:
+		case ERYUMovementMode::CLIMBDOWNLEDGE:
 			break;
 		default:
 			break;
@@ -285,8 +285,9 @@ void ARYUCharacterBase::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* Ov
 {
 	if (OtherActor != nullptr)
 	{
+		SphereOverlappedActor = OtherActor;
 		bSphereTracerOverlap = true;
-		UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In"));
+		UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In with: %s"),*SphereOverlappedActor->GetName());
 	}
 
 }
@@ -296,53 +297,63 @@ void ARYUCharacterBase::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* Over
 {
 	bSphereTracerOverlap = false;
 	bLedgeHeightInRange = false;
+	//SphereOverlappedActor = nullptr;
 	UE_LOG(LogTemp, Log, TEXT("SpherTracer Overlap Out"));
 }
 
 
 void ARYUCharacterBase::SetMovementEnum()
 {
-	if (!bSphereTracerOverlap)
+	//@ToDo: look for a nice and neat structure ti set the MovementEnum !
+	if (!(RYUMovement == ERYUMovementMode::CLIMBDOWNLEDGE) && 
+		!(RYUMovement == ERYUMovementMode::CLIMBUPLEDGE) && 
+		!(RYUMovement == ERYUMovementMode::HANGONLEDGE) &&
+		!(RYUMovement == ERYUMovementMode::CANGRABLEDGE))
 	{
-		if (bJumpJustStarted)
+		if (!bSphereTracerOverlap)
 		{
-			RYUMovement = ERYUMovementMode::JUMP;
-		}
-		else
-		{
-			if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > 0)
+			if (bJumpJustStarted)
 			{
-				if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > TreshholdYWalkRun)
+				RYUMovement = ERYUMovementMode::JUMP;
+			}
+			else
+			{
+				if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > 0)
 				{
-					RYUMovement = ERYUMovementMode::RUN;
+					if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > TreshholdYWalkRun)
+					{
+						RYUMovement = ERYUMovementMode::RUN;
+					}
+					else
+					{
+						RYUMovement = ERYUMovementMode::WALK;
+					}
 				}
 				else
 				{
-					RYUMovement = ERYUMovementMode::WALK;
+					RYUMovement = ERYUMovementMode::STAND;
 				}
 			}
-			else
-			{
-				RYUMovement = ERYUMovementMode::STAND;
-			}
 		}
-	}
-	else
-	{
-		if ((RYUMovement != ERYUMovementMode::CLIMBLEDGE) &&
-			(RYUMovement != ERYUMovementMode::HANGONLEDGE))
+		else
 		{
-			if (bLedgeHeightInRange)
+			if ((RYUMovement != ERYUMovementMode::CLIMBDOWNLEDGE) &&
+				(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE) &&
+				(RYUMovement != ERYUMovementMode::HANGONLEDGE))
 			{
-				RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+				if (bLedgeHeightInRange)
+				{
+					RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+				}
+				else
+				{
+					RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+				}
 			}
-			else
-			{
-				RYUMovement = ERYUMovementMode::CANTRACELEDGE;
-			}
-		}
 
+		}
 	}
+	
 }
 
 

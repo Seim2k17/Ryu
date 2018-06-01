@@ -66,7 +66,7 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 
 	switch (CustomMovementMode)
 	{
-		case ERYUMovementMode::CLIMBLEDGE:
+		case ERYUMovementMode::CLIMBUPLEDGE:
 		{
 			ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
 			//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
@@ -76,6 +76,23 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 			MyChar->GetMesh()->SetEnableGravity(false);
 			MyChar->GetCapsuleComponent()->SetEnableGravity(false);
 			UE_LOG(LogTemp, Log, TEXT("Mode changed to CLIMBLEDGE"));
+			break;
+		}
+		case ERYUMovementMode::CLIMBDOWNLEDGE:
+		{
+			ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
+			//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
+			//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
+			MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			MyChar->SphereTracer->SetEnableGravity(false);
+			MyChar->GetMesh()->SetEnableGravity(false);
+			MyChar->GetCapsuleComponent()->SetEnableGravity(false);
+			UE_LOG(LogTemp, Log, TEXT("Mode changed to CLIMBLEDGE"));
+			break;
+		}
+		case ERYUMovementMode::HANGONLEDGE:
+		{
+			UE_LOG(LogTemp, Log, TEXT("Waiting!"));
 			break;
 		}
 		
@@ -121,8 +138,16 @@ void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iteration
 
 	switch (CustomMovementMode)
 	{
-	case ERYUMovementMode::CLIMBLEDGE:
+	case ERYUMovementMode::CLIMBUPLEDGE:
 		PhysClimbingLedge(deltaTime, Iterations);
+		break;
+	case ERYUMovementMode::CLIMBDOWNLEDGE:
+		PhysClimbingLedge(deltaTime, Iterations);
+		break;
+	case ERYUMovementMode::HANGONLEDGE:
+		//Just Hang around
+		//PhysClimbingLedge(deltaTime, Iterations);
+		UE_LOG(LogTemp, Log, TEXT("Hanging!"));
 		break;
 	case ERYUMovementMode::CLIMBLADDER:
 		PhysClimbingLadder(deltaTime, Iterations);
@@ -136,7 +161,7 @@ void URYUCustomizeMovementComponent::PhysClimbingLedge(float deltaTime, int32 It
 {
 
 	//TODo: updates the movement take modified walking state ! ATM FlyingState active
-	//UE_LOG(LogTemp, Log, TEXT("I´m climbing the ledge!"));
+	UE_LOG(LogTemp, Log, TEXT("I´m climbing the ledge!"));
 
 	/** Following is copypasted from CharacterMovementComponent::PhysFlying and ajdusted to Phyclimbing*/
 

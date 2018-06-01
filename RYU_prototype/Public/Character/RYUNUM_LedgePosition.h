@@ -12,5 +12,7 @@ enum class ERYULedgePosition : uint8
 	Above_100cm UMETA(DisplayName = "AboveLedge(1.0m)"),
 	Above_150cm UMETA(DisplayName = "AboveLedge(1.5m)"),
 	Above_200cm UMETA(DisplayName = "AboveLedge(2.0m)"),
+	Above_450cm UMETA(DisplayName = "AboveLedge(4.5m)"),
+	Hurdle_080cm UMETA(DisplayName = "FrontHurdle(0.8m)"),
 
 };

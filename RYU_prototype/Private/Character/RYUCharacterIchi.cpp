@@ -10,6 +10,7 @@
 #include "Components/SphereComponent.h"
 #include "Character/RYUNUM_LedgePosition.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
+#include "Components/ClimbAssetComponent.h"
 
 
 // Sets default values
@@ -23,6 +24,8 @@ ARYUCharacterIchi::ARYUCharacterIchi(const class FObjectInitializer& ObjectIniti
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
 	PlayerActive = ERYUPlayerActive::Player1;
+
+	ClimbAssetComp = CreateDefaultSubobject<UClimbAssetComponent>(TEXT("ClimbAssetComponent"));
 
 	InitializeCharacterValues();
 
@@ -109,6 +112,8 @@ void ARYUCharacterIchi::BeginPlay()
 
 	CustMovementComp->SetNormalMaxJumpCount(JumpMaxCount);
 
+	
+
 }
 
 void ARYUCharacterIchi::Tick(float DeltaTime)
@@ -166,8 +171,11 @@ void ARYUCharacterIchi::DrawDebugInfosOnScreen()
 			case ERYUMovementMode::HANGONLEDGE:
 				MoveMode = "HangingOnLedge";
 				break;
-			case ERYUMovementMode::CLIMBLEDGE:
-				MoveMode = "ClimbingLedge";
+			case ERYUMovementMode::CLIMBDOWNLEDGE:
+				MoveMode = "ClimbingDownLedge";
+				break;
+			case ERYUMovementMode::CLIMBUPLEDGE:
+				MoveMode = "ClimbingUpLedge";
 				break;
 			default:
 				MoveMode = "STANDING";
@@ -201,7 +209,7 @@ void ARYUCharacterIchi::Jump()
 		{
 		case ERYUMovementMode::CANGRABLEDGE:
 		{
-			CanGrabLedgeAndClimb();
+			CanGrabLedgeAndClimb(1.0f);
 			break;
 		}
 		return;
@@ -423,7 +431,8 @@ void ARYUCharacterIchi::MoveRight(float Val)
 	
 	if ((RYUMovement != ERYUMovementMode::CLIMBLADDER) && 
 		(RYUMovement != ERYUMovementMode::HANGONLEDGE) &&
-		(RYUMovement != ERYUMovementMode::CLIMBLEDGE))
+		(RYUMovement != ERYUMovementMode::CLIMBDOWNLEDGE) &&
+		(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE))
 	{
 		AddMovementInput(FVector(0.f, -1.f, 0.f), Val);
 	}
@@ -434,43 +443,22 @@ void ARYUCharacterIchi::MoveRight(float Val)
 
 void ARYUCharacterIchi::Climb(float Val)
 {
-	//Move up
-	if (Val > 0)
-	{
+	//Move up or Down a ledge...
 		switch (RYUMovement)
 		{
-		case ERYUMovementMode::CANGRABLEDGE:
-		{
-			CanGrabLedgeAndClimb();			
-			break;
-		}
-			
-		case ERYUMovementMode::HANGONLEDGE:
-			RYUMovement = ERYUMovementMode::CLIMBLEDGE;
-			break;
-		default:
-			break;
-		}
-
-		if ((RYUMovement == ERYUMovementMode::HANGONLEDGE) ||
-			(RYUMovement == ERYUMovementMode::CANGRABLEDGE)
-			)
-		{
-// 			uint8 CustMoveMent = (uint8)RYUMovement;
-// 			CustMovementComp->SetMovementMode(MOVE_Custom, CustMoveMent);
-		}
-
-	
-	}
-	if (Val < 0)
-	{
-		switch (RYUMovement)
-		{
+				//...near a ledge
+			case ERYUMovementMode::CANGRABLEDGE:
+			{
+				CanGrabLedgeAndClimb(Val);			
+				break;
+			}
+				//...hanging on a ledge
 			case ERYUMovementMode::HANGONLEDGE:
-				RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+				HangOnLedgeAndClimb(Val);
+				break;
+			default:
 				break;
 		}
-	}
 }
 
 void ARYUCharacterIchi::CheckClimbingLedge()
@@ -481,36 +469,99 @@ void ARYUCharacterIchi::CheckClimbingLedge()
 }
 
 
-void ARYUCharacterIchi::CanGrabLedgeAndClimb()
+void ARYUCharacterIchi::CanGrabLedgeAndClimb(float Val)
 {
-	if (!CustMovementComp->IsFalling())
+	//Stand near ledge & climb Up or over ledge
+	if (Val > 0)
 	{
-		CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBLEDGE));
-		//CustMovementComp->SetMovementMode(MOVE_Flying);
-		//select appr. Asset from height of ledge
-		UE_LOG(LogTemp, Log, TEXT("LedgeHeightVector: %s"), *LedgeTracerHeight.ToString());
 		ERYULedgePosition LedgePosi;
-
-		if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 0.0f, 101.0f))
+		if (!CustMovementComp->IsFalling())
 		{
-			LedgePosi = ERYULedgePosition::Above_080cm;
-		}
+			CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBUPLEDGE));
+			//CustMovementComp->SetMovementMode(MOVE_Flying);
+			//select appr. Asset from height of ledge
+			UE_LOG(LogTemp, Log, TEXT("LedgeHeightVector: %s"), *LedgeTracerHeight.ToString());
 
-		if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 101.01f, 130.0f))
-		{
-			LedgePosi = ERYULedgePosition::Above_100cm;
-		}
+			TArray<FName> AcTags;
 
-		if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 130.01f, 180.0f))
-		{
-			LedgePosi = ERYULedgePosition::Above_150cm;
-		}
+			if (SphereOverlappedActor)
+			{
+				UE_LOG(LogTemp, Log, TEXT("There´s a Overlapping Actor"));
+				AcTags = SphereOverlappedActor->Tags;
+			}
 
-		 
-		CustMovementComp->OnCanClimbLedge.Broadcast(LedgePosi);
+
+			if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 0.0f, 101.0f))
+			{
+				LedgePosi = ERYULedgePosition::Above_080cm;
+			}
+
+			if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 101.01f, 130.0f))
+			{
+				LedgePosi = ERYULedgePosition::Above_100cm;
+			}
+
+			if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 130.01f, 180.0f))
+			{
+				LedgePosi = ERYULedgePosition::Above_150cm;
+			}
+
+			//possibly a workaround for climbing !?
+
+			if (AcTags.Num() > 0)
+			{
+				UE_LOG(LogTemp, Log, TEXT("There´re Tags"));
+				//Override the Ledgeposition set before, when climbing tagged (Ledgetracer is ignored
+				if (AcTags[0] == "climbing") LedgePosi = ERYULedgePosition::Above_450cm;
+				if (AcTags[0] == "hurdle") LedgePosi = ERYULedgePosition::Hurdle_080cm;
+
+			}
+			CustMovementComp->OnCanClimbLedge.Broadcast(LedgePosi);
+		}
+	}
+
+	//Stand near ledge & Climb down or fall and die
+	if (Val < 0)
+	{
+		RYUMovement = ERYUMovementMode::CLIMBDOWNLEDGE;
+		//@ToDo: Play MontageSection ClimbDown in Reverse
+		UE_LOG(LogTemp, Log, TEXT("StartPlaying: %s"), *ClimbAssetComp->ClimbDownMontage->GetName());
+		PlayAnimMontage(ClimbAssetComp->ClimbDownMontage, 1.0f, ClimbAssetComp->ClimbDownStart);
+		CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBDOWNLEDGE));
+		
 	}
 	
 }
+
+
+void ARYUCharacterIchi::HangOnLedgeAndClimb(float Val)
+{	
+	float UpOrDown;
+	//Hang on ledge && climb Up
+	if (Val > 0)
+	{
+		RYUMovement = ERYUMovementMode::CLIMBUPLEDGE;
+		CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBUPLEDGE));
+		UpOrDown = -1.0f;
+	}
+
+	//Hang on ledge && climb Down
+	if (Val < 0)
+	{
+		RYUMovement = ERYUMovementMode::CLIMBDOWNLEDGE;
+		CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBDOWNLEDGE));
+		UpOrDown = 1.0f;
+	}
+
+	if (ClimbAssetComp->ClimbDownMontage)
+	{
+		PlayAnimMontage(ClimbAssetComp->ClimbDownMontage, UpOrDown, ClimbAssetComp->ClimbDownStart);
+		
+	}
+
+}
+
+
 
 #if WITH_EDITOR
 //#include "Editor.h"
