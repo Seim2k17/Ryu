@@ -110,8 +110,6 @@ protected:
 
 	bool bJumpJustStarted;
 
-
-
 	FVector LedgeTracerHeight;
 	FVector LedgeTracerWall;
 
@@ -119,8 +117,6 @@ protected:
 
 private:
 
-
-	void SetMovementEnum();
 
 	FVector LedgeTracerWallNormal;
 	FVector HipSocketLocation;

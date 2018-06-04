@@ -90,7 +90,7 @@ void ARYUCharacterIchi::InitializeCharacterValues()
 
 	CoyoteJumpPossible = false;
 
-	TreshholdYWalkRun = 220.0f;
+	TreshholdYWalkRun = 0.3f;
 
 	bJumpJustStarted = false;
 
@@ -177,6 +177,9 @@ void ARYUCharacterIchi::DrawDebugInfosOnScreen()
 			case ERYUMovementMode::CLIMBUPLEDGE:
 				MoveMode = "ClimbingUpLedge";
 				break;
+			case ERYUMovementMode::CANCLIMBDOWNLEDGE:
+				MoveMode = "CanClimbDownLedge";
+				break;
 			default:
 				MoveMode = "STANDING";
 		}
@@ -210,12 +213,21 @@ void ARYUCharacterIchi::Jump()
 		case ERYUMovementMode::CANGRABLEDGE:
 		{
 			CanGrabLedgeAndClimb(1.0f);
-			break;
+			//break;
+			return;
 		}
-		return;
+		case ERYUMovementMode::CLIMBUPLEDGE:
+		{
+			//break;
+			return;
+		}
+		case ERYUMovementMode::CLIMBDOWNLEDGE:
+		{
+			//break;
+			return;
+		}
 	}
-	
-	
+
 
 	StartJumpPosition = GetActorLocation();
 
@@ -243,6 +255,12 @@ void ARYUCharacterIchi::Jump()
 	{
 		//AddMoreVelocity ?
 		GetCharacterMovement()->Velocity.Y = GetCharacterMovement()->Velocity.Y + CustMovementComp->JumpForceRun.Y;
+	}
+
+	if ((RYUMovement != ERYUMovementMode::CANGRABLEDGE) &&
+		(RYUMovement != ERYUMovementMode::HANGONLEDGE))
+	{
+		RYUMovement = ERYUMovementMode::JUMP;
 	}
 	//UE_LOG(LogTemp, Log, TEXT("Y(final): %s"), *FString::SanitizeFloat(StartJumpVelocity.Y));
 
@@ -356,6 +374,9 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 			//if fall on the ground earlier than MaxJumpButtonHoldTime
 			CoyoteJumpPossible = false;
 			StopJumping();
+			
+			RYUMovement = ERYUMovementMode::STAND;
+			
 			//GetCharacterMovement()->GravityScale = DefaultGravityScale;
 		}
 		return;
@@ -432,10 +453,43 @@ void ARYUCharacterIchi::MoveRight(float Val)
 	if ((RYUMovement != ERYUMovementMode::CLIMBLADDER) && 
 		(RYUMovement != ERYUMovementMode::HANGONLEDGE) &&
 		(RYUMovement != ERYUMovementMode::CLIMBDOWNLEDGE) &&
+		(RYUMovement != ERYUMovementMode::JUMP) &&
+		(RYUMovement != ERYUMovementMode::CANTRACELEDGE) &&
+		(RYUMovement != ERYUMovementMode::CANGRABLEDGE) &&
+		(RYUMovement != ERYUMovementMode::CANCLIMBDOWNLEDGE) &&
+		(RYUMovement != ERYUMovementMode::CANCLIMBUPLEDGE) &&
 		(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE))
+	{
+		if (FMath::Abs(Val) > 0)
+		{
+			if (FMath::Abs(Val) > TreshholdYWalkRun)
+				{
+					RYUMovement = ERYUMovementMode::RUN;
+				}
+				else
+				{
+					RYUMovement = ERYUMovementMode::WALK;
+				}
+		}
+		else
+		{
+			RYUMovement = ERYUMovementMode::STAND;
+		}
+	}
+
+	if ((RYUMovement != ERYUMovementMode::HANGONLEDGE) && 
+		(RYUMovement != ERYUMovementMode::CLIMBLADDER) &&
+		(RYUMovement != ERYUMovementMode::CLIMBDOWNLEDGE) &&
+		(RYUMovement != ERYUMovementMode::CANCLIMBUPLEDGE) &&
+		(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE))
+
 	{
 		AddMovementInput(FVector(0.f, -1.f, 0.f), Val);
 	}
+
+	
+
+	
 	
 	
 }
@@ -452,6 +506,16 @@ void ARYUCharacterIchi::Climb(float Val)
 				CanGrabLedgeAndClimb(Val);			
 				break;
 			}
+			case ERYUMovementMode::CANCLIMBDOWNLEDGE:
+			{
+				CanClimbUpOrDown(Val);
+				break;
+			}
+			case ERYUMovementMode::CANCLIMBUPLEDGE:
+			{
+				CanClimbUpOrDown(Val);
+				break;
+			}
 				//...hanging on a ledge
 			case ERYUMovementMode::HANGONLEDGE:
 				HangOnLedgeAndClimb(Val);
@@ -459,6 +523,29 @@ void ARYUCharacterIchi::Climb(float Val)
 			default:
 				break;
 		}
+}
+
+
+void ARYUCharacterIchi::CanClimbUpOrDown(float Val)
+{
+	//Stand near ledge & Climb down to Hangmode
+	if (Val < 0)
+	{
+		RYUMovement = ERYUMovementMode::CLIMBDOWNLEDGE;
+		//@ToDo: Play MontageSection ClimbDown in Reverse
+		UE_LOG(LogTemp, Log, TEXT("StartPlaying: %s"), *ClimbAssetComp->ClimbDownMontage->GetName());
+		CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBDOWNLEDGE));
+		//CustMovementComp->SetMovementMode(MOVE_Flying);
+		PlayAnimMontage(ClimbAssetComp->ClimbDownMontage, 1.0f);
+		
+	}
+	if (Val > 0)
+	{
+		RYUMovement = ERYUMovementMode::HANGONLEDGE;
+		CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::HANGONLEDGE));
+		//CustMovementComp->SetMovementMode(MOVE_Flying);
+		PlayAnimMontage(ClimbAssetComp->ClimbDownMontage, 1.0f,ClimbAssetComp->ClimbDownHang);
+	}
 }
 
 void ARYUCharacterIchi::CheckClimbingLedge()
@@ -519,18 +606,6 @@ void ARYUCharacterIchi::CanGrabLedgeAndClimb(float Val)
 			CustMovementComp->OnCanClimbLedge.Broadcast(LedgePosi);
 		}
 	}
-
-	//Stand near ledge & Climb down or fall and die
-	if (Val < 0)
-	{
-		RYUMovement = ERYUMovementMode::CLIMBDOWNLEDGE;
-		//@ToDo: Play MontageSection ClimbDown in Reverse
-		UE_LOG(LogTemp, Log, TEXT("StartPlaying: %s"), *ClimbAssetComp->ClimbDownMontage->GetName());
-		PlayAnimMontage(ClimbAssetComp->ClimbDownMontage, 1.0f, ClimbAssetComp->ClimbDownStart);
-		CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBDOWNLEDGE));
-		
-	}
-	
 }
 
 
@@ -543,21 +618,30 @@ void ARYUCharacterIchi::HangOnLedgeAndClimb(float Val)
 		RYUMovement = ERYUMovementMode::CLIMBUPLEDGE;
 		CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBUPLEDGE));
 		UpOrDown = -1.0f;
+
+		if (ClimbAssetComp->ClimbDownMontage)
+		{
+			//PlayAnimMontage(ClimbAssetComp->ClimbDownMontage, UpOrDown, ClimbAssetComp->ClimbDownStart);
+			PlayAnimMontage(ClimbAssetComp->ClimbUpMontage, UpOrDown, "Default");
+
+		}
 	}
 
-	//Hang on ledge && climb Down
+	//Hang on ledge && climb Down / Fall
 	if (Val < 0)
 	{
-		RYUMovement = ERYUMovementMode::CLIMBDOWNLEDGE;
-		CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBDOWNLEDGE));
+		RYUMovement = ERYUMovementMode::FALLDOWNLEDGE;
+		CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::FALLDOWNLEDGE));
 		UpOrDown = 1.0f;
+
+		if (ClimbAssetComp->ClimbDownMontage)
+		{
+			PlayAnimMontage(ClimbAssetComp->ClimbFallMontage, UpOrDown);
+
+		}
 	}
 
-	if (ClimbAssetComp->ClimbDownMontage)
-	{
-		PlayAnimMontage(ClimbAssetComp->ClimbDownMontage, UpOrDown, ClimbAssetComp->ClimbDownStart);
-		
-	}
+	
 
 }
 

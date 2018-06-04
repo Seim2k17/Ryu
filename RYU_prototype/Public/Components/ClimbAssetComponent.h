@@ -24,20 +24,28 @@ protected:
 
 public:	
 
+	UPROPERTY(EditAnywhere, Category = "Montages")
+	UAnimMontage* ClimbUpMontage;
+
 	UPROPERTY(EditAnywhere,Category = "Montages")
 	UAnimMontage* ClimbDownMontage;
 
-	UPROPERTY(VisibleAnywhere, Category = "SectionNames")
-		FName ClimbDownStart;
+	UPROPERTY(EditAnywhere, Category = "Montages")
+	UAnimMontage* ClimbFallMontage;
 
 	UPROPERTY(VisibleAnywhere, Category = "SectionNames")
-		FName ClimbDownHang;
+	FName ClimbDownStart;
 
 	UPROPERTY(VisibleAnywhere, Category = "SectionNames")
-		FName ClimbDownEnd;
+	FName ClimbDownHang;
+
+	UPROPERTY(VisibleAnywhere, Category = "SectionNames")
+	FName ClimbDownEnd;
 
 	UPROPERTY(BlueprintCallable, Category = "Climbing")
 	FOnStartPlayingMontageSignature OnStartPlayingClimbDownMontage;
+
+
 
 
 protected:

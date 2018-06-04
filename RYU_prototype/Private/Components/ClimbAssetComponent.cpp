@@ -6,8 +6,8 @@
 // Sets default values for this component's properties
 UClimbAssetComponent::UClimbAssetComponent()
 {
-	ClimbDownHang = "Climb_Hang";
-	ClimbDownStart = "ClimbDown";
+	ClimbDownHang = "ClimbingDownHang";
+	ClimbDownStart = "ClimbingDown";
 	ClimbDownEnd = "ClimbDownEnd";
 }
 

@@ -92,6 +92,22 @@ void ARYUCharacterBase::BeginPlay()
 
 void ARYUCharacterBase::MoveRight(float Val)
 {
+
+	if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > 0)
+	{
+		if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > TreshholdYWalkRun)
+		{
+			RYUMovement = ERYUMovementMode::RUN;
+		}
+		else
+		{
+			RYUMovement = ERYUMovementMode::WALK;
+		}
+	}
+	else
+	{
+		RYUMovement = ERYUMovementMode::STAND;
+	}
 	// add movement in that direction
 	AddMovementInput(FVector(0.f, -1.f, 0.f), Val);
 }
@@ -112,15 +128,14 @@ void ARYUCharacterBase::TouchStopped(const ETouchIndex::Type FingerIndex, const 
 void ARYUCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//set Movement Enum in private Function
-	SetMovementEnum();
 }
 
 
 void ARYUCharacterBase::Jump()
 {
 	Super::Jump();
+
+	RYUMovement = ERYUMovementMode::JUMP;
 }
 
 void ARYUCharacterBase::StopJumping()
@@ -146,9 +161,9 @@ void ARYUCharacterBase::CheckLedgeTracer()
 		}
 		
 		case ERYUMovementMode::HANGONLEDGE:
-			break;
+			return;
 		case ERYUMovementMode::CLIMBDOWNLEDGE:
-			break;
+			return;
 		default:
 			break;
 	}
@@ -221,7 +236,7 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 				bLedgeHeightInRange = true;
 
 				//done in Tick (ichi) --> move to CharBase ?
-				//RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+				RYUMovement = ERYUMovementMode::CANGRABLEDGE;
 			}
 		}
 		else {
@@ -234,7 +249,7 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 				bLedgeHeightInRange = false;
 				
 				//done in Tick (ichi) --> move to CharBase ?
-				//RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+				RYUMovement = ERYUMovementMode::CANTRACELEDGE;
 			}
 		}
 	}
@@ -288,6 +303,14 @@ void ARYUCharacterBase::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* Ov
 		SphereOverlappedActor = OtherActor;
 		bSphereTracerOverlap = true;
 		UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In with: %s"),*SphereOverlappedActor->GetName());
+		if ((RYUMovement != ERYUMovementMode::CANCLIMBDOWNLEDGE) &&
+			(RYUMovement != ERYUMovementMode::CLIMBDOWNLEDGE) &&
+			(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE) &&
+			(RYUMovement != ERYUMovementMode::HANGONLEDGE))
+		{
+			RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+		}
+
 	}
 
 }
@@ -299,61 +322,12 @@ void ARYUCharacterBase::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* Over
 	bLedgeHeightInRange = false;
 	//SphereOverlappedActor = nullptr;
 	UE_LOG(LogTemp, Log, TEXT("SpherTracer Overlap Out"));
-}
+	if ((RYUMovement != ERYUMovementMode::CANCLIMBDOWNLEDGE) &&
+		(RYUMovement != ERYUMovementMode::CLIMBDOWNLEDGE) &&
+		(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE) &&
+		(RYUMovement != ERYUMovementMode::HANGONLEDGE))
 
-
-void ARYUCharacterBase::SetMovementEnum()
-{
-	//@ToDo: look for a nice and neat structure ti set the MovementEnum !
-	if (!(RYUMovement == ERYUMovementMode::CLIMBDOWNLEDGE) && 
-		!(RYUMovement == ERYUMovementMode::CLIMBUPLEDGE) && 
-		!(RYUMovement == ERYUMovementMode::HANGONLEDGE) &&
-		!(RYUMovement == ERYUMovementMode::CANGRABLEDGE))
 	{
-		if (!bSphereTracerOverlap)
-		{
-			if (bJumpJustStarted)
-			{
-				RYUMovement = ERYUMovementMode::JUMP;
-			}
-			else
-			{
-				if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > 0)
-				{
-					if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > TreshholdYWalkRun)
-					{
-						RYUMovement = ERYUMovementMode::RUN;
-					}
-					else
-					{
-						RYUMovement = ERYUMovementMode::WALK;
-					}
-				}
-				else
-				{
-					RYUMovement = ERYUMovementMode::STAND;
-				}
-			}
-		}
-		else
-		{
-			if ((RYUMovement != ERYUMovementMode::CLIMBDOWNLEDGE) &&
-				(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE) &&
-				(RYUMovement != ERYUMovementMode::HANGONLEDGE))
-			{
-				if (bLedgeHeightInRange)
-				{
-					RYUMovement = ERYUMovementMode::CANGRABLEDGE;
-				}
-				else
-				{
-					RYUMovement = ERYUMovementMode::CANTRACELEDGE;
-				}
-			}
-
-		}
+		RYUMovement = ERYUMovementMode::WALK;
 	}
-	
 }
-
-

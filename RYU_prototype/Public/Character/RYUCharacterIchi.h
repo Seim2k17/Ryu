@@ -76,6 +76,8 @@ protected:
 	//UFUNCTION(BlueprintImplementableEvent, Category = "Climb")
 	void Climb(float Val);
 
+	void CanClimbUpOrDown(float Val);
+
 	void CheckClimbingLedge() override;
 
 	void CanGrabLedgeAndClimb(float Val);

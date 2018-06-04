@@ -14,7 +14,9 @@ enum class ERYUMovementMode : uint8
 	CANTRACELEDGE UMETA(DisplayName = "Trace Ledges"),
 	CANGRABLEDGE UMETA(DisplayName = "Grab Ledges"),
 	HANGONLEDGE UMETA(DisplayName = "Hanging On Ledges"),
+	CANCLIMBDOWNLEDGE UMETA(DisplayName = "Can Climb Down Ledges"),
+	CANCLIMBUPLEDGE UMETA(DisplayName = "Can Climb Up Ledges"),
 	CLIMBDOWNLEDGE UMETA(DisplayName = "Climbing Down Ledges"),
 	CLIMBUPLEDGE UMETA(DisplayName = "Climbing Up Ledges"),
-	//CANCLIMBLEDGE UMETA(DisplayName = "Can Climb Ledges"),
+	FALLDOWNLEDGE UMETA(DisplayName = "Fall Down from Ledges"),
 };
