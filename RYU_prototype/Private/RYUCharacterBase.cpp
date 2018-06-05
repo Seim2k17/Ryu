@@ -92,6 +92,22 @@ void ARYUCharacterBase::BeginPlay()
 
 void ARYUCharacterBase::MoveRight(float Val)
 {
+
+	if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > 0)
+	{
+		if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > TreshholdYWalkRun)
+		{
+			RYUMovement = ERYUMovementMode::RUN;
+		}
+		else
+		{
+			RYUMovement = ERYUMovementMode::WALK;
+		}
+	}
+	else
+	{
+		RYUMovement = ERYUMovementMode::STAND;
+	}
 	// add movement in that direction
 	AddMovementInput(FVector(0.f, -1.f, 0.f), Val);
 }
@@ -112,15 +128,14 @@ void ARYUCharacterBase::TouchStopped(const ETouchIndex::Type FingerIndex, const 
 void ARYUCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//set Movement Enum in private Function
-	SetMovementEnum();
 }
 
 
 void ARYUCharacterBase::Jump()
 {
 	Super::Jump();
+
+	RYUMovement = ERYUMovementMode::JUMP;
 }
 
 void ARYUCharacterBase::StopJumping()
@@ -130,9 +145,9 @@ void ARYUCharacterBase::StopJumping()
 
 void ARYUCharacterBase::CheckLedgeTracer()
 {
+	//UE_LOG(LogTemp, Log, TEXT("CheckLedgeTracer"));
 	switch (RYUMovement)
 	{
-	
 		case ERYUMovementMode::CANTRACELEDGE:
 		{
 			TraceHeightAndWallOfLedge();
@@ -146,9 +161,9 @@ void ARYUCharacterBase::CheckLedgeTracer()
 		}
 		
 		case ERYUMovementMode::HANGONLEDGE:
-			break;
-		case ERYUMovementMode::CLIMBLEDGE:
-			break;
+			return;
+		case ERYUMovementMode::CLIMBDOWNLEDGE:
+			return;
 		default:
 			break;
 	}
@@ -211,7 +226,7 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 
 		if (FMath::IsWithinInclusive((HipSocketZ - LedgeTracerHeightZ), -200.0f, 0.0f))
 		{
-			if (!bLedgeTraceInRangeChanged)
+			//if (!bLedgeTraceInRangeChanged)
 			{
 				UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
 				bLedgeTraceNotInRangeChanged = false;
@@ -221,11 +236,11 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 				bLedgeHeightInRange = true;
 
 				//done in Tick (ichi) --> move to CharBase ?
-				//RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+				RYUMovement = ERYUMovementMode::CANGRABLEDGE;
 			}
 		}
 		else {
-			if (!bLedgeTraceNotInRangeChanged)
+			//if (!bLedgeTraceNotInRangeChanged)
 			{
 				UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
 				bLedgeTraceNotInRangeChanged = true;
@@ -234,7 +249,7 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 				bLedgeHeightInRange = false;
 				
 				//done in Tick (ichi) --> move to CharBase ?
-				//RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+				RYUMovement = ERYUMovementMode::CANTRACELEDGE;
 			}
 		}
 	}
@@ -285,8 +300,17 @@ void ARYUCharacterBase::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* Ov
 {
 	if (OtherActor != nullptr)
 	{
+		SphereOverlappedActor = OtherActor;
 		bSphereTracerOverlap = true;
-		UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In"));
+		UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In with: %s"),*SphereOverlappedActor->GetName());
+		if ((RYUMovement != ERYUMovementMode::CANCLIMBDOWNLEDGE) &&
+			(RYUMovement != ERYUMovementMode::CLIMBDOWNLEDGE) &&
+			(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE) &&
+			(RYUMovement != ERYUMovementMode::HANGONLEDGE))
+		{
+			RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+		}
+
 	}
 
 }
@@ -296,53 +320,14 @@ void ARYUCharacterBase::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* Over
 {
 	bSphereTracerOverlap = false;
 	bLedgeHeightInRange = false;
+	//SphereOverlappedActor = nullptr;
 	UE_LOG(LogTemp, Log, TEXT("SpherTracer Overlap Out"));
-}
+	if ((RYUMovement != ERYUMovementMode::CANCLIMBDOWNLEDGE) &&
+		(RYUMovement != ERYUMovementMode::CLIMBDOWNLEDGE) &&
+		(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE) &&
+		(RYUMovement != ERYUMovementMode::HANGONLEDGE))
 
-
-void ARYUCharacterBase::SetMovementEnum()
-{
-	if (!bSphereTracerOverlap)
 	{
-		if (bJumpJustStarted)
-		{
-			RYUMovement = ERYUMovementMode::JUMP;
-		}
-		else
-		{
-			if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > 0)
-			{
-				if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > TreshholdYWalkRun)
-				{
-					RYUMovement = ERYUMovementMode::RUN;
-				}
-				else
-				{
-					RYUMovement = ERYUMovementMode::WALK;
-				}
-			}
-			else
-			{
-				RYUMovement = ERYUMovementMode::STAND;
-			}
-		}
-	}
-	else
-	{
-		if ((RYUMovement != ERYUMovementMode::CLIMBLEDGE) &&
-			(RYUMovement != ERYUMovementMode::HANGONLEDGE))
-		{
-			if (bLedgeHeightInRange)
-			{
-				RYUMovement = ERYUMovementMode::CANGRABLEDGE;
-			}
-			else
-			{
-				RYUMovement = ERYUMovementMode::CANTRACELEDGE;
-			}
-		}
-
+		RYUMovement = ERYUMovementMode::WALK;
 	}
 }
-
-

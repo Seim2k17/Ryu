@@ -64,18 +64,38 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 {
 	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
 
+	ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
+
 	switch (CustomMovementMode)
 	{
-		case ERYUMovementMode::CLIMBLEDGE:
+		case ERYUMovementMode::CLIMBUPLEDGE:
 		{
-			ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
 			//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
 			//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
 			MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			MyChar->SphereTracer->SetEnableGravity(false);
 			MyChar->GetMesh()->SetEnableGravity(false);
 			MyChar->GetCapsuleComponent()->SetEnableGravity(false);
-			UE_LOG(LogTemp, Log, TEXT("Mode changed to CLIMBLEDGE"));
+			MyChar->RYUMovement = ERYUMovementMode::CLIMBUPLEDGE;
+			UE_LOG(LogTemp, Log, TEXT("Mode changed to CLIMB-UP LEDGE"));
+			break;
+		}
+		case ERYUMovementMode::CLIMBDOWNLEDGE:
+		{
+			//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
+			//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
+			MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			//MyChar->SphereTracer->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			//MyChar->SphereTracer->SetEnableGravity(false);
+			MyChar->GetMesh()->SetEnableGravity(false);
+			MyChar->GetCapsuleComponent()->SetEnableGravity(false);
+			UE_LOG(LogTemp, Log, TEXT("Mode changed to CLIMB-DOWN LEDGE"));
+			break;
+		}
+		case ERYUMovementMode::HANGONLEDGE:
+		{
+			UE_LOG(LogTemp, Log, TEXT("Waiting!"));
+			MyChar->RYUMovement = ERYUMovementMode::HANGONLEDGE;
 			break;
 		}
 		
@@ -114,6 +134,12 @@ void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iteration
 {
 	Super::PhysCustom(deltaTime,Iterations);
 
+//RootBonePosition
+// 	ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
+// 	FVector RootBone = MyChar->GetMesh()->GetBoneLocation("root");
+// 	UE_LOG(LogTemp, Log, TEXT("RootBone: %s"), *RootBone.ToString());
+
+
 	if (deltaTime < MIN_TICK_TIME)
 	{
 		return;
@@ -121,8 +147,18 @@ void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iteration
 
 	switch (CustomMovementMode)
 	{
-	case ERYUMovementMode::CLIMBLEDGE:
+	case ERYUMovementMode::CLIMBUPLEDGE:
+		UE_LOG(LogTemp, Log, TEXT("I´m climbing up the ledge!"));
 		PhysClimbingLedge(deltaTime, Iterations);
+		break;
+	case ERYUMovementMode::CLIMBDOWNLEDGE:
+		UE_LOG(LogTemp, Log, TEXT("I´m climbing down the ledge!"));
+		PhysClimbingLedge(deltaTime, Iterations);
+		break;
+	case ERYUMovementMode::HANGONLEDGE:
+		//Just Hang around
+		//PhysClimbingLedge(deltaTime, Iterations);
+		UE_LOG(LogTemp, Log, TEXT("Hanging!"));
 		break;
 	case ERYUMovementMode::CLIMBLADDER:
 		PhysClimbingLadder(deltaTime, Iterations);
@@ -136,8 +172,7 @@ void URYUCustomizeMovementComponent::PhysClimbingLedge(float deltaTime, int32 It
 {
 
 	//TODo: updates the movement take modified walking state ! ATM FlyingState active
-	//UE_LOG(LogTemp, Log, TEXT("I´m climbing the ledge!"));
-
+	
 	/** Following is copypasted from CharacterMovementComponent::PhysFlying and ajdusted to Phyclimbing*/
 
 	RestorePreAdditiveRootMotionVelocity();
@@ -219,6 +254,7 @@ void URYUCustomizeMovementComponent::ResetClimbingState()
 	//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
 	//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
 	MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	MyChar->SphereTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	MyChar->SphereTracer->SetEnableGravity(true);
 	MyChar->GetMesh()->SetEnableGravity(true);
 	MyChar->GetCapsuleComponent()->SetEnableGravity(true);
