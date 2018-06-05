@@ -33,6 +33,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Montages")
 	UAnimMontage* ClimbFallMontage;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Montages")
+	FVector HangPositionOffset;
+
 	UPROPERTY(VisibleAnywhere, Category = "SectionNames")
 	FName ClimbDownStart;
 

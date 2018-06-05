@@ -84,6 +84,7 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 		{
 			//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
 			//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
+			ClimbDownStartPosition = MyChar->GetActorLocation();
 			MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			//MyChar->SphereTracer->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			//MyChar->SphereTracer->SetEnableGravity(false);
@@ -138,7 +139,9 @@ void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iteration
 // 	ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
 // 	FVector RootBone = MyChar->GetMesh()->GetBoneLocation("root");
 // 	UE_LOG(LogTemp, Log, TEXT("RootBone: %s"), *RootBone.ToString());
-
+//MeshPosition
+//  	FVector MeshPosi = MyChar->GetMesh()->GetPosition();
+//  	UE_LOG(LogTemp, Log, TEXT("RootBone: %s"), *MeshPosi.ToString());
 
 	if (deltaTime < MIN_TICK_TIME)
 	{
@@ -159,6 +162,10 @@ void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iteration
 		//Just Hang around
 		//PhysClimbingLedge(deltaTime, Iterations);
 		UE_LOG(LogTemp, Log, TEXT("Hanging!"));
+		break;
+	case ERYUMovementMode::FALLDOWNLEDGE:
+		UE_LOG(LogTemp, Log, TEXT("I´m falling down the ledge!"));
+		PhysFallingLedge(deltaTime, Iterations);
 		break;
 	case ERYUMovementMode::CLIMBLADDER:
 		PhysClimbingLadder(deltaTime, Iterations);
@@ -222,6 +229,26 @@ void URYUCustomizeMovementComponent::PhysClimbingLedge(float deltaTime, int32 It
 }
 
 
+void URYUCustomizeMovementComponent::PhysFallingLedge(float deltaTime, int32 Iterations)
+{
+	//workaround for NoRootMotion 
+// 	ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
+// 	FVector MeshPosition = MyChar->GetMesh()->GetComponentLocation();
+// 	MyChar->SetActorLocation(MeshPosition);
+	
+	
+	//RootMotionactive
+// 	if (MyChar->IsPlayingRootMotion())
+// 	{
+// 		//UE_LOG(LogTemp, Log, TEXT("ROOTMOTIONANI IS PLAYING."));
+// 	}
+// 	else
+// 	{
+// 		//UE_LOG(LogTemp, Log, TEXT("THE ANI HAS NO ROOTMOTION."));
+// 	}
+	
+}
+
 void URYUCustomizeMovementComponent::PhysClimbingLadder(float deltaTime, int32 Iterations)
 {
 	UE_LOG(LogTemp, Log, TEXT("I´m climbing the ladder!"));
@@ -259,6 +286,7 @@ void URYUCustomizeMovementComponent::ResetClimbingState()
 	MyChar->GetMesh()->SetEnableGravity(true);
 	MyChar->GetCapsuleComponent()->SetEnableGravity(true);
 	SetMovementMode(MOVE_Walking);
+	MyChar->RYUMovement = ERYUMovementMode::STAND;
 }
 
 void URYUCustomizeMovementComponent::SetNormalMaxJumpCount(int32 MaxJumps)

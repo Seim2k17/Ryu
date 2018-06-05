@@ -49,8 +49,9 @@ public:
 	/**Member*/
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerChange")
-		ERYUPlayerActive PlayerActive;
+	ERYUPlayerActive PlayerActive;
 
+	
 	
 protected:
 
@@ -90,7 +91,7 @@ protected:
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 		FChangeActivePlayer OnPlayerActive;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 		UClimbAssetComponent* ClimbAssetComp;
 
 private:

@@ -42,6 +42,8 @@ protected:
 
 	virtual void PhysClimbingLedge(float deltaTime, int32 Iterations);
 
+	virtual void PhysFallingLedge(float deltaTime, int32 Iterations);
+
 	virtual void PhysClimbingLadder(float deltaTime, int32 Iterations);
 	
 
@@ -88,7 +90,11 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Climbing")
 		FOnCanClimbLedgeStartedSignature OnCanClimbLedge;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Climbing")
+		FVector ClimbDownStartPosition;
+
 private:
 
 	int32 NormalMaxJumpCount;
+
 };

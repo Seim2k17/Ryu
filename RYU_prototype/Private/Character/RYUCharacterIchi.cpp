@@ -180,6 +180,12 @@ void ARYUCharacterIchi::DrawDebugInfosOnScreen()
 			case ERYUMovementMode::CANCLIMBDOWNLEDGE:
 				MoveMode = "CanClimbDownLedge";
 				break;
+			case ERYUMovementMode::CANCLIMBUPLEDGE:
+				MoveMode = "CanClimbUpLedge";
+				break;
+			case ERYUMovementMode::FALLDOWNLEDGE:
+				MoveMode = "FallingDownLedge";
+				break;
 			default:
 				MoveMode = "STANDING";
 		}
@@ -372,8 +378,13 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 			//if fall on the ground earlier than MaxJumpButtonHoldTime
 			CoyoteJumpPossible = false;
 			StopJumping();
+
+			//only when we´re really in jump mode and not "accidently" falling into LedgeTrace/Grab mode
+			if (RYUMovement == ERYUMovementMode::JUMP)
+			{
+				RYUMovement = ERYUMovementMode::STAND;
+			}
 			
-			RYUMovement = ERYUMovementMode::STAND;
 					
 			//GetCharacterMovement()->GravityScale = DefaultGravityScale;
 		}
@@ -456,6 +467,7 @@ void ARYUCharacterIchi::MoveRight(float Val)
 		(RYUMovement != ERYUMovementMode::CANGRABLEDGE) &&
 		(RYUMovement != ERYUMovementMode::CANCLIMBDOWNLEDGE) &&
 		(RYUMovement != ERYUMovementMode::CANCLIMBUPLEDGE) &&
+		(RYUMovement != ERYUMovementMode::FALLDOWNLEDGE) &&
 		(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE))
 	{
 		if (FMath::Abs(Val) > 0)
@@ -531,7 +543,10 @@ void ARYUCharacterIchi::CanClimbUpOrDown(float Val)
 	{
 		RYUMovement = ERYUMovementMode::CLIMBDOWNLEDGE;
 		//@ToDo: Play MontageSection ClimbDown in Reverse
-		UE_LOG(LogTemp, Log, TEXT("StartPlaying: %s"), *ClimbAssetComp->ClimbDownMontage->GetName());
+		if (ClimbAssetComp->ClimbDownMontage)
+		{
+			UE_LOG(LogTemp, Log, TEXT("StartPlaying: %s"), *ClimbAssetComp->ClimbDownMontage->GetName());
+		}		
 		CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBDOWNLEDGE));
 		//CustMovementComp->SetMovementMode(MOVE_Flying);
 		PlayAnimMontage(ClimbAssetComp->ClimbDownMontage, 1.0f);
