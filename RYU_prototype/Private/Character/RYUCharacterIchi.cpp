@@ -124,7 +124,7 @@ void ARYUCharacterIchi::Tick(float DeltaTime)
 	currentFPS = 1 / DeltaTime;
 
 	/** Check if a ledge is nearby to climb, or hang, or snap jumping to it*/
-	Super::CheckLedgeTracer();
+	CheckLedgeTracer();
 
  	if (bDebugOutputActive)
 	{
@@ -221,11 +221,13 @@ void ARYUCharacterIchi::Jump()
 			//break;
 			return;
 		}
-		case ERYUMovementMode::CLIMBDOWNLEDGE:
-		{
-			//break;
-			return;
-		}
+		
+	}
+
+	if (bJumpJustStarted == false)
+	{
+		bJumpJustStarted = true;
+		TimeDeltaStart = GetWorld()->GetTimeSeconds();
 	}
 
 
@@ -258,6 +260,7 @@ void ARYUCharacterIchi::Jump()
 	}
 
 	if ((RYUMovement != ERYUMovementMode::CANGRABLEDGE) &&
+		(RYUMovement != ERYUMovementMode::CANTRACELEDGE) &&
 		(RYUMovement != ERYUMovementMode::HANGONLEDGE))
 	{
 		RYUMovement = ERYUMovementMode::JUMP;
@@ -321,12 +324,6 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 		}
 		
 	
-		if (bJumpJustStarted == false)
-		{
-			TimeDeltaStart = GetWorld()->GetTimeSeconds();
-			bJumpJustStarted = true;
-		}
-
 		//falling Down; grappy est. difference more than 30
 		if ((GetVelocity().Z - GetCharacterMovement()->JumpZVelocity) < -40)
 		{
@@ -362,6 +359,7 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 		{
 			bJumpJustStarted = false;
 
+			UE_LOG(LogTemp, Log, TEXT("bJumpJustStarted == false"));
 			float directionV = (GetCapsuleComponent()->GetForwardVector().Y > 0) ? 1.0f : -1.0f;
 			//Wenn Char schnell gelaufen ist oder aus grosser Höhe gefallen, @ToDo BigHeigth
 			if ((FMath::Abs(StartJumpVelocity.Y) > CustMovementComp->AfterJumpTreshold.Y) || FallCheck)
@@ -376,7 +374,7 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 			StopJumping();
 			
 			RYUMovement = ERYUMovementMode::STAND;
-			
+					
 			//GetCharacterMovement()->GravityScale = DefaultGravityScale;
 		}
 		return;

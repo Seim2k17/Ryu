@@ -145,9 +145,9 @@ void ARYUCharacterBase::StopJumping()
 
 void ARYUCharacterBase::CheckLedgeTracer()
 {
+	//UE_LOG(LogTemp, Log, TEXT("CheckLedgeTracer"));
 	switch (RYUMovement)
 	{
-	
 		case ERYUMovementMode::CANTRACELEDGE:
 		{
 			TraceHeightAndWallOfLedge();
@@ -226,7 +226,7 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 
 		if (FMath::IsWithinInclusive((HipSocketZ - LedgeTracerHeightZ), -200.0f, 0.0f))
 		{
-			if (!bLedgeTraceInRangeChanged)
+			//if (!bLedgeTraceInRangeChanged)
 			{
 				UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
 				bLedgeTraceNotInRangeChanged = false;
@@ -240,7 +240,7 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 			}
 		}
 		else {
-			if (!bLedgeTraceNotInRangeChanged)
+			//if (!bLedgeTraceNotInRangeChanged)
 			{
 				UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
 				bLedgeTraceNotInRangeChanged = true;
