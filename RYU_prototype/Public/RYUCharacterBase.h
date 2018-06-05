@@ -113,10 +113,10 @@ protected:
 	FVector LedgeTracerHeight;
 	FVector LedgeTracerWall;
 
+	AActor* SphereOverlappedActor;
+
 private:
 
-
-	void SetMovementEnum();
 
 	FVector LedgeTracerWallNormal;
 	FVector HipSocketLocation;

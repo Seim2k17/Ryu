@@ -11,6 +11,7 @@
  */
 
 class URYUCustomizeMovementComponent;
+class UClimbAssetComponent;
 
 UCLASS()
 class RYU_PROTOTYPE_API ARYUCharacterIchi : public ARYUCharacterBase
@@ -68,11 +69,6 @@ protected:
 	UFUNCTION()
 		void DeactivateCoyotoeJumpPossible();
 
-	/** MEMBERS */
-
-	UPROPERTY(BlueprintAssignable, Category = "Events")
-		FChangeActivePlayer OnPlayerActive;
-
 	/** Called for side to side input */
 	void MoveRight(float Val);
 
@@ -80,9 +76,22 @@ protected:
 	//UFUNCTION(BlueprintImplementableEvent, Category = "Climb")
 	void Climb(float Val);
 
+	void CanClimbUpOrDown(float Val);
+
 	void CheckClimbingLedge() override;
 
-	void CanGrabLedgeAndClimb();
+	void CanGrabLedgeAndClimb(float Val);
+
+	void HangOnLedgeAndClimb(float Val);
+
+	
+	/** MEMBERS */
+
+	UPROPERTY(BlueprintAssignable, Category = "Events")
+		FChangeActivePlayer OnPlayerActive;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+		UClimbAssetComponent* ClimbAssetComp;
 
 private:
 
