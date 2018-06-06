@@ -41,6 +41,11 @@ public:
 
 	void DebugSomething();
 
+	UFUNCTION(BlueprintCallable)
+		void SetHangUpPosition(FVector ClimUpPosition);
+
+	UFUNCTION(BlueprintCallable)
+		void ReSetHangUpPosition();
 
 #if WITH_EDITOR
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
@@ -51,7 +56,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerChange")
 	ERYUPlayerActive PlayerActive;
 
-	
+	UFUNCTION()
+		void ToggleAllowClimbUp();
 	
 protected:
 
@@ -77,7 +83,9 @@ protected:
 	//UFUNCTION(BlueprintImplementableEvent, Category = "Climb")
 	void Climb(float Val);
 
-	void CanClimbUpOrDown(float Val);
+	void CanClimbDown(float Val);
+
+	void CanClimbUp(float Val);
 
 	void CheckClimbingLedge() override;
 
@@ -93,6 +101,14 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 		UClimbAssetComponent* ClimbAssetComp;
+
+	bool bAllowClimbUp;
+
+	UPROPERTY()
+		FTimerHandle AllowClimbUp_TimerHandle;
+
+	UPROPERTY(EditAnywhere, Category = "Climbing")
+		float AllowClimbUpTime;
 
 private:
 
@@ -127,4 +143,10 @@ private:
 
 	//Position when Jumping
 	FVector StartJumpPosition;
+
+	FVector HangLedgePosition;
+
+	bool bHangPositionSet;
+
+
 };

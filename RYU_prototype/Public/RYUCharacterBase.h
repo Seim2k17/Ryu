@@ -79,6 +79,12 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* TracerSphere;
 
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+		USphereComponent* ClimbDownTracer;
+
+	UPROPERTY(EditAnywhere, Category = "Climbing")
+		float ClimbDownTraceLength;
+
 protected:
 
 	/** METHODS */
@@ -100,6 +106,8 @@ protected:
 	void TraceHeightAndWallOfLedge();
 
 	virtual void CheckClimbingLedge();
+
+	void CheckClimbDownTracer();
 
 	
 	//DoOnce Repl.
@@ -123,4 +131,5 @@ private:
 	bool bLedgeTraceInRangeChanged;
 	bool bLedgeTraceNotInRangeChanged;
 
+	FName TraceTag ="ClimbingDownTraceTag";
 };

@@ -45,6 +45,8 @@ protected:
 	virtual void PhysFallingLedge(float deltaTime, int32 Iterations);
 
 	virtual void PhysClimbingLadder(float deltaTime, int32 Iterations);
+
+	bool bClimbUpAllowed;
 	
 
 public:
@@ -92,6 +94,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Climbing")
 		FVector ClimbDownStartPosition;
+
+
 
 private:
 
