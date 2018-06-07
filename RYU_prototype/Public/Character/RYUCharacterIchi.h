@@ -10,6 +10,8 @@
  * 
  */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCanClimbUpSignature, float, Value);
+
 class URYUCustomizeMovementComponent;
 class UClimbAssetComponent;
 
@@ -41,6 +43,10 @@ public:
 
 	void DebugSomething();
 
+	/**/
+	//UFUNCTION(BlueprintImplementableEvent, Category = "Climb")
+	void Climb(float Val);
+
 	UFUNCTION(BlueprintCallable)
 		void SetHangUpPosition(FVector ClimUpPosition);
 
@@ -58,6 +64,9 @@ public:
 
 	UFUNCTION()
 		void ToggleAllowClimbUp();
+
+	UPROPERTY(BlueprintAssignable, Category = "Climbing")
+		FOnCanClimbUpSignature OnCanClimbUp;
 	
 protected:
 
@@ -79,13 +88,10 @@ protected:
 	/** Called for side to side input */
 	void MoveRight(float Val);
 
-	/**/
-	//UFUNCTION(BlueprintImplementableEvent, Category = "Climb")
-	void Climb(float Val);
-
 	void CanClimbDown(float Val);
 
-	void CanClimbUp(float Val);
+	UFUNCTION(BlueprintCallable, Category = "Climbing")
+	void CanClimbUp(float Val, FVector SetHangLedgePosition, FVector StartClimbUpPosition);
 
 	void CheckClimbingLedge() override;
 
@@ -146,7 +152,12 @@ private:
 
 	FVector HangLedgePosition;
 
+	FVector _StartClimbUpPosition;
+
 	bool bHangPositionSet;
 
+	FName TraceTagFalling = "FallingDownTraceTag";
+
+	
 
 };

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RYUCustomizeMovementComponent.h"
 #include "GameFramework/Character.h"
@@ -154,11 +154,11 @@ void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iteration
 	switch (CustomMovementMode)
 	{
 	case ERYUMovementMode::CLIMBUPLEDGE:
-		UE_LOG(LogTemp, Log, TEXT("I´m climbing up the ledge!"));
+		UE_LOG(LogTemp, Log, TEXT("IÂ´m climbing up the ledge!"));
 		PhysClimbingLedge(deltaTime, Iterations);
 		break;
 	case ERYUMovementMode::CLIMBDOWNLEDGE:
-		UE_LOG(LogTemp, Log, TEXT("I´m climbing down the ledge!"));
+		UE_LOG(LogTemp, Log, TEXT("IÂ´m climbing down the ledge!"));
 		PhysClimbingLedge(deltaTime, Iterations);
 		break;
 	case ERYUMovementMode::HANGONLEDGE:
@@ -167,7 +167,7 @@ void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iteration
 		UE_LOG(LogTemp, Log, TEXT("Hanging!"));
 		break;
 	case ERYUMovementMode::FALLDOWNLEDGE:
-		UE_LOG(LogTemp, Log, TEXT("I´m falling down the ledge!"));
+		UE_LOG(LogTemp, Log, TEXT("IÂ´m falling down the ledge!"));
 		PhysClimbingLedge(deltaTime, Iterations);
 		//PhysFallingLedge(deltaTime, Iterations);
 		break;
@@ -256,7 +256,7 @@ void URYUCustomizeMovementComponent::PhysFallingLedge(float deltaTime, int32 Ite
 
 void URYUCustomizeMovementComponent::PhysClimbingLadder(float deltaTime, int32 Iterations)
 {
-	UE_LOG(LogTemp, Log, TEXT("I´m climbing the ladder!"));
+	UE_LOG(LogTemp, Log, TEXT("IÂ´m climbing the ladder!"));
 }
 
 bool URYUCustomizeMovementComponent::DoJump(bool bReplayingMoves)
@@ -276,6 +276,11 @@ bool URYUCustomizeMovementComponent::DoJump(bool bReplayingMoves)
 		}
 	}
 
+	ARYUCharacterIchi* MyChar = Cast<ARYUCharacterIchi>(CharacterOwner);
+	if (MyChar && (MyChar->RYUMovement == ERYUMovementMode::CANCLIMBUPLEDGE))
+	{
+		MyChar->Climb(1.0f);
+	}
 	return false;
 }
 
@@ -318,6 +323,17 @@ void URYUCustomizeMovementComponent::SetNormalMaxJumpCount(int32 MaxJumps)
 int32 URYUCustomizeMovementComponent::GetNormalMaxJumpCount()
 {
 	return NormalMaxJumpCount;
+}
+
+
+void URYUCustomizeMovementComponent::ClimbDownLedgeFinished()
+{
+	ARYUCharacterIchi* MyChar = Cast<ARYUCharacterIchi>(CharacterOwner);
+	MyChar->RYUMovement = ERYUMovementMode::HANGONLEDGE;
+	MyChar->CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::HANGONLEDGE));
+	MyChar->ToggleAllowClimbUp();
+	
+
 }
 
 void URYUCustomizeMovementComponent::SetGravityScaleMaximum(float GravScale)

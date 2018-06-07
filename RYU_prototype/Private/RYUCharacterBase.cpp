@@ -168,6 +168,11 @@ void ARYUCharacterBase::CheckLedgeTracer()
 	//UE_LOG(LogTemp, Log, TEXT("CheckLedgeTracer"));
 	switch (RYUMovement)
 	{
+		case ERYUMovementMode::HANGONLEDGE:
+			return;
+		case ERYUMovementMode::CLIMBDOWNLEDGE:
+			return;
+
 		case ERYUMovementMode::CANTRACELEDGE:
 		{
 			TraceHeightAndWallOfLedge();
@@ -180,10 +185,6 @@ void ARYUCharacterBase::CheckLedgeTracer()
 			break;
 		}
 		
-		case ERYUMovementMode::HANGONLEDGE:
-			return;
-		case ERYUMovementMode::CLIMBDOWNLEDGE:
-			return;
 		default:
 			break;
 	}
@@ -319,9 +320,7 @@ void ARYUCharacterBase::CheckClimbingLedge()
 
 void ARYUCharacterBase::CheckClimbDownTracer()
 {
-	
-	{
-		if (GetMovementComponent()->IsMovingOnGround())
+	if (GetMovementComponent()->IsMovingOnGround())
 		{
 			FHitResult ClimbDownHitResult;
 			FVector TraceStart = ClimbDownTracer->GetComponentLocation();
@@ -339,10 +338,6 @@ void ARYUCharacterBase::CheckClimbDownTracer()
 				RYUMovement = ERYUMovementMode::CANCLIMBDOWNLEDGE;
 			}
 		}
-
-	}
-	
-	
 }
 
 void ARYUCharacterBase::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -353,10 +348,12 @@ void ARYUCharacterBase::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* Ov
 		bSphereTracerOverlap = true;
 		UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In with: %s"),*SphereOverlappedActor->GetName());
 		if ((RYUMovement != ERYUMovementMode::CANCLIMBDOWNLEDGE) &&
+			(RYUMovement != ERYUMovementMode::CANCLIMBUPLEDGE) &&
 			(RYUMovement != ERYUMovementMode::CLIMBDOWNLEDGE) &&
 			(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE) &&
 			(RYUMovement != ERYUMovementMode::HANGONLEDGE))
 		{
+			UE_LOG(LogTemp, Log, TEXT("SphereTracer: Mode: CanTraceActivated"));
 			RYUMovement = ERYUMovementMode::CANTRACELEDGE;
 		}
 
@@ -372,11 +369,13 @@ void ARYUCharacterBase::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* Over
 	//SphereOverlappedActor = nullptr;
 	UE_LOG(LogTemp, Log, TEXT("SpherTracer Overlap Out"));
 	if ((RYUMovement != ERYUMovementMode::CANCLIMBDOWNLEDGE) &&
+		(RYUMovement != ERYUMovementMode::CANCLIMBUPLEDGE) &&
 		(RYUMovement != ERYUMovementMode::CLIMBDOWNLEDGE) &&
 		(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE) &&
 		(RYUMovement != ERYUMovementMode::HANGONLEDGE))
 
 	{
+		UE_LOG(LogTemp, Log, TEXT("SphereTracer: Mode: Walk Activated"));
 		RYUMovement = ERYUMovementMode::WALK;
 	}
 }

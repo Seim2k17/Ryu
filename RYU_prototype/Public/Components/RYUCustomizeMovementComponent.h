@@ -87,6 +87,9 @@ public:
 	UFUNCTION()
 		int32 GetNormalMaxJumpCount();
 
+	UFUNCTION(BlueprintCallable)
+		void ClimbDownLedgeFinished();
+
 	FTimerHandle Timerhandle_CoyoteTime;
 
 	UPROPERTY(BlueprintAssignable, Category = "Climbing")
