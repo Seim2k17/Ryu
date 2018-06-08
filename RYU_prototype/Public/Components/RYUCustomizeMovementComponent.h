@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Character/RYUNUM_LedgePosition.h"
+#include "Character/RYUENUM_LedgePos.h"
 #include "RYUCustomizeMovementComponent.generated.h"
 
 

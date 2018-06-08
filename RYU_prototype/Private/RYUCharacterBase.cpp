@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "Math/UnrealMathUtility.h"
+#include "Engine/TargetPoint.h"
 
 
 // Sets default values
@@ -36,13 +37,6 @@ ARYUCharacterBase::ARYUCharacterBase()
 	SphereTracer->SetRelativeLocation(FVector(60, 0, 0));
 	SphereTracer->SetSphereRadius(100);
 
-	ClimbDownTracer = CreateDefaultSubobject<USphereComponent>(TEXT("ClimbDownTracer"));
-	ClimbDownTracer->SetupAttachment(RootComponent);
-	ClimbDownTracer->SetRelativeLocation(FVector(60, 0, 0));
-	ClimbDownTracer->SetSphereRadius(10);
-	
-
-
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 
@@ -54,8 +48,6 @@ ARYUCharacterBase::ARYUCharacterBase()
 	bJumpJustStarted = false;
 
 	TreshholdYWalkRun = 220.0f;
-
-	ClimbDownTraceLength = 80.0f;
 
 }
 
@@ -82,14 +74,6 @@ ARYUCharacterBase::ARYUCharacterBase(const class FObjectInitializer& ObjectIniti
 	SphereTracer->SetRelativeLocation(FVector(60, 0, 0));
 	SphereTracer->SetSphereRadius(100);
 
-	ClimbDownTracer = CreateDefaultSubobject<USphereComponent>(TEXT("ClimbDownTracer"));
-	ClimbDownTracer->SetupAttachment(RootComponent);
-	ClimbDownTracer->SetRelativeLocation(FVector(60, 0, 0));
-	ClimbDownTracer->SetSphereRadius(10);
-
-	ClimbDownTraceLength = 120.0f;
-
-	
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
@@ -168,9 +152,7 @@ void ARYUCharacterBase::CheckLedgeTracer()
 	//UE_LOG(LogTemp, Log, TEXT("CheckLedgeTracer"));
 	switch (RYUMovement)
 	{
-		case ERYUMovementMode::HANGONLEDGE:
-			return;
-		case ERYUMovementMode::CLIMBDOWNLEDGE:
+		case ERYUMovementMode::CLIMB:
 			return;
 
 		case ERYUMovementMode::CANTRACELEDGE:
@@ -250,11 +232,11 @@ if (HitLedgeHeight)
 	{
 		//if (!bLedgeTraceInRangeChanged)
 		{
-			UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
+			//UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
 			bLedgeTraceNotInRangeChanged = false;
 			//CAUTION when Ledges Overlap ! Maybe a pimp is needable !
 			bLedgeTraceInRangeChanged = true;
-			UE_LOG(LogTemp, Log, TEXT("LedgeHeigth in Range"));
+			//UE_LOG(LogTemp, Log, TEXT("LedgeHeigth in Range"));
 			bLedgeHeightInRange = true;
 
 			//done in Tick (ichi) --> move to CharBase ?
@@ -264,10 +246,10 @@ if (HitLedgeHeight)
 	else {
 		//if (!bLedgeTraceNotInRangeChanged)
 		{
-			UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
+			//UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
 			bLedgeTraceNotInRangeChanged = true;
 			bLedgeTraceInRangeChanged = false;
-			UE_LOG(LogTemp, Log, TEXT("LedgeHeigth NOT in Range"));
+			//UE_LOG(LogTemp, Log, TEXT("LedgeHeigth NOT in Range"));
 			bLedgeHeightInRange = false;
 
 			//done in Tick (ichi) --> move to CharBase ?
@@ -318,28 +300,6 @@ void ARYUCharacterBase::CheckClimbingLedge()
 }
 
 
-void ARYUCharacterBase::CheckClimbDownTracer()
-{
-	if (GetMovementComponent()->IsMovingOnGround())
-		{
-			FHitResult ClimbDownHitResult;
-			FVector TraceStart = ClimbDownTracer->GetComponentLocation();
-			FVector TraceEnd = TraceStart;
-			TraceEnd.Z = TraceEnd.Z - ClimbDownTraceLength;
-
-			FCollisionQueryParams QueryParams;
-			QueryParams.TraceTag = TraceTag;
-			QueryParams.bTraceComplex = true;
-
-			bool HitClimbDown = GetWorld()->LineTraceSingleByChannel(ClimbDownHitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, QueryParams);
-
-			if (ClimbDownHitResult.bBlockingHit == false)
-			{
-				RYUMovement = ERYUMovementMode::CANCLIMBDOWNLEDGE;
-			}
-		}
-}
-
 void ARYUCharacterBase::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	if (OtherActor != nullptr)
@@ -347,11 +307,7 @@ void ARYUCharacterBase::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* Ov
 		SphereOverlappedActor = OtherActor;
 		bSphereTracerOverlap = true;
 		UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In with: %s"),*SphereOverlappedActor->GetName());
-		if ((RYUMovement != ERYUMovementMode::CANCLIMBDOWNLEDGE) &&
-			(RYUMovement != ERYUMovementMode::CANCLIMBUPLEDGE) &&
-			(RYUMovement != ERYUMovementMode::CLIMBDOWNLEDGE) &&
-			(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE) &&
-			(RYUMovement != ERYUMovementMode::HANGONLEDGE))
+		if (RYUMovement != ERYUMovementMode::CLIMB)
 		{
 			UE_LOG(LogTemp, Log, TEXT("SphereTracer: Mode: CanTraceActivated"));
 			RYUMovement = ERYUMovementMode::CANTRACELEDGE;
@@ -368,14 +324,20 @@ void ARYUCharacterBase::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* Over
 	bLedgeHeightInRange = false;
 	//SphereOverlappedActor = nullptr;
 	UE_LOG(LogTemp, Log, TEXT("SpherTracer Overlap Out"));
-	if ((RYUMovement != ERYUMovementMode::CANCLIMBDOWNLEDGE) &&
-		(RYUMovement != ERYUMovementMode::CANCLIMBUPLEDGE) &&
-		(RYUMovement != ERYUMovementMode::CLIMBDOWNLEDGE) &&
-		(RYUMovement != ERYUMovementMode::CLIMBUPLEDGE) &&
-		(RYUMovement != ERYUMovementMode::HANGONLEDGE))
-
+	if (RYUMovement != ERYUMovementMode::CLIMB)
 	{
 		UE_LOG(LogTemp, Log, TEXT("SphereTracer: Mode: Walk Activated"));
 		RYUMovement = ERYUMovementMode::WALK;
 	}
+}
+
+void ARYUCharacterBase::SetLedgeHangPosition(FVector LedgeTargetPoint)
+{
+	LedgeHangPosition = LedgeTargetPoint;
+	LedgeHangPosition.Z = LedgeHangPosition.Z + 115.0f;
+}
+
+FVector ARYUCharacterBase::GetLedgeHangPosition()
+{
+	return LedgeHangPosition;
 }

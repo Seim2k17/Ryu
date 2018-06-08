@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RYUENUM_PlayerActive.h"
 #include "Character/RYUENUM_MovementMode.h"
+#include "Character/RYUENUM_ClimbingMode.h"
 #include "RYUCharacterBase.generated.h"
 
 
@@ -41,11 +42,11 @@ public:
 	void StopJumping() override;
 
 	UFUNCTION()
-		void OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+	void OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 			bool bFromSweep, const FHitResult & SweepResult);
 
 	UFUNCTION()
-		void OnSphereTracerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	void OnSphereTracerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	/** MEMBERS */
 
@@ -64,6 +65,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
 	ERYUMovementMode RYUMovement;
 
+	/** State of the Character Movement*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
+		ERYUClimbingMode RYUClimbingMode;
+
 	UPROPERTY(VisibleAnywhere, Category = "Sockets")
 		FName CharacterHipSocketName;
 
@@ -79,11 +84,11 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* TracerSphere;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-		USphereComponent* ClimbDownTracer;
+	UFUNCTION(BlueprintCallable, Category = "Climbing")
+	void SetLedgeHangPosition(FVector LedgeTargetPoint);
 
-	UPROPERTY(EditAnywhere, Category = "Climbing")
-		float ClimbDownTraceLength;
+	UFUNCTION(BlueprintCallable, Category = "Climbing")
+	FVector GetLedgeHangPosition();
 
 protected:
 
@@ -107,9 +112,6 @@ protected:
 
 	virtual void CheckClimbingLedge();
 
-	void CheckClimbDownTracer();
-
-	
 	//DoOnce Repl.
 
 	bool bLedgeTracePossible;
@@ -132,4 +134,6 @@ private:
 	bool bLedgeTraceNotInRangeChanged;
 
 	FName TraceTag ="ClimbingDownTraceTag";
+
+	FVector LedgeHangPosition;
 };

@@ -48,9 +48,6 @@ public:
 	void Climb(float Val);
 
 	UFUNCTION(BlueprintCallable)
-		void SetHangUpPosition(FVector ClimUpPosition);
-
-	UFUNCTION(BlueprintCallable)
 		void ReSetHangUpPosition();
 
 #if WITH_EDITOR
@@ -91,7 +88,7 @@ protected:
 	void CanClimbDown(float Val);
 
 	UFUNCTION(BlueprintCallable, Category = "Climbing")
-	void CanClimbUp(float Val, FVector SetHangLedgePosition, FVector StartClimbUpPosition);
+	void CanClimbUp(float Val, FVector StartClimbUpPosition);
 
 	void CheckClimbingLedge() override;
 
@@ -149,8 +146,6 @@ private:
 
 	//Position when Jumping
 	FVector StartJumpPosition;
-
-	FVector HangLedgePosition;
 
 	FVector _StartClimbUpPosition;
 

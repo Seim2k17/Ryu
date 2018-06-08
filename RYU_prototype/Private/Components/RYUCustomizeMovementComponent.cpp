@@ -67,7 +67,7 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 
 	switch (CustomMovementMode)
 	{
-		case ERYUMovementMode::CLIMBUPLEDGE:
+		case ERYUClimbingMode::CLIMBUPLEDGE:
 		{
 			//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
 			//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
@@ -75,11 +75,12 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 			MyChar->SphereTracer->SetEnableGravity(false);
 			MyChar->GetMesh()->SetEnableGravity(false);
 			MyChar->GetCapsuleComponent()->SetEnableGravity(false);
-			MyChar->RYUMovement = ERYUMovementMode::CLIMBUPLEDGE;
+			MyChar->RYUMovement = ERYUMovementMode::CLIMB;
+			MyChar->RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
 			UE_LOG(LogTemp, Log, TEXT("Mode changed to CLIMB-UP LEDGE"));
 			break;
 		}
-		case ERYUMovementMode::CLIMBDOWNLEDGE:
+		case ERYUClimbingMode::CLIMBDOWNLEDGE:
 		{
 			//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
 			//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
@@ -92,10 +93,11 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 			UE_LOG(LogTemp, Log, TEXT("Mode changed to CLIMB-DOWN LEDGE"));
 			break;
 		}
-		case ERYUMovementMode::HANGONLEDGE:
+		case ERYUClimbingMode::HANGONLEDGE:
 		{
 			UE_LOG(LogTemp, Log, TEXT("Waiting!"));
-			MyChar->RYUMovement = ERYUMovementMode::HANGONLEDGE;
+			MyChar->RYUMovement = ERYUMovementMode::CLIMB;
+			MyChar->RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
 			MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			MyChar->SphereTracer->SetEnableGravity(false);
 			MyChar->GetMesh()->SetEnableGravity(false);
@@ -153,25 +155,28 @@ void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iteration
 
 	switch (CustomMovementMode)
 	{
-	case ERYUMovementMode::CLIMBUPLEDGE:
+	case ERYUClimbingMode::CLIMBUPLEDGE:
 		UE_LOG(LogTemp, Log, TEXT("I´m climbing up the ledge!"));
 		PhysClimbingLedge(deltaTime, Iterations);
 		break;
-	case ERYUMovementMode::CLIMBDOWNLEDGE:
+	case ERYUClimbingMode::CLIMBDOWNLEDGE:
 		UE_LOG(LogTemp, Log, TEXT("I´m climbing down the ledge!"));
 		PhysClimbingLedge(deltaTime, Iterations);
 		break;
-	case ERYUMovementMode::HANGONLEDGE:
+	case ERYUClimbingMode::HANGONLEDGE:
 		//Just Hang around
 		//PhysClimbingLedge(deltaTime, Iterations);
 		UE_LOG(LogTemp, Log, TEXT("Hanging!"));
 		break;
-	case ERYUMovementMode::FALLDOWNLEDGE:
+	case ERYUClimbingMode::FALLDOWNLEDGE:
 		UE_LOG(LogTemp, Log, TEXT("I´m falling down the ledge!"));
 		PhysClimbingLedge(deltaTime, Iterations);
 		//PhysFallingLedge(deltaTime, Iterations);
 		break;
-	case ERYUMovementMode::CLIMBLADDER:
+	case ERYUClimbingMode::CLIMBLADDERUP:
+		PhysClimbingLadder(deltaTime, Iterations);
+		break;
+	case ERYUClimbingMode::CLIMBLADDERDOWN:
 		PhysClimbingLadder(deltaTime, Iterations);
 		break;
 	}
@@ -277,7 +282,7 @@ bool URYUCustomizeMovementComponent::DoJump(bool bReplayingMoves)
 	}
 
 	ARYUCharacterIchi* MyChar = Cast<ARYUCharacterIchi>(CharacterOwner);
-	if (MyChar && (MyChar->RYUMovement == ERYUMovementMode::CANCLIMBUPLEDGE))
+	if (MyChar && (MyChar->RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPLEDGE))
 	{
 		MyChar->Climb(1.0f);
 	}
@@ -306,10 +311,11 @@ void URYUCustomizeMovementComponent::ResetClimbingState()
 		SetMovementMode(MOVE_Walking);
 		if ((MyChar->RYUMovement != ERYUMovementMode::CANTRACELEDGE) &&
 			(MyChar->RYUMovement != ERYUMovementMode::CANGRABLEDGE) &&
-			(MyChar->RYUMovement != ERYUMovementMode::CANCLIMBUPLEDGE) &&
-			(MyChar->RYUMovement != ERYUMovementMode::CANCLIMBDOWNLEDGE))
+			(MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
+			(MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE))
 		{
 			MyChar->RYUMovement = ERYUMovementMode::STAND;
+			MyChar->RYUClimbingMode = ERYUClimbingMode::NONE;
 		}
 	}
 }
@@ -329,8 +335,9 @@ int32 URYUCustomizeMovementComponent::GetNormalMaxJumpCount()
 void URYUCustomizeMovementComponent::ClimbDownLedgeFinished()
 {
 	ARYUCharacterIchi* MyChar = Cast<ARYUCharacterIchi>(CharacterOwner);
-	MyChar->RYUMovement = ERYUMovementMode::HANGONLEDGE;
-	MyChar->CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::HANGONLEDGE));
+	MyChar->RYUMovement = ERYUMovementMode::CLIMB;
+	MyChar->RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+	MyChar->CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::HANGONLEDGE));
 	MyChar->ToggleAllowClimbUp();
 	
 
