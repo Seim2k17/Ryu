@@ -1,10 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RYUCustomizeMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 #include "RYUENUM_MovementMode.h"
 #include "RYUCharacterBase.h"
+#include "RYUCharacterIchi.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include <stdexcept>
@@ -40,8 +41,6 @@ URYUCustomizeMovementComponent::URYUCustomizeMovementComponent(const class FObje
 
 	CoyoteTimeActive = true;
 
-	
-
 }
 
 
@@ -68,7 +67,7 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 
 	switch (CustomMovementMode)
 	{
-		case ERYUMovementMode::CLIMBUPLEDGE:
+		case ERYUClimbingMode::CLIMBUPLEDGE:
 		{
 			//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
 			//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
@@ -76,11 +75,12 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 			MyChar->SphereTracer->SetEnableGravity(false);
 			MyChar->GetMesh()->SetEnableGravity(false);
 			MyChar->GetCapsuleComponent()->SetEnableGravity(false);
-			MyChar->RYUMovement = ERYUMovementMode::CLIMBUPLEDGE;
+			MyChar->RYUMovement = ERYUMovementMode::CLIMB;
+			MyChar->RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
 			UE_LOG(LogTemp, Log, TEXT("Mode changed to CLIMB-UP LEDGE"));
 			break;
 		}
-		case ERYUMovementMode::CLIMBDOWNLEDGE:
+		case ERYUClimbingMode::CLIMBDOWNLEDGE:
 		{
 			//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
 			//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
@@ -93,10 +93,15 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 			UE_LOG(LogTemp, Log, TEXT("Mode changed to CLIMB-DOWN LEDGE"));
 			break;
 		}
-		case ERYUMovementMode::HANGONLEDGE:
+		case ERYUClimbingMode::HANGONLEDGE:
 		{
 			UE_LOG(LogTemp, Log, TEXT("Waiting!"));
-			MyChar->RYUMovement = ERYUMovementMode::HANGONLEDGE;
+			MyChar->RYUMovement = ERYUMovementMode::CLIMB;
+			MyChar->RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+			MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			MyChar->SphereTracer->SetEnableGravity(false);
+			MyChar->GetMesh()->SetEnableGravity(false);
+			MyChar->GetCapsuleComponent()->SetEnableGravity(false);
 			break;
 		}
 		
@@ -150,24 +155,28 @@ void URYUCustomizeMovementComponent::PhysCustom(float deltaTime, int32 Iteration
 
 	switch (CustomMovementMode)
 	{
-	case ERYUMovementMode::CLIMBUPLEDGE:
-		UE_LOG(LogTemp, Log, TEXT("I´m climbing up the ledge!"));
+	case ERYUClimbingMode::CLIMBUPLEDGE:
+		UE_LOG(LogTemp, Log, TEXT("IÂ´m climbing up the ledge!"));
 		PhysClimbingLedge(deltaTime, Iterations);
 		break;
-	case ERYUMovementMode::CLIMBDOWNLEDGE:
-		UE_LOG(LogTemp, Log, TEXT("I´m climbing down the ledge!"));
+	case ERYUClimbingMode::CLIMBDOWNLEDGE:
+		UE_LOG(LogTemp, Log, TEXT("IÂ´m climbing down the ledge!"));
 		PhysClimbingLedge(deltaTime, Iterations);
 		break;
-	case ERYUMovementMode::HANGONLEDGE:
+	case ERYUClimbingMode::HANGONLEDGE:
 		//Just Hang around
 		//PhysClimbingLedge(deltaTime, Iterations);
 		UE_LOG(LogTemp, Log, TEXT("Hanging!"));
 		break;
-	case ERYUMovementMode::FALLDOWNLEDGE:
-		UE_LOG(LogTemp, Log, TEXT("I´m falling down the ledge!"));
-		PhysFallingLedge(deltaTime, Iterations);
+	case ERYUClimbingMode::FALLDOWNLEDGE:
+		UE_LOG(LogTemp, Log, TEXT("IÂ´m falling down the ledge!"));
+		PhysClimbingLedge(deltaTime, Iterations);
+		//PhysFallingLedge(deltaTime, Iterations);
 		break;
-	case ERYUMovementMode::CLIMBLADDER:
+	case ERYUClimbingMode::CLIMBLADDERUP:
+		PhysClimbingLadder(deltaTime, Iterations);
+		break;
+	case ERYUClimbingMode::CLIMBLADDERDOWN:
 		PhysClimbingLadder(deltaTime, Iterations);
 		break;
 	}
@@ -182,50 +191,50 @@ void URYUCustomizeMovementComponent::PhysClimbingLedge(float deltaTime, int32 It
 	
 	/** Following is copypasted from CharacterMovementComponent::PhysFlying and ajdusted to Phyclimbing*/
 
-	RestorePreAdditiveRootMotionVelocity();
+RestorePreAdditiveRootMotionVelocity();
 
 
-	ApplyRootMotionToVelocity(deltaTime);
+ApplyRootMotionToVelocity(deltaTime);
 
-	Iterations++;
-	bJustTeleported = false;
+Iterations++;
+bJustTeleported = false;
 
-	FVector OldLocation = UpdatedComponent->GetComponentLocation();
-	const FVector Adjusted = Velocity * deltaTime;
-	FHitResult Hit(1.f);
-	SafeMoveUpdatedComponent(Adjusted, UpdatedComponent->GetComponentQuat(), true, Hit);
+FVector OldLocation = UpdatedComponent->GetComponentLocation();
+const FVector Adjusted = Velocity * deltaTime;
+FHitResult Hit(1.f);
+SafeMoveUpdatedComponent(Adjusted, UpdatedComponent->GetComponentQuat(), true, Hit);
 
-	if (Hit.Time < 1.f)
+if (Hit.Time < 1.f)
+{
+	const FVector GravDir = FVector(0.f, 0.f, -1.f);
+	const FVector VelDir = Velocity.GetSafeNormal();
+	const float UpDown = GravDir | VelDir;
+
+	bool bSteppedUp = false;
+	if ((FMath::Abs(Hit.ImpactNormal.Z) < 0.2f) && (UpDown < 0.5f) && (UpDown > -0.2f) && CanStepUp(Hit))
 	{
-		const FVector GravDir = FVector(0.f, 0.f, -1.f);
-		const FVector VelDir = Velocity.GetSafeNormal();
-		const float UpDown = GravDir | VelDir;
-
-		bool bSteppedUp = false;
-		if ((FMath::Abs(Hit.ImpactNormal.Z) < 0.2f) && (UpDown < 0.5f) && (UpDown > -0.2f) && CanStepUp(Hit))
+		float stepZ = UpdatedComponent->GetComponentLocation().Z;
+		bSteppedUp = StepUp(GravDir, Adjusted * (1.f - Hit.Time), Hit);
+		if (bSteppedUp)
 		{
-			float stepZ = UpdatedComponent->GetComponentLocation().Z;
-			bSteppedUp = StepUp(GravDir, Adjusted * (1.f - Hit.Time), Hit);
-			if (bSteppedUp)
-			{
-				OldLocation.Z = UpdatedComponent->GetComponentLocation().Z + (OldLocation.Z - stepZ);
-			}
-		}
-
-		if (!bSteppedUp)
-		{
-			//adjust and try again
-			HandleImpact(Hit, deltaTime, Adjusted);
-			SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);
+			OldLocation.Z = UpdatedComponent->GetComponentLocation().Z + (OldLocation.Z - stepZ);
 		}
 	}
 
-	if (!bJustTeleported && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+	if (!bSteppedUp)
 	{
-		Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
+		//adjust and try again
+		HandleImpact(Hit, deltaTime, Adjusted);
+		SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);
 	}
+}
 
-	
+if (!bJustTeleported && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+{
+	Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
+}
+
+
 }
 
 
@@ -235,8 +244,8 @@ void URYUCustomizeMovementComponent::PhysFallingLedge(float deltaTime, int32 Ite
 // 	ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
 // 	FVector MeshPosition = MyChar->GetMesh()->GetComponentLocation();
 // 	MyChar->SetActorLocation(MeshPosition);
-	
-	
+
+
 	//RootMotionactive
 // 	if (MyChar->IsPlayingRootMotion())
 // 	{
@@ -246,12 +255,13 @@ void URYUCustomizeMovementComponent::PhysFallingLedge(float deltaTime, int32 Ite
 // 	{
 // 		//UE_LOG(LogTemp, Log, TEXT("THE ANI HAS NO ROOTMOTION."));
 // 	}
-	
+
+
 }
 
 void URYUCustomizeMovementComponent::PhysClimbingLadder(float deltaTime, int32 Iterations)
 {
-	UE_LOG(LogTemp, Log, TEXT("I´m climbing the ladder!"));
+	UE_LOG(LogTemp, Log, TEXT("IÂ´m climbing the ladder!"));
 }
 
 bool URYUCustomizeMovementComponent::DoJump(bool bReplayingMoves)
@@ -263,7 +273,7 @@ bool URYUCustomizeMovementComponent::DoJump(bool bReplayingMoves)
 	if (CharacterOwner && CharacterOwner->CanJump() || (GetOwner()->GetWorldTimerManager().GetTimerRemaining(Timerhandle_CoyoteTime) > 0.0f))
 	{
 		// Don't jump if we can't move up/down.
-		if (!bConstrainToPlane || FMath::Abs(PlaneConstraintNormal.Z) != 1.f )
+		if (!bConstrainToPlane || FMath::Abs(PlaneConstraintNormal.Z) != 1.f)
 		{
 			Velocity.Z = JumpZVelocity;
 			SetMovementMode(MOVE_Falling);
@@ -271,6 +281,11 @@ bool URYUCustomizeMovementComponent::DoJump(bool bReplayingMoves)
 		}
 	}
 
+	ARYUCharacterIchi* MyChar = Cast<ARYUCharacterIchi>(CharacterOwner);
+	if (MyChar && (MyChar->RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPLEDGE))
+	{
+		MyChar->Climb(1.0f);
+	}
 	return false;
 }
 
@@ -278,15 +293,31 @@ bool URYUCustomizeMovementComponent::DoJump(bool bReplayingMoves)
 void URYUCustomizeMovementComponent::ResetClimbingState()
 {
 	ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
-	//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
-	//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
-	MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	MyChar->SphereTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	MyChar->SphereTracer->SetEnableGravity(true);
-	MyChar->GetMesh()->SetEnableGravity(true);
-	MyChar->GetCapsuleComponent()->SetEnableGravity(true);
-	SetMovementMode(MOVE_Walking);
-	MyChar->RYUMovement = ERYUMovementMode::STAND;
+
+	if (MyChar)
+	{
+		//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
+		//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
+		MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		MyChar->SphereTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		MyChar->SphereTracer->SetEnableGravity(true);
+		MyChar->GetMesh()->SetEnableGravity(true);
+		MyChar->GetCapsuleComponent()->SetEnableGravity(true);
+		ARYUCharacterIchi* MyRYUChar = Cast<ARYUCharacterIchi>(MyChar);
+		if (MyRYUChar)
+		{
+			MyRYUChar->ToggleAllowClimbUp();
+		}
+		SetMovementMode(MOVE_Walking);
+		if ((MyChar->RYUMovement != ERYUMovementMode::CANTRACELEDGE) &&
+			(MyChar->RYUMovement != ERYUMovementMode::CANGRABLEDGE) &&
+			(MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
+			(MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE))
+		{
+			MyChar->RYUMovement = ERYUMovementMode::STAND;
+			MyChar->RYUClimbingMode = ERYUClimbingMode::NONE;
+		}
+	}
 }
 
 void URYUCustomizeMovementComponent::SetNormalMaxJumpCount(int32 MaxJumps)
@@ -298,6 +329,18 @@ void URYUCustomizeMovementComponent::SetNormalMaxJumpCount(int32 MaxJumps)
 int32 URYUCustomizeMovementComponent::GetNormalMaxJumpCount()
 {
 	return NormalMaxJumpCount;
+}
+
+
+void URYUCustomizeMovementComponent::ClimbDownLedgeFinished()
+{
+	ARYUCharacterIchi* MyChar = Cast<ARYUCharacterIchi>(CharacterOwner);
+	MyChar->RYUMovement = ERYUMovementMode::CLIMB;
+	MyChar->RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+	MyChar->CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::HANGONLEDGE));
+	MyChar->ToggleAllowClimbUp();
+	
+
 }
 
 void URYUCustomizeMovementComponent::SetGravityScaleMaximum(float GravScale)

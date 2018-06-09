@@ -10,6 +10,8 @@
  * 
  */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCanClimbUpSignature, float, Value);
+
 class URYUCustomizeMovementComponent;
 class UClimbAssetComponent;
 
@@ -41,6 +43,12 @@ public:
 
 	void DebugSomething();
 
+	/**/
+	//UFUNCTION(BlueprintImplementableEvent, Category = "Climb")
+	void Climb(float Val);
+
+	UFUNCTION(BlueprintCallable)
+		void ReSetHangUpPosition();
 
 #if WITH_EDITOR
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
@@ -51,7 +59,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerChange")
 	ERYUPlayerActive PlayerActive;
 
-	
+	UFUNCTION()
+		void ToggleAllowClimbUp();
+
+	UPROPERTY(BlueprintAssignable, Category = "Climbing")
+		FOnCanClimbUpSignature OnCanClimbUp;
 	
 protected:
 
@@ -73,11 +85,10 @@ protected:
 	/** Called for side to side input */
 	void MoveRight(float Val);
 
-	/**/
-	//UFUNCTION(BlueprintImplementableEvent, Category = "Climb")
-	void Climb(float Val);
+	void CanClimbDown(float Val);
 
-	void CanClimbUpOrDown(float Val);
+	UFUNCTION(BlueprintCallable, Category = "Climbing")
+	void CanClimbUp(float Val, FVector StartClimbUpPosition);
 
 	void CheckClimbingLedge() override;
 
@@ -93,6 +104,14 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 		UClimbAssetComponent* ClimbAssetComp;
+
+	bool bAllowClimbUp;
+
+	UPROPERTY()
+		FTimerHandle AllowClimbUp_TimerHandle;
+
+	UPROPERTY(EditAnywhere, Category = "Climbing")
+		float AllowClimbUpTime;
 
 private:
 
@@ -127,4 +146,13 @@ private:
 
 	//Position when Jumping
 	FVector StartJumpPosition;
+
+	FVector _StartClimbUpPosition;
+
+	bool bHangPositionSet;
+
+	FName TraceTagFalling = "FallingDownTraceTag";
+
+	
+
 };

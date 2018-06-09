@@ -33,6 +33,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Montages")
 	UAnimMontage* ClimbFallMontage;
 
+	UPROPERTY(EditAnywhere, Category = "Montages")
+		UAnimMontage* ClimbFallMontageShort;
+
+	UPROPERTY(EditAnywhere, Category = "Montages")
+		UAnimMontage* ClimbHangMontage;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Montages")
 	FVector HangPositionOffset;
 
@@ -48,10 +54,9 @@ public:
 	UPROPERTY(BlueprintCallable, Category = "Climbing")
 	FOnStartPlayingMontageSignature OnStartPlayingClimbDownMontage;
 
+private:
 
-
-
-protected:
+	
 
 
 
