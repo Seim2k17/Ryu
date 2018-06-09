@@ -612,8 +612,9 @@ void ARYUCharacterIchi::CanClimbUp(float Val, FVector StartClimbUpPosition)
 				//CustMovementComp->SetMovementMode(MOVE_Flying);
 				//GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ASPickupActor::Respawn, CoolDownDuration);
 			
-			
-				SetActorLocation(GetLedgeHangPosition());
+				FVector _HangLocation = GetLedgeHangPosition();
+				SetActorLocation(_HangLocation);
+				UE_LOG(LogTemp, Warning, TEXT("HangLedgePosition : %s"), *_HangLocation.ToString());
 				//@ToDo: later replace with JumpUpHangAni
 				PlayAnimMontage(ClimbAssetComp->ClimbHangMontage, 1.0f);
 
