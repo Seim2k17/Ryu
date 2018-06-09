@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Character/RYUNUM_LedgePosition.h"
+#include "Character/RYUENUM_LedgePos.h"
 #include "RYUCustomizeMovementComponent.generated.h"
 
 
@@ -45,6 +45,8 @@ protected:
 	virtual void PhysFallingLedge(float deltaTime, int32 Iterations);
 
 	virtual void PhysClimbingLadder(float deltaTime, int32 Iterations);
+
+	bool bClimbUpAllowed;
 	
 
 public:
@@ -85,6 +87,9 @@ public:
 	UFUNCTION()
 		int32 GetNormalMaxJumpCount();
 
+	UFUNCTION(BlueprintCallable)
+		void ClimbDownLedgeFinished();
+
 	FTimerHandle Timerhandle_CoyoteTime;
 
 	UPROPERTY(BlueprintAssignable, Category = "Climbing")
@@ -92,6 +97,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Climbing")
 		FVector ClimbDownStartPosition;
+
+
 
 private:
 
