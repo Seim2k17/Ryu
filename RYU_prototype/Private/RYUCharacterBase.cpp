@@ -49,6 +49,8 @@ ARYUCharacterBase::ARYUCharacterBase()
 
 	TreshholdYWalkRun = 220.0f;
 
+	ESideEntered = ERYULedgeSideEntered::NONE;
+	
 }
 
 
@@ -73,6 +75,17 @@ ARYUCharacterBase::ARYUCharacterBase(const class FObjectInitializer& ObjectIniti
 	SphereTracer->SetCollisionResponseToAllChannels(ECR_Overlap);
 	SphereTracer->SetRelativeLocation(FVector(60, 0, 0));
 	SphereTracer->SetSphereRadius(100);
+
+	RYUMovement = ERYUMovementMode::STAND;
+	CharacterHipSocketName = "HipSocket";
+
+	bSphereTracerOverlap = false;
+
+	bJumpJustStarted = false;
+
+	TreshholdYWalkRun = 220.0f;
+
+	ESideEntered = ERYULedgeSideEntered::NONE;
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
@@ -157,14 +170,30 @@ void ARYUCharacterBase::CheckLedgeTracer()
 
 		case ERYUMovementMode::CANTRACELEDGE:
 		{
-			TraceHeightAndWallOfLedge();
-			break;
+			//Tmp cause CanClimpUp&Down not working
+			if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
+				(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
+				(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
+				(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
+				(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE))
+			{
+				TraceHeightAndWallOfLedge();
+				break;
+			}
 		}
 		
 		case ERYUMovementMode::CANGRABLEDGE:
 		{
-			CheckClimbingLedge();
-			break;
+			//Tmp cause CanClimpUp&Down not working
+			if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
+				(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
+				(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
+				(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
+				(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE))
+			{
+				CheckClimbingLedge();
+				break;
+			}
 		}
 		
 		default:
@@ -240,7 +269,15 @@ if (HitLedgeHeight)
 			bLedgeHeightInRange = true;
 
 			//done in Tick (ichi) --> move to CharBase ?
-			RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+			if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
+				(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
+				(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
+				(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
+				(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE))
+			{
+				RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+			}
+			
 		}
 	}
 	else {
@@ -252,8 +289,15 @@ if (HitLedgeHeight)
 			//UE_LOG(LogTemp, Log, TEXT("LedgeHeigth NOT in Range"));
 			bLedgeHeightInRange = false;
 
-			//done in Tick (ichi) --> move to CharBase ?
-			RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+			if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
+				(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
+				(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
+				(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
+				(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE))
+			{
+				//done in Tick (ichi) --> move to CharBase ?
+				RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+			}
 		}
 	}
 }
@@ -307,7 +351,13 @@ void ARYUCharacterBase::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* Ov
 		SphereOverlappedActor = OtherActor;
 		bSphereTracerOverlap = true;
 		UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In with: %s"),*SphereOverlappedActor->GetName());
-		if (RYUMovement != ERYUMovementMode::CLIMB)
+		if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
+			(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
+			(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
+			(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
+			(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE) &&
+			(RYUMovement != ERYUMovementMode::CLIMB))
+		
 		{
 			UE_LOG(LogTemp, Log, TEXT("SphereTracer: Mode: CanTraceActivated"));
 			RYUMovement = ERYUMovementMode::CANTRACELEDGE;
@@ -324,20 +374,52 @@ void ARYUCharacterBase::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* Over
 	bLedgeHeightInRange = false;
 	//SphereOverlappedActor = nullptr;
 	UE_LOG(LogTemp, Log, TEXT("SpherTracer Overlap Out"));
-	if (RYUMovement != ERYUMovementMode::CLIMB)
+	if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
+		(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
+		(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
+		(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
+		(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE) &&
+		(RYUMovement != ERYUMovementMode::CLIMB))
 	{
 		UE_LOG(LogTemp, Log, TEXT("SphereTracer: Mode: Walk Activated"));
 		RYUMovement = ERYUMovementMode::WALK;
 	}
 }
 
-void ARYUCharacterBase::SetLedgeHangPosition(FVector LedgeTargetPoint)
+void ARYUCharacterBase::SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide)
 {
 	LedgeHangPosition = LedgeTargetPoint;
 	LedgeHangPosition.Z = LedgeHangPosition.Z + 115.0f;
+
+	//	LeftPositionTag = "Left";
+	//RightPositionTag = "Right";
+
+	if (LedgeSide == "Left")
+	{
+		UE_LOG(LogTemp, Log, TEXT("Left Side Ledge."));
+		ESideEntered = ERYULedgeSideEntered::LeftSide;
+	}
+	else
+	{
+		if (LedgeSide == "Right")
+		{
+			UE_LOG(LogTemp, Log, TEXT("Right Side Ledge."));
+			ESideEntered = ERYULedgeSideEntered::RightSide;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Log, TEXT("no Side Ledge."));
+			ESideEntered = ERYULedgeSideEntered::NONE;
+		}
+	}
 }
 
 FVector ARYUCharacterBase::GetLedgeHangPosition()
 {
 	return LedgeHangPosition;
+}
+
+ERYULedgeSideEntered ARYUCharacterBase::GetLedgeSideEntered()
+{
+	return ESideEntered;
 }

@@ -109,7 +109,7 @@ void ARYUClimbingActor::OnTriggerHandleBeginOverlap(UPrimitiveComponent* Overlap
 	ARYUCharacterIchi* MyChar = Cast<ARYUCharacterIchi>(OtherActor);
 	if (MyChar)
 	{
-		MyChar->RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
+		//MyChar->RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
 		
 		UCapsuleComponent* MyOvComp = Cast<UCapsuleComponent>(OtherComp);
 
@@ -130,12 +130,14 @@ void ARYUClimbingActor::OnTriggerHandleBeginOverlap(UPrimitiveComponent* Overlap
 
 			if (OverlappedComponent->ComponentTags[1] == LeftPositionTag)
 			{
-				MyChar->SetLedgeHangPosition(LeftHangPosition->GetComponentLocation());
+				MyChar->SetLedgeHangPosition(LeftHangPosition->GetComponentLocation(), LeftPositionTag);
+				UE_LOG(LogTemp, Log, TEXT("TAG: %s"),*LeftPositionTag.ToString());
 			}
 
 			if (OverlappedComponent->ComponentTags[1] == RightPositionTag)
 			{
-				MyChar->SetLedgeHangPosition(RightHangPosition->GetComponentLocation());
+				MyChar->SetLedgeHangPosition(RightHangPosition->GetComponentLocation(), RightPositionTag);
+				UE_LOG(LogTemp, Log, TEXT("TAG: %s"), *RightPositionTag.ToString());
 			}
 		}
 		
@@ -148,7 +150,7 @@ void ARYUClimbingActor::OnTriggerHandleEndOverlap(UPrimitiveComponent* Overlappe
 	if (MyChar)
 	{
 
-		MyChar->RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
+		//MyChar->RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
 
 		USphereComponent* MyOvComp = Cast<USphereComponent>(OtherComp);
 
@@ -157,7 +159,7 @@ void ARYUClimbingActor::OnTriggerHandleEndOverlap(UPrimitiveComponent* Overlappe
 			UE_LOG(LogTemp, Log, TEXT("CanClimbDown TAG: Overlap Out"));
 			MyChar->RYUClimbingMode = ERYUClimbingMode::NONE;
 
-			MyChar->SetLedgeHangPosition(FVector::ZeroVector);
+			MyChar->SetLedgeHangPosition(FVector::ZeroVector, "none");
 		}
 
 		

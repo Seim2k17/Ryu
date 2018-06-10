@@ -545,8 +545,11 @@ void ARYUCharacterIchi::Climb(float Val)
 				//...near a ledge
 			case ERYUMovementMode::CANGRABLEDGE:
 			{
-				CanGrabLedgeAndClimb(Val);			
-				break;
+				if (RYUClimbingMode ==  ERYUClimbingMode::NONE)
+				{
+					CanGrabLedgeAndClimb(Val);
+					break;
+				}
 			}
 			default:
 				break;
@@ -595,45 +598,65 @@ void ARYUCharacterIchi::CanClimbUp(float Val, FVector StartClimbUpPosition)
 {
 // 	if (!GetMovementComponent()->IsFalling())
 // 	{
-		if (Val > 0.8)
+	if (Val > 0.8)
+	{
+		if (GetLedgeHangPosition() != FVector::ZeroVector)
 		{
-			if (GetLedgeHangPosition() != FVector::ZeroVector)
+			UE_LOG(LogTemp, Warning, TEXT("NotZeroButSet ??"));
+			if (!bHangPositionSet)
 			{
+
 				_StartClimbUpPosition = StartClimbUpPosition;
+				UE_LOG(LogTemp, Warning, TEXT("StartHangLedgePosition: %s"), *_StartClimbUpPosition.ToString());
 				//HangLedgePosition = HangLedgePosition;
 				//LedgeHangPosition.Z = LedgeHangPosition.Z + 115.0f;
-			
-			
+
+
 				bHangPositionSet = true;
 
 				RYUMovement = ERYUMovementMode::CLIMB;
+				//@ToDo later climbUpToHangposition Ani
 				RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
-				CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::HANGONLEDGE));
 				//CustMovementComp->SetMovementMode(MOVE_Flying);
 				//GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ASPickupActor::Respawn, CoolDownDuration);
-			
+
 				FVector _HangLocation = GetLedgeHangPosition();
+
+				
+				ERYULedgeSideEntered _SideEntered = GetLedgeSideEntered();
+
+				switch (_SideEntered)
+				{
+				case ERYULedgeSideEntered::NONE:
+					break;
+				case ERYULedgeSideEntered::LeftSide:
+					SetActorRotation(FRotator(0, -90.0f, 0));
+					break;
+				case ERYULedgeSideEntered::RightSide:
+					SetActorRotation(FRotator(0, 90.0f, 0));
+					break;
+				default:
+					break;
+				}
+				
+
+				CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::HANGONLEDGE));
+
 				SetActorLocation(_HangLocation);
 				UE_LOG(LogTemp, Warning, TEXT("HangLedgePosition : %s"), *_HangLocation.ToString());
 				//@ToDo: later replace with JumpUpHangAni
 				PlayAnimMontage(ClimbAssetComp->ClimbHangMontage, 1.0f);
 
 				GetWorldTimerManager().SetTimer(AllowClimbUp_TimerHandle, this, &ARYUCharacterIchi::ToggleAllowClimbUp, AllowClimbUpTime, false, AllowClimbUpTime);
-			}
-			else
-			{
-				UE_LOG(LogTemp, Warning,TEXT("HangLedgePosition set to (0,0,0)"))
-			}
-			
 
-			if (bHangPositionSet)
-			{
-
-				
 			}
-			
-		
 		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("HangLedgePosition set to (0,0,0)"))
+		}
+
+	}
 //	}
 
 }
@@ -645,16 +668,46 @@ void ARYUCharacterIchi::CanClimbDown(float Val)
 		//Stand near ledge & Climb down to Hangmode
 		if (Val < -0.5)
 		{
-			RYUMovement = ERYUMovementMode::CLIMB;
-			RYUClimbingMode = ERYUClimbingMode::CLIMBDOWNLEDGE;
-			//@ToDo: Play MontageSection ClimbDown in Reverse
-			if (ClimbAssetComp->ClimbDownMontage)
+			if (GetLedgeHangPosition() != FVector::ZeroVector)
 			{
-				UE_LOG(LogTemp, Log, TEXT("StartPlaying: %s"), *ClimbAssetComp->ClimbDownMontage->GetName());
+				if (!bHangPositionSet)
+				{
+					RYUMovement = ERYUMovementMode::CLIMB;
+					RYUClimbingMode = ERYUClimbingMode::CLIMBDOWNLEDGE;
+
+					FVector _HangLocation = GetLedgeHangPosition();
+					ERYULedgeSideEntered _SideEntered = GetLedgeSideEntered();
+
+					switch (_SideEntered)
+					{
+					case ERYULedgeSideEntered::NONE:
+						break;
+					case ERYULedgeSideEntered::LeftSide:
+						SetActorRotation(FRotator(0, 90.0f, 0));
+						break;
+					case ERYULedgeSideEntered::RightSide:
+						SetActorRotation(FRotator(0, -90.0f, 0));
+						break;
+					default:
+						break;
+					}
+					SetActorLocation(_HangLocation);
+
+
+
+					//@ToDo: Play MontageSection ClimbDown in Reverse
+					if (ClimbAssetComp->ClimbDownMontage)
+					{
+						UE_LOG(LogTemp, Log, TEXT("StartPlaying: %s"), *ClimbAssetComp->ClimbDownMontage->GetName());
+					}
+					CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBDOWNLEDGE));
+					//CustMovementComp->SetMovementMode(MOVE_Flying);
+					PlayAnimMontage(ClimbAssetComp->ClimbDownMontage, 1.0f);
+
+					bHangPositionSet = true;
+					//ReSetHangUpPosition();
+				}
 			}
-			CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBDOWNLEDGE));
-			//CustMovementComp->SetMovementMode(MOVE_Flying);
-			PlayAnimMontage(ClimbAssetComp->ClimbDownMontage, 1.0f);
 		}
 	}
 
@@ -736,12 +789,12 @@ void ARYUCharacterIchi::HangOnLedgeAndClimb(float Val)
 			RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
 			CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBUPLEDGE));
 			UpOrDown = -1.0f;
-
+			ReSetHangUpPosition();
 			if (ClimbAssetComp->ClimbDownMontage)
 			{
 				//PlayAnimMontage(ClimbAssetComp->ClimbDownMontage, UpOrDown, ClimbAssetComp->ClimbDownStart);
 				PlayAnimMontage(ClimbAssetComp->ClimbUpMontage, UpOrDown, "Default");
-
+			
 			}
 		}
 	}
@@ -778,6 +831,8 @@ void ARYUCharacterIchi::HangOnLedgeAndClimb(float Val)
 		float _Bla = 110.0f;
 
 		UE_LOG(LogTemp, Log, TEXT("Sqrt(Distance) is %s: "), *FString::SanitizeFloat(FMath::Sqrt(distanceHit)));
+
+		ReSetHangUpPosition();
 
 		if (FMath::Sqrt(distanceHit) < _Bla)
 		{

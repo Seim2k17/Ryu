@@ -188,51 +188,51 @@ void URYUCustomizeMovementComponent::PhysClimbingLedge(float deltaTime, int32 It
 {
 
 	//TODo: updates the movement take modified walking state ! ATM FlyingState active
-	
+
 	/** Following is copypasted from CharacterMovementComponent::PhysFlying and ajdusted to Phyclimbing*/
 
-RestorePreAdditiveRootMotionVelocity();
+	RestorePreAdditiveRootMotionVelocity();
 
 
-ApplyRootMotionToVelocity(deltaTime);
+	ApplyRootMotionToVelocity(deltaTime);
 
-Iterations++;
-bJustTeleported = false;
+	Iterations++;
+	bJustTeleported = false;
 
-FVector OldLocation = UpdatedComponent->GetComponentLocation();
-const FVector Adjusted = Velocity * deltaTime;
-FHitResult Hit(1.f);
-SafeMoveUpdatedComponent(Adjusted, UpdatedComponent->GetComponentQuat(), true, Hit);
+	FVector OldLocation = UpdatedComponent->GetComponentLocation();
+	const FVector Adjusted = Velocity * deltaTime;
+	FHitResult Hit(1.f);
+	SafeMoveUpdatedComponent(Adjusted, UpdatedComponent->GetComponentQuat(), true, Hit);
 
-if (Hit.Time < 1.f)
-{
-	const FVector GravDir = FVector(0.f, 0.f, -1.f);
-	const FVector VelDir = Velocity.GetSafeNormal();
-	const float UpDown = GravDir | VelDir;
-
-	bool bSteppedUp = false;
-	if ((FMath::Abs(Hit.ImpactNormal.Z) < 0.2f) && (UpDown < 0.5f) && (UpDown > -0.2f) && CanStepUp(Hit))
+	if (Hit.Time < 1.f)
 	{
-		float stepZ = UpdatedComponent->GetComponentLocation().Z;
-		bSteppedUp = StepUp(GravDir, Adjusted * (1.f - Hit.Time), Hit);
-		if (bSteppedUp)
+		const FVector GravDir = FVector(0.f, 0.f, -1.f);
+		const FVector VelDir = Velocity.GetSafeNormal();
+		const float UpDown = GravDir | VelDir;
+
+		bool bSteppedUp = false;
+		if ((FMath::Abs(Hit.ImpactNormal.Z) < 0.2f) && (UpDown < 0.5f) && (UpDown > -0.2f) && CanStepUp(Hit))
 		{
-			OldLocation.Z = UpdatedComponent->GetComponentLocation().Z + (OldLocation.Z - stepZ);
+			float stepZ = UpdatedComponent->GetComponentLocation().Z;
+			bSteppedUp = StepUp(GravDir, Adjusted * (1.f - Hit.Time), Hit);
+			if (bSteppedUp)
+			{
+				OldLocation.Z = UpdatedComponent->GetComponentLocation().Z + (OldLocation.Z - stepZ);
+			}
+		}
+
+		if (!bSteppedUp)
+		{
+			//adjust and try again
+			HandleImpact(Hit, deltaTime, Adjusted);
+			SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);
 		}
 	}
 
-	if (!bSteppedUp)
+	if (!bJustTeleported && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
 	{
-		//adjust and try again
-		HandleImpact(Hit, deltaTime, Adjusted);
-		SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);
+		Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
 	}
-}
-
-if (!bJustTeleported && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
-{
-	Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
-}
 
 
 }

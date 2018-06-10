@@ -7,6 +7,7 @@
 #include "RYUENUM_PlayerActive.h"
 #include "Character/RYUENUM_MovementMode.h"
 #include "Character/RYUENUM_ClimbingMode.h"
+#include "RYUENUM_LedgeSideEntered.h"
 #include "RYUCharacterBase.generated.h"
 
 
@@ -85,10 +86,13 @@ public:
 	USphereComponent* TracerSphere;
 
 	UFUNCTION(BlueprintCallable, Category = "Climbing")
-	void SetLedgeHangPosition(FVector LedgeTargetPoint);
+	void SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide);
 
 	UFUNCTION(BlueprintCallable, Category = "Climbing")
 	FVector GetLedgeHangPosition();
+
+	UFUNCTION(BlueprintCallable, Category = "Climbing")
+	ERYULedgeSideEntered GetLedgeSideEntered();
 
 protected:
 
@@ -136,4 +140,6 @@ private:
 	FName TraceTag ="ClimbingDownTraceTag";
 
 	FVector LedgeHangPosition;
+
+	ERYULedgeSideEntered ESideEntered;
 };
