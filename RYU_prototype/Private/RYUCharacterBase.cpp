@@ -13,6 +13,8 @@
 #include "DrawDebugHelpers.h"
 #include "Math/UnrealMathUtility.h"
 #include "Engine/TargetPoint.h"
+#include "RYUClimbingActor.h"
+#include "Components/BoxComponent.h"
 
 
 // Sets default values
@@ -50,6 +52,12 @@ ARYUCharacterBase::ARYUCharacterBase()
 	TreshholdYWalkRun = 220.0f;
 
 	ESideEntered = ERYULedgeSideEntered::NONE;
+
+	CanClimbUpTagName = "CanClimbUp";
+	CanClimbDownTagName = "CanClimbDown";
+
+	LeftPositionTagName = "Left";
+	RightPositionTagName = "Right";
 	
 }
 
@@ -87,6 +95,12 @@ ARYUCharacterBase::ARYUCharacterBase(const class FObjectInitializer& ObjectIniti
 
 	ESideEntered = ERYULedgeSideEntered::NONE;
 
+	CanClimbUpTagName = "CanClimbUp";
+	CanClimbDownTagName = "CanClimbDown";
+
+	LeftPositionTagName = "Left";
+	RightPositionTagName = "Right";
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
 }
@@ -102,6 +116,9 @@ void ARYUCharacterBase::BeginPlay()
 	// 	SphereTracer->OnComponentEndOverlap.AddDynamic(this, &ARYUCharacterBase::OnSphereTracerHandleEndOverlap);
 
 	GetWorld()->DebugDrawTraceTag = TraceTag;
+
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &ARYUCharacterBase::OnHandleCapsuleBeginOverlap);
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &ARYUCharacterBase::OnHandleCapsuleEndOverlap);
 }
 
 void ARYUCharacterBase::MoveRight(float Val)
@@ -346,7 +363,11 @@ void ARYUCharacterBase::CheckClimbingLedge()
 
 void ARYUCharacterBase::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	if (OtherActor != nullptr)
+	
+	ARYUClimbingActor* ClimbActorOverlap = Cast<ARYUClimbingActor>(OtherActor);
+	
+	if ((OtherActor != nullptr) &&
+		(!ClimbActorOverlap))
 	{
 		SphereOverlappedActor = OtherActor;
 		bSphereTracerOverlap = true;
@@ -422,4 +443,122 @@ FVector ARYUCharacterBase::GetLedgeHangPosition()
 ERYULedgeSideEntered ARYUCharacterBase::GetLedgeSideEntered()
 {
 	return ESideEntered;
+}
+
+void ARYUCharacterBase::AddCapsuleOverlappedActor(AActor* OvActor)
+{
+	CapsuleOverlappedActors.Add(OvActor);
+}
+
+
+//void ARYUCharacterBase::RemoveCapsuleOverlappedActor(UPrimitiveComponent* OvComponent)
+void ARYUCharacterBase::RemoveCapsuleOverlappedActor(AActor* OvActor)
+{
+
+
+	CapsuleOverlappedActors.RemoveSingle(OvActor);
+// 	ARYUClimbingActor* RCA = nullptr;
+// 	
+// 	//it´s a trigger for sure
+// 	TArray<UPrimitiveComponent*> OvTrigger;
+// 
+// 	for (int i; i < CapsuleOverlappedActors.Num(); i++)
+// 	{
+// 
+// 	}
+// 	
+// 	if (RCA != nullptr)
+// 	{
+// 		CapsuleOverlappedActors.RemoveSingle(RCA);
+// 	}
+// 	
+}
+
+ARYUClimbingActor* ARYUCharacterBase::GetOverlappedClimbingActor(FName UpOrDown, FName LeftOrRight)
+{
+	ARYUClimbingActor* OverlappedClimbingActor = nullptr;
+
+	for (int i = 0; i < CapsuleOverlappedActors.Num(); i++)
+	{
+		ARYUClimbingActor* OvCA = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i]);
+		if (OvCA)
+		{
+			//it´s a trigger for sure
+			TArray<UPrimitiveComponent*> OvTrigger;
+			GetOverlappingComponents(OvTrigger);
+
+			//we assume and due gamedesign we pretend that we ONLY can overlapp ONE component from ONE actor but TWO actors at a time
+			UBoxComponent* BoxTrigger = Cast<UBoxComponent>(OvTrigger[0]);
+			if ((BoxTrigger->ComponentTags[0] == UpOrDown) &&
+				(BoxTrigger->ComponentTags[1] == LeftOrRight))
+			{
+				OverlappedClimbingActor = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i]);
+				break;
+			}
+			
+		}
+	}
+	
+	return OverlappedClimbingActor;
+}
+
+void ARYUCharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+	UE_LOG(LogTemp, Log, TEXT("CapslOvlp in: %s "), *OtherComp->GetName() );
+
+	//ToDo: need to handle other Triggerlements than ClimbingTriggers ???, for now and easyness we only do ClimbingTriggers
+
+	ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(OtherActor);
+	if (ARY)
+	{
+		CapsuleOverlappedActors.Add(OtherActor);
+
+		UE_LOG(LogTemp, Log, TEXT("CapslOvlpArray with: %d Actors"), CapsuleOverlappedActors.Num());
+
+		//easy check but u need to bee careful !!!
+		if (CapsuleOverlappedActors.Num() > 1)
+		{
+			RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
+			return;
+		}
+
+		if (RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN)
+		{
+			if (OtherComp->ComponentTags[0] == CanClimbDownTagName)
+			{
+				UE_LOG(LogTemp, Log, TEXT("CanClimbDown TAG: Overlap In"));
+				RYUClimbingMode = ERYUClimbingMode::CANCLIMBDOWNLEDGE;
+			}
+
+			if (OtherComp->ComponentTags[0] == CanClimbUpTagName)
+			{
+				UE_LOG(LogTemp, Log, TEXT("CanClimbUp TAG: Overlap In"));
+				RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPLEDGE;
+			}
+
+
+			//if UpAND DOwn the position needs to be set in Climb !
+			if (OtherComp->ComponentTags[1] == LeftPositionTagName)
+			{
+				SetLedgeHangPosition(ARY->LeftHangPosition->GetComponentLocation(), LeftPositionTagName);
+				UE_LOG(LogTemp, Log, TEXT("TAG: %s"), *LeftPositionTagName.ToString());
+			}
+
+			if (OtherComp->ComponentTags[1] == RightPositionTagName)
+			{
+				SetLedgeHangPosition(ARY->RightHangPosition->GetComponentLocation(), RightPositionTagName);
+				UE_LOG(LogTemp, Log, TEXT("TAG: %s"), *RightPositionTagName.ToString());
+			}
+		}
+	}
+}
+
+void ARYUCharacterBase::OnHandleCapsuleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	UE_LOG(LogTemp, Log, TEXT("CapslOvlp out: %s"), *OtherComp->GetName());
+	RYUClimbingMode = ERYUClimbingMode::NONE;
+	RYUMovement = ERYUMovementMode::STAND;
+	SetLedgeHangPosition(FVector::ZeroVector, "none");
+
+	RemoveCapsuleOverlappedActor(OtherActor);
 }

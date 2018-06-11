@@ -8,6 +8,7 @@
 #include "Character/RYUENUM_MovementMode.h"
 #include "Character/RYUENUM_ClimbingMode.h"
 #include "RYUENUM_LedgeSideEntered.h"
+#include "RYUClimbingActor.h"
 #include "RYUCharacterBase.generated.h"
 
 
@@ -94,6 +95,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Climbing")
 	ERYULedgeSideEntered GetLedgeSideEntered();
 
+	UFUNCTION()
+		void AddCapsuleOverlappedActor(AActor* OvActor);
+
+	UFUNCTION()
+		//void RemoveCapsuleOverlappedActor(UPrimitiveComponent* OvComp);
+		void RemoveCapsuleOverlappedActor(AActor* OvActor);
+
+	UFUNCTION(BlueprintCallable)
+		ARYUClimbingActor* GetOverlappedClimbingActor(FName UpOrDown, FName LeftOrRight);
+
+	UFUNCTION()
+		void OnHandleCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
+			int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+
+	UFUNCTION()
+		void OnHandleCapsuleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 protected:
 
 	/** METHODS */
@@ -128,6 +146,14 @@ protected:
 	FVector LedgeTracerWall;
 
 	AActor* SphereOverlappedActor;
+
+	TArray<AActor*> CapsuleOverlappedActors;
+
+	FName CanClimbUpTagName;
+	FName CanClimbDownTagName;
+
+	FName LeftPositionTagName;
+	FName RightPositionTagName;
 
 private:
 

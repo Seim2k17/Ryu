@@ -47,6 +47,8 @@ protected:
 	virtual void PhysClimbingLadder(float deltaTime, int32 Iterations);
 
 	bool bClimbUpAllowed;
+
+	void CheckOverlappingActors();
 	
 
 public:
@@ -103,5 +105,7 @@ public:
 private:
 
 	int32 NormalMaxJumpCount;
+
+	bool bDoStuffOnce;
 
 };

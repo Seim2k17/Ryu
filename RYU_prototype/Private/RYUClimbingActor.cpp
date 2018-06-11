@@ -106,64 +106,79 @@ void ARYUClimbingActor::BeginPlay()
 
 void ARYUClimbingActor::OnTriggerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	ARYUCharacterIchi* MyChar = Cast<ARYUCharacterIchi>(OtherActor);
-	if (MyChar)
-	{
-		//MyChar->RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
-		
-		UCapsuleComponent* MyOvComp = Cast<UCapsuleComponent>(OtherComp);
-
-		
-		if(MyOvComp == MyChar->GetCapsuleComponent()) 
-		{
-			if (OverlappedComponent->ComponentTags[0] == CanClimbDownTag)
-			{
-				UE_LOG(LogTemp, Log, TEXT("CanClimbDown TAG: Overlap In"));
-				MyChar->RYUClimbingMode = ERYUClimbingMode::CANCLIMBDOWNLEDGE;
-			}
-
-			if (OverlappedComponent->ComponentTags[0] == CanClimbUpTag)
-			{
-				UE_LOG(LogTemp, Log, TEXT("CanClimbUp TAG: Overlap In"));
-				MyChar->RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPLEDGE;
-			}
-
-			if (OverlappedComponent->ComponentTags[1] == LeftPositionTag)
-			{
-				MyChar->SetLedgeHangPosition(LeftHangPosition->GetComponentLocation(), LeftPositionTag);
-				UE_LOG(LogTemp, Log, TEXT("TAG: %s"),*LeftPositionTag.ToString());
-			}
-
-			if (OverlappedComponent->ComponentTags[1] == RightPositionTag)
-			{
-				MyChar->SetLedgeHangPosition(RightHangPosition->GetComponentLocation(), RightPositionTag);
-				UE_LOG(LogTemp, Log, TEXT("TAG: %s"), *RightPositionTag.ToString());
-			}
-		}
-		
-	}
+	//move it to the player because mostly the player enters the trigger not the platform enters the player except it´s moving but not for now
+// 	ARYUCharacterIchi* MyChar = Cast<ARYUCharacterIchi>(OtherActor);
+// 	if (MyChar)
+// 	{
+// 		//MyChar->RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
+// 		
+// 		UCapsuleComponent* MyOvComp = Cast<UCapsuleComponent>(OtherComp);
+// 
+// 		TArray<AActor*> OverlappedActors;
+// 		MyChar->GetOverlappingActors(OverlappedActors, TSubclassOf<ARYUClimbingActor>());
+// 		bool CheckUpDownActor = false;
+// 
+// 		if(MyOvComp == MyChar->GetCapsuleComponent()) 
+// 		{
+// 			if (OverlappedComponent->ComponentTags[0] == CanClimbDownTag)
+// 			{
+// 				UE_LOG(LogTemp, Log, TEXT("CanClimbDown TAG: Overlap In"));
+// 				MyChar->RYUClimbingMode = ERYUClimbingMode::CANCLIMBDOWNLEDGE;
+// 			}
+// 
+// 			if (OverlappedComponent->ComponentTags[0] == CanClimbUpTag)
+// 			{
+// 				UE_LOG(LogTemp, Log, TEXT("CanClimbUp TAG: Overlap In"));
+// 				MyChar->RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPLEDGE;
+// 			}
+// 
+// 			//easy check but u need to bee careful !!!
+// 			if (OverlappedActors.Num() > 1)
+// 			{
+// 				MyChar->RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
+// 			}
+// 
+// 			if (OverlappedComponent->ComponentTags[1] == LeftPositionTag)
+// 			{
+// 				MyChar->SetLedgeHangPosition(LeftHangPosition->GetComponentLocation(), LeftPositionTag);
+// 				UE_LOG(LogTemp, Log, TEXT("TAG: %s"),*LeftPositionTag.ToString());
+// 			}
+// 
+// 			if (OverlappedComponent->ComponentTags[1] == RightPositionTag)
+// 			{
+// 				MyChar->SetLedgeHangPosition(RightHangPosition->GetComponentLocation(), RightPositionTag);
+// 				UE_LOG(LogTemp, Log, TEXT("TAG: %s"), *RightPositionTag.ToString());
+// 			}
+// 		}
+// 		
+// 	}
 }
 
 void ARYUClimbingActor::OnTriggerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	ARYUCharacterIchi* MyChar = Cast<ARYUCharacterIchi>(OtherActor);
-	if (MyChar)
-	{
 
-		//MyChar->RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
-
-		USphereComponent* MyOvComp = Cast<USphereComponent>(OtherComp);
-
-		if (MyOvComp == MyChar->SphereTracer)
-		{
-			UE_LOG(LogTemp, Log, TEXT("CanClimbDown TAG: Overlap Out"));
-			MyChar->RYUClimbingMode = ERYUClimbingMode::NONE;
-
-			MyChar->SetLedgeHangPosition(FVector::ZeroVector, "none");
-		}
-
-		
-	}
+	/************************************************************************/
+	/* Hmmm move it to the player                                                                      */
+	/************************************************************************/
+// 	ARYUCharacterIchi* MyChar = Cast<ARYUCharacterIchi>(OtherActor);
+// 	if (MyChar)
+// 	{
+// 
+// 		//MyChar->RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
+// 
+// 		USphereComponent* MyOvComp = Cast<USphereComponent>(OtherComp);
+// 
+// 		if (MyOvComp == MyChar->SphereTracer)
+// 		{
+// 			UE_LOG(LogTemp, Log, TEXT("CanClimbDown TAG: Overlap Out"));
+// 			MyChar->RYUClimbingMode = ERYUClimbingMode::NONE;
+// 			MyChar->RYUMovement = ERYUMovementMode::STAND;
+// 
+// 			MyChar->SetLedgeHangPosition(FVector::ZeroVector, "none");
+// 		}
+// 
+// 		
+// 	}
 		
 }
 

@@ -100,6 +100,8 @@ void ARYUCharacterIchi::InitializeCharacterValues()
 
 	bHangPositionSet = false;
 
+	bDoOnceClimbInput = false;
+
 }
 
 // Called when the game starts or when spawned
@@ -203,6 +205,9 @@ void ARYUCharacterIchi::DrawDebugInfosOnScreen()
 		case ERYUClimbingMode::CANCLIMBUPLEDGE:
 			ClimbMode = "CanClimbUpLedge";
 			break;
+		case ERYUClimbingMode::CANCLIMBUPANDDOWN:
+			ClimbMode = "CanClimbUpAndDownLedge";
+			break;
 		case ERYUClimbingMode::FALLDOWNLEDGE:
 			ClimbMode = "FallingDownLedge";
 			break;
@@ -247,7 +252,10 @@ void ARYUCharacterIchi::ReSetHangUpPosition()
 
 void ARYUCharacterIchi::Jump()
 {
-	switch (RYUMovement)
+
+	if (RYUClimbingMode == ERYUClimbingMode::NONE)
+	{
+		switch (RYUMovement)
 		{
 		case ERYUMovementMode::CANGRABLEDGE:
 		{
@@ -270,7 +278,37 @@ void ARYUCharacterIchi::Jump()
 			//CanClimbUp(1.0f, HangLedgePosition, GetActorLocation());
 			return;
 		}
-		
+
+		}
+	}
+	
+
+	switch (RYUClimbingMode)
+	{
+		case ERYUClimbingMode::NONE:
+			break;
+		case ERYUClimbingMode::CANCLIMBUPLEDGE:
+			Climb(1.0f);
+			return;
+			//break;
+		case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
+			break;
+		case ERYUClimbingMode::CANCLIMBUPANDDOWN:
+			break;
+		case ERYUClimbingMode::CLIMBDOWNLEDGE:
+			break;
+		case ERYUClimbingMode::CLIMBUPLEDGE:
+			break;
+		case ERYUClimbingMode::FALLDOWNLEDGE:
+			break;
+		case ERYUClimbingMode::HANGONLEDGE:
+			break;
+		case ERYUClimbingMode::CLIMBLADDERUP:
+			break;
+		case ERYUClimbingMode::CLIMBLADDERDOWN:
+			break;
+		default:
+			break;
 	}
 
 	if (bJumpJustStarted == false)
@@ -566,14 +604,7 @@ void ARYUCharacterIchi::Climb(float Val)
 				CanClimbDown(Val);
 				break;
 			case ERYUClimbingMode::CANCLIMBUPANDDOWN:
-				if (Val > 0.8)
-				{
-					CanClimbUp(Val, GetActorLocation());
-				}
-				if (Val < - 0.5)
-				{
-					CanClimbDown(Val);
-				}
+				CanClimbUpAndDown(Val, GetActorLocation());
 				break;
 			case ERYUClimbingMode::CLIMBDOWNLEDGE:
 				break;
@@ -647,7 +678,7 @@ void ARYUCharacterIchi::CanClimbUp(float Val, FVector StartClimbUpPosition)
 				//@ToDo: later replace with JumpUpHangAni
 				PlayAnimMontage(ClimbAssetComp->ClimbHangMontage, 1.0f);
 
-				GetWorldTimerManager().SetTimer(AllowClimbUp_TimerHandle, this, &ARYUCharacterIchi::ToggleAllowClimbUp, AllowClimbUpTime, false, AllowClimbUpTime);
+				GetWorldTimerManager().SetTimer(AllowClimbUp_TimerHandle, this, &ARYUCharacterIchi::SetAllowClimbUpTrue, AllowClimbUpTime, false, AllowClimbUpTime);
 
 			}
 		}
@@ -711,6 +742,78 @@ void ARYUCharacterIchi::CanClimbDown(float Val)
 		}
 	}
 
+}
+
+void ARYUCharacterIchi::CanClimbUpAndDown(float Val, FVector StartClimbPosition)
+{
+	//crappy code ? !
+	if (!bDoOnceClimbInput)
+	{
+		bDoOnceClimbInput = true;
+
+		ARYUClimbingActor* AboveActor = nullptr;
+		ARYUClimbingActor* BelowActor = nullptr;
+
+		ERYUClimbUpOrDownMode ClimbUpOrDown = ERYUClimbUpOrDownMode::NONE;
+
+		if (Val > 0.8)
+		{
+			ClimbUpOrDown = ERYUClimbUpOrDownMode::CLIMBUP;
+		}
+		else
+		{
+			if (Val < -0.5)
+			{
+				ClimbUpOrDown = ERYUClimbUpOrDownMode::CLIMDOWN;
+			}
+		}
+
+		for (int i = 0; i < CapsuleOverlappedActors.Num(); i++)
+		{
+			//AFTERMAX TALK: BAEMM ON THE HEAD FACEPALM
+			//BLUB save the Overlapped Components not the actors and check tags (die ich ja schon hab)
+			//ARYUClimbingActor* RCA = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i]);
+			//Positionen der actor vergleichen der der in der z-Posi groesser ist ist oben
+			if (i > 0)
+			{
+				if (CapsuleOverlappedActors[i]->GetActorLocation().Z < CapsuleOverlappedActors[i - 1]->GetActorLocation().Z)
+				{
+					AboveActor = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i - 1]);
+					BelowActor = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i]);
+				}
+				else
+				{
+					AboveActor = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i]);
+					BelowActor = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i-1]);
+				}
+			}
+		}
+
+		//ToDo: calc. & set Position
+		if (ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMBUP)
+		{
+
+			// 	if (OtherComp->ComponentTags[1] == LeftPositionTagName)
+			// 	{
+			// 		SetLedgeHangPosition(ARY->LeftHangPosition->GetComponentLocation(), LeftPositionTagName);
+			// 		UE_LOG(LogTemp, Log, TEXT("TAG: %s"), *LeftPositionTagName.ToString());
+			// 	}
+			// 
+			// 	(OtherComp->ComponentTags[0] == CanClimbUpTagName)
+			// 	if (OtherComp->ComponentTags[0] == CanClimbDownTagName)
+			//AboveActor: Left or Right ?
+			SetLedgeHangPosition(AboveActor->LeftHangPosition->GetComponentLocation(), LeftPositionTagName);
+			CanClimbUp(Val, GetActorLocation());
+		}
+
+		if (ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMDOWN)
+		{
+			//BelowActor
+			SetLedgeHangPosition(BelowActor->LeftHangPosition->GetComponentLocation(), LeftPositionTagName);
+			CanClimbDown(Val);
+		}
+	}
+	
 }
 
 void ARYUCharacterIchi::CheckClimbingLedge()
@@ -863,25 +966,24 @@ void ARYUCharacterIchi::HangOnLedgeAndClimb(float Val)
 
 }
 
-
-
-void ARYUCharacterIchi::ToggleAllowClimbUp()
+void ARYUCharacterIchi::SetAllowClimbUpTrue()
 {
+	UE_LOG(LogTemp, Log, TEXT("bAlloClimbing: true"));
+	bAllowClimbUp = true;
+	RYUMovement = ERYUMovementMode::CLIMB;
+	RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+}
+
+void ARYUCharacterIchi::SetAllowClimbUpFalse()
+{
+	UE_LOG(LogTemp, Log, TEXT("bAlloClimbing: false"));
+	bAllowClimbUp = false;
+}
 
 
-	if (bAllowClimbUp)
-	{
-		UE_LOG(LogTemp, Log, TEXT("bAlloClimbing: false"));
-		bAllowClimbUp = false;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("bAlloClimbing: true"));
-		bAllowClimbUp = true;
-		RYUMovement = ERYUMovementMode::CLIMB;
-		RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
-	}
-
+void ARYUCharacterIchi::ResetDoOnceClimbInput()
+{
+	bDoOnceClimbInput = false;
 }
 
 #if WITH_EDITOR

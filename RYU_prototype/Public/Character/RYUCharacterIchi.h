@@ -15,6 +15,15 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCanClimbUpSignature, float, Value
 class URYUCustomizeMovementComponent;
 class UClimbAssetComponent;
 
+UENUM(BlueprintType)
+enum class ERYUClimbUpOrDownMode : uint8
+{
+	NONE UMETA(DisplayName = "none"),
+	CLIMBUP UMETA(DisplayName = "ClimbUpwards"),
+	CLIMDOWN UMETA(DisplayName = "ClimbDownwards"),
+};
+
+
 UCLASS()
 class RYU_PROTOTYPE_API ARYUCharacterIchi : public ARYUCharacterBase
 {
@@ -60,11 +69,16 @@ public:
 	ERYUPlayerActive PlayerActive;
 
 	UFUNCTION()
-		void ToggleAllowClimbUp();
+		void SetAllowClimbUpTrue();
+
+	UFUNCTION()
+		void SetAllowClimbUpFalse();
 
 	UPROPERTY(BlueprintAssignable, Category = "Climbing")
 		FOnCanClimbUpSignature OnCanClimbUp;
-	
+
+	void ResetDoOnceClimbInput();
+
 protected:
 
 	// Called when the game starts or when spawned
@@ -89,6 +103,8 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Climbing")
 	void CanClimbUp(float Val, FVector StartClimbUpPosition);
+
+	void CanClimbUpAndDown(float Val, FVector StartClimbPosition);
 
 	void CheckClimbingLedge() override;
 
@@ -153,6 +169,5 @@ private:
 
 	FName TraceTagFalling = "FallingDownTraceTag";
 
-	
-
+	bool bDoOnceClimbInput;
 };
