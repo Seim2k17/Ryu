@@ -182,6 +182,25 @@ void ARYUClimbingActor::OnTriggerHandleEndOverlap(UPrimitiveComponent* Overlappe
 		
 }
 
+#if WITH_EDITOR
+void ARYUClimbingActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	LeftDownTrigger->SetVisibility(bLeftDownTriggerIsActive);
+	LeftDownTrigger->bGenerateOverlapEvents = bLeftDownTriggerIsActive;
+
+	LeftUpTrigger->SetVisibility(bLeftUpTriggerIsActive);
+	LeftUpTrigger->bGenerateOverlapEvents = bLeftUpTriggerIsActive;
+
+	RightDownTrigger->SetVisibility(bRightDownTriggerIsActive);
+	RightDownTrigger->bGenerateOverlapEvents = bRightDownTriggerIsActive;
+
+	RightUpTrigger->SetVisibility(bRightUpTriggerIsActive);
+	RightUpTrigger->bGenerateOverlapEvents = bRightUpTriggerIsActive;
+}
+#endif
+
 // Called every frame
 void ARYUClimbingActor::Tick(float DeltaTime)
 {

@@ -48,8 +48,6 @@ protected:
 
 	bool bClimbUpAllowed;
 
-	void CheckOverlappingActors();
-	
 
 public:
 

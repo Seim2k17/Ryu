@@ -286,17 +286,6 @@ void URYUCustomizeMovementComponent::PhysClimbingLadder(float deltaTime, int32 I
 }
 
 
-void URYUCustomizeMovementComponent::CheckOverlappingActors()
-{
-	TArray<AActor*> OverlappingActors;
-	CharacterOwner->GetOverlappingActors(OverlappingActors, TSubclassOf<ARYUClimbingActor>());
-
-	for (int i=0;i<OverlappingActors.Num();i++)
-	{
-		UE_LOG(LogTemp, Log, TEXT("OvAc: %s"), *OverlappingActors[i]->GetName());
-	}
-}
-
 bool URYUCustomizeMovementComponent::DoJump(bool bReplayingMoves)
 {
 	//Test JumpInput
@@ -351,17 +340,17 @@ void URYUCustomizeMovementComponent::ResetClimbingState()
 		}
 
 		if ((MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
-			(MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE))
+			(MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
+			(MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN))
 		{
 			MyChar->RYUClimbingMode = ERYUClimbingMode::NONE;
 		}
-
-		CheckOverlappingActors();
 
 		ARYUCharacterIchi* MyIchiChar = Cast<ARYUCharacterIchi>(MyChar);
 		if (MyIchiChar)
 		{
 			MyIchiChar->ResetDoOnceClimbInput();
+			//MyIchiChar->CheckOverlappingComponents();
 		}
 	}
 }

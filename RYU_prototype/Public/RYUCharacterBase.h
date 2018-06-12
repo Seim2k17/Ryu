@@ -114,6 +114,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	/** Called for side to side input */
+	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void MoveRight(float Val);
 
 	/** Handle touch inputs. */
@@ -140,6 +141,7 @@ protected:
 	FVector LedgeTracerWall;
 
 	AActor* SphereOverlappedActor;
+	UPrimitiveComponent* SphereOverlappedComponent;
 
 	TArray<UPrimitiveComponent*> CapsuleOverlappedComponents;
 
@@ -148,6 +150,8 @@ protected:
 
 	FName LeftPositionTagName;
 	FName RightPositionTagName;
+
+	void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
 
 private:
 

@@ -160,8 +160,6 @@ void ARYUCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//doesn´t work properly FUCKSHITSUCKER
-	//CheckClimbDownTracer();
 }
 
 
@@ -229,6 +227,7 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 	FCollisionQueryParams ColParams(FName(TEXT("LedgeHeightTracerParams")), true, ActorToIgnore);
 	ColParams.bTraceComplex = true;
 	ColParams.bReturnPhysicalMaterial = false;
+	ColParams.TraceTag = TraceTag;
 
 	FHitResult HitresultHeight;
 
@@ -238,8 +237,8 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 	FQuat SweepRotHeight = GetActorQuat();
 
 	//cal. Start and End
-	float StartHeight = 500;
-	float EndHeight = 550;
+	float StartHeight = 300;
+	float EndHeight = 350;
 	SweepStartHeight = GetActorLocation();
 	SweepStartHeight.Z = SweepStartHeight.Z + StartHeight;
 
@@ -251,107 +250,107 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 
 	SweepEndHeight = SweepStartHeight;
 	SweepEndHeight.Z = SweepEndHeight.Z - EndHeight;
-// Macro End
+	// Macro End
 
 
-/************************************************************************/
-/* see DefaultEngine.ini:
-+DefaultChannelResponses=(Channel=ECC_GameTraceChannel1,Name="SphereTracer",DefaultResponse=ECR_Ignore,bTraceType=False,bStaticObject=False)
-+DefaultChannelResponses=(Channel=ECC_GameTraceChannel2,Name="LedgeTrace",DefaultResponse=ECR_Ignore,bTraceType=True,bStaticObject=False)
-*/
-/************************************************************************/
-//A: if there is a possible ledge Hit in Height 
-//@ToDo: If there are more than one ledges layered -> takes the above --> FAIL (=can´t climb)
-bool HitLedgeHeight = GetWorld()->SweepSingleByChannel(HitresultHeight, SweepStartHeight, SweepEndHeight, SweepRotHeight,
+	/************************************************************************/
+	/* see DefaultEngine.ini:
+	+DefaultChannelResponses=(Channel=ECC_GameTraceChannel1,Name="SphereTracer",DefaultResponse=ECR_Ignore,bTraceType=False,bStaticObject=False)
+	+DefaultChannelResponses=(Channel=ECC_GameTraceChannel2,Name="LedgeTrace",DefaultResponse=ECR_Ignore,bTraceType=True,bStaticObject=False)
+	*/
+	/************************************************************************/
+	//A: if there is a possible ledge Hit in Height 
+	//@ToDo: If there are more than one ledges layered -> takes the above --> FAIL (=can´t climb)
+	bool HitLedgeHeight = GetWorld()->SweepSingleByChannel(HitresultHeight, SweepStartHeight, SweepEndHeight, SweepRotHeight,
 	ECollisionChannel::ECC_EngineTraceChannel2, FCollisionShape::MakeSphere(2), ColParams);
 
-if (HitLedgeHeight)
-{
-	LedgeTracerHeight = HitresultHeight.ImpactPoint;
-	DrawDebugSphere(GetWorld(), LedgeTracerHeight, 5, 10, FColor::Green, false, 0.0f, 0, 0.0f);
-	/** Check if Ledge is in Height */
-	HipSocketLocation = GetMesh()->GetSocketLocation(CharacterHipSocketName);
-	float HipSocketZ = HipSocketLocation.Z;
-	float LedgeTracerHeightZ = LedgeTracerHeight.Z;
-
-	if (FMath::IsWithinInclusive((HipSocketZ - LedgeTracerHeightZ), -200.0f, 0.0f))
+	if (HitLedgeHeight)
 	{
-		//if (!bLedgeTraceInRangeChanged)
-		{
-			//UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
-			bLedgeTraceNotInRangeChanged = false;
-			//CAUTION when Ledges Overlap ! Maybe a pimp is needable !
-			bLedgeTraceInRangeChanged = true;
-			//UE_LOG(LogTemp, Log, TEXT("LedgeHeigth in Range"));
-			bLedgeHeightInRange = true;
+		LedgeTracerHeight = HitresultHeight.ImpactPoint;
+		DrawDebugSphere(GetWorld(), LedgeTracerHeight, 5, 10, FColor::Green, false, 0.0f, 0, 0.0f);
+		/** Check if Ledge is in Height */
+		HipSocketLocation = GetMesh()->GetSocketLocation(CharacterHipSocketName);
+		float HipSocketZ = HipSocketLocation.Z;
+		float LedgeTracerHeightZ = LedgeTracerHeight.Z;
 
-			//done in Tick (ichi) --> move to CharBase ?
-			if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
-				(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
-				(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
-				(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
-				(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE))
-			{
-				RYUMovement = ERYUMovementMode::CANGRABLEDGE;
-			}
-			
-		}
-	}
-	else {
-		//if (!bLedgeTraceNotInRangeChanged)
+		if (FMath::IsWithinInclusive((HipSocketZ - LedgeTracerHeightZ), -200.0f, 0.0f))
 		{
-			//UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
-			bLedgeTraceNotInRangeChanged = true;
-			bLedgeTraceInRangeChanged = false;
-			//UE_LOG(LogTemp, Log, TEXT("LedgeHeigth NOT in Range"));
-			bLedgeHeightInRange = false;
-
-			if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
-				(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
-				(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
-				(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
-				(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE))
+			//if (!bLedgeTraceInRangeChanged)
 			{
+				//UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
+				bLedgeTraceNotInRangeChanged = false;
+				//CAUTION when Ledges Overlap ! Maybe a pimp is needable !
+				bLedgeTraceInRangeChanged = true;
+				//UE_LOG(LogTemp, Log, TEXT("LedgeHeigth in Range"));
+				bLedgeHeightInRange = true;
+
 				//done in Tick (ichi) --> move to CharBase ?
-				RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+				if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
+					(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
+					(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
+					(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
+					(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE))
+				{
+					RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+				}
+			
+			}
+		}
+		else {
+			//if (!bLedgeTraceNotInRangeChanged)
+			{
+				//UE_LOG(LogTemp, Log, TEXT("LedgeHeigth: %s"), *LedgeTracerHeight.ToString());
+				bLedgeTraceNotInRangeChanged = true;
+				bLedgeTraceInRangeChanged = false;
+				//UE_LOG(LogTemp, Log, TEXT("LedgeHeigth NOT in Range"));
+				bLedgeHeightInRange = false;
+
+				if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
+					(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
+					(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
+					(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
+					(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE))
+				{
+					//done in Tick (ichi) --> move to CharBase ?
+					RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+				}
 			}
 		}
 	}
-}
-else
-{
-	//Reset Stuff
-	bLedgeTraceInRangeChanged = false;
-	bLedgeHeightInRange = false;
-	bLedgeTraceNotInRangeChanged = false;
-	bLedgeTracePossible = false;
-}
+	else
+	{
+		//Reset Stuff
+		bLedgeTraceInRangeChanged = false;
+		bLedgeHeightInRange = false;
+		bLedgeTraceNotInRangeChanged = false;
+		bLedgeTracePossible = false;
+	}
 
-bLedgeTracePossible = HitLedgeHeight;
+	bLedgeTracePossible = HitLedgeHeight;
 
-//** see Macro "Wall Tracer in Sidescroller.BP 
-FHitResult HitresultWall;
-FVector SweepStartWall;
-FVector SweepEndWall;
-FQuat SweepRotWall = GetActorQuat();
+	//** see Macro "Wall Tracer in Sidescroller.BP 
+	FHitResult HitresultWall;
+	FVector SweepStartWall;
+	FVector SweepEndWall;
+	FQuat SweepRotWall = GetActorQuat();
 
-SweepStartWall = GetActorLocation();
-FVector CharForwardWall = GetActorForwardVector();
-CharForwardWall.X = CharForwardWall.X * 150.0f;
-CharForwardWall.Y = CharForwardWall.Y * 150.0f;
-SweepEndWall = SweepStartWall + CharForwardWall;
+	SweepStartWall = GetActorLocation();
+	FVector CharForwardWall = GetActorForwardVector();
+	CharForwardWall.X = CharForwardWall.X * 150.0f;
+	CharForwardWall.Y = CharForwardWall.Y * 150.0f;
+	SweepEndWall = SweepStartWall + CharForwardWall;
 
-//Macro End
+	//Macro End
 
-//B: if there is a possible ledge Hit in a Wall infront
-bool HitLedgeWall = GetWorld()->SweepSingleByChannel(HitresultWall, SweepStartWall, SweepEndWall, SweepRotWall, ECollisionChannel::ECC_EngineTraceChannel2, FCollisionShape::MakeSphere(20), ColParams);
+	//B: if there is a possible ledge Hit in a Wall infront
+	bool HitLedgeWall = GetWorld()->SweepSingleByChannel(HitresultWall, SweepStartWall, SweepEndWall, SweepRotWall, ECollisionChannel::ECC_EngineTraceChannel2, FCollisionShape::MakeSphere(20), ColParams);
 
-if (HitLedgeWall)
-{
-	LedgeTracerWall = HitresultWall.ImpactPoint;
-	LedgeTracerWallNormal = HitresultWall.Normal;
-	DrawDebugSphere(GetWorld(), LedgeTracerWall, 5, 10, FColor::Green, false, 0.0f, 0, 0.0f);
-}
+	if (HitLedgeWall)
+	{
+		LedgeTracerWall = HitresultWall.ImpactPoint;
+		LedgeTracerWallNormal = HitresultWall.Normal;
+		DrawDebugSphere(GetWorld(), LedgeTracerWall, 5, 10, FColor::Green, false, 0.0f, 0, 0.0f);
+	}
 }
 
 void ARYUCharacterBase::CheckClimbingLedge()
@@ -363,29 +362,9 @@ void ARYUCharacterBase::CheckClimbingLedge()
 
 void ARYUCharacterBase::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	
-	ARYUClimbingActor* ClimbActorOverlap = Cast<ARYUClimbingActor>(OtherActor);
-	
-	if ((OtherActor != nullptr) &&
-		(!ClimbActorOverlap))
-	{
-		SphereOverlappedActor = OtherActor;
-		bSphereTracerOverlap = true;
-		UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In with: %s"),*SphereOverlappedActor->GetName());
-		if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
-			(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
-			(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
-			(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
-			(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE) &&
-			(RYUMovement != ERYUMovementMode::CLIMB))
-		
-		{
-			UE_LOG(LogTemp, Log, TEXT("SphereTracer: Mode: CanTraceActivated"));
-			RYUMovement = ERYUMovementMode::CANTRACELEDGE;
-		}
+	// a function just because we reuse the functionality in OnHandleCapsuleEndOverlap
 
-	}
-
+	OnSphereTracerCheckOverlap(OtherActor, OtherComp);
 }
 
 
@@ -393,7 +372,7 @@ void ARYUCharacterBase::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* Over
 {
 	bSphereTracerOverlap = false;
 	bLedgeHeightInRange = false;
-	//SphereOverlappedActor = nullptr;
+	SphereOverlappedActor = nullptr;
 	UE_LOG(LogTemp, Log, TEXT("SpherTracer Overlap Out"));
 	if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
 		(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
@@ -404,6 +383,38 @@ void ARYUCharacterBase::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* Over
 	{
 		UE_LOG(LogTemp, Log, TEXT("SphereTracer: Mode: Walk Activated"));
 		RYUMovement = ERYUMovementMode::WALK;
+	}
+}
+
+
+void ARYUCharacterBase::OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp)
+{
+	//UBoxComponent* ClimbComponentOverlap = Cast<UBoxComponent>(OtherComp);
+	ARYUClimbingActor* IgnoredActor_1 = Cast<ARYUClimbingActor>(OtherActor);
+	if(OtherActor != nullptr) UE_LOG(LogTemp, Log, TEXT("SphereTracer Overlap In with: %s"), *OtherActor->GetName());
+
+	if ((OtherActor != nullptr) &&
+		//(!ClimbComponentOverlap) &&
+		(!IgnoredActor_1))
+	{
+		//double Set when calling from OnHandleCapsuleEndOverlap, But WHO CARES ?
+		SphereOverlappedActor = OtherActor;
+		SphereOverlappedComponent = OtherComp;
+
+		bSphereTracerOverlap = true;
+		if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
+			(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
+			(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
+			(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
+			(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE) &&
+			(RYUMovement != ERYUMovementMode::CLIMB))
+
+		{
+			UE_LOG(LogTemp, Log, TEXT("SphereTracer: Mode: CanTraceActivated"));
+			//RYUMovement = ERYUMovementMode::CANTRACELEDGE;
+			RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+		}
+
 	}
 }
 
@@ -478,8 +489,15 @@ void ARYUCharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* Overlap
 	ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(OtherActor);
 	if (ARY)
 	{
+
+
 		//we work only with the components not with the actor itself
-		CapsuleOverlappedComponents.Add(OtherComp);
+		if (((OtherComp->ComponentTags[0] == CanClimbDownTagName) && ((ARY->bLeftDownTriggerIsActive) || (ARY->bRightDownTriggerIsActive))) &&
+			((OtherComp->ComponentTags[0] == CanClimbUpTagName) && ((ARY->bLeftUpTriggerIsActive) || (ARY->bRightUpTriggerIsActive))))
+		{
+			CapsuleOverlappedComponents.Add(OtherComp);
+		}
+		
 
 		UE_LOG(LogTemp, Log, TEXT("CapslOvlpArray with: %d Actors"), CapsuleOverlappedComponents.Num());
 
@@ -529,4 +547,7 @@ void ARYUCharacterBase::OnHandleCapsuleEndOverlap(UPrimitiveComponent* Overlappe
 	SetLedgeHangPosition(FVector::ZeroVector, "none");
 
 	CapsuleOverlappedComponents.RemoveSingle(OtherComp);
+
+	//Check if an actor is is collided with the SphereTracer
+	OnSphereTracerCheckOverlap(SphereOverlappedActor, SphereOverlappedComponent);
 }

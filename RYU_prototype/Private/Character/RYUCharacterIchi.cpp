@@ -132,8 +132,9 @@ void ARYUCharacterIchi::Tick(float DeltaTime)
 
 	currentFPS = 1 / DeltaTime;
 
-	/** Check if a ledge is nearby to climb, or hang, or snap jumping to it*/
-	CheckLedgeTracer();
+	/** Check if a ledge is nearby to climb, or hang, or snap jumping to it Implemented in BaseClass: RYUCharacterBase*/
+	/** Replace with simplier logic: Just Tag the Objects and play appropriate animation, FUCKING LedgeTrace doesn´t work like it should, maybe its because the game is pseudo 3D, mainly 2D*/
+	//CheckLedgeTracer();
 
  	if (bDebugOutputActive)
 	{
@@ -260,7 +261,8 @@ void ARYUCharacterIchi::Jump()
 		{
 		case ERYUMovementMode::CANGRABLEDGE:
 		{
-			CanGrabLedgeAndClimb(1.0f);
+			//CanGrabLedgeAndClimb(1.0f);
+			CanGrabLedges(1.0f);
 			//break;
 			return;
 		}
@@ -586,7 +588,8 @@ void ARYUCharacterIchi::Climb(float Val)
 			{
 				if (RYUClimbingMode ==  ERYUClimbingMode::NONE)
 				{
-					CanGrabLedgeAndClimb(Val);
+					CanGrabLedges(Val);
+					//CanGrabLedgeAndClimb(Val);
 					break;
 				}
 			}
@@ -747,91 +750,90 @@ void ARYUCharacterIchi::CanClimbDown(float Val)
 
 void ARYUCharacterIchi::CanClimbUpAndDown(float Val, FVector StartClimbPosition)
 {
-	//crappy code ? !
-	if (!bDoOnceClimbInput)
+	//we have input
+	if (Val != 0)
 	{
-		bDoOnceClimbInput = true;
-
-		
-		ERYUClimbUpOrDownMode ClimbUpOrDown = ERYUClimbUpOrDownMode::NONE;
-
-		if (Val > 0.8)
+		//crappy code ? !
+		if (!bDoOnceClimbInput)
 		{
-			ClimbUpOrDown = ERYUClimbUpOrDownMode::CLIMBUP;
-		}
-		else
-		{
-			if (Val < -0.5)
-			{
-				ClimbUpOrDown = ERYUClimbUpOrDownMode::CLIMDOWN;
+			UE_LOG(LogTemp, Log, TEXT("Climb(z): %s"), *FString::SanitizeFloat(Val));
+			ERYUClimbUpOrDownMode ClimbUpOrDown = ERYUClimbUpOrDownMode::NONE;
+
+			if (Val > 0.8)
+			{	
+				bDoOnceClimbInput = true;
+				ClimbUpOrDown = ERYUClimbUpOrDownMode::CLIMBUP;
 			}
-		}
-
-		for (int i = 0; i < CapsuleOverlappedComponents.Num(); i++)
-		{
-			UBoxComponent* BoxTrigger = Cast<UBoxComponent>(CapsuleOverlappedComponents[i]);
-			//AFTERMAX TALK: BAEMM ON THE HEAD FACEPALM
-			//BLUB save the Overlapped Components not the actors and check tags (die ich ja schon hab)
-			//ARYUClimbingActor* RCA = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i]);
-			//Positionen der actor vergleichen der der in der z-Posi groesser ist ist oben
-			if (BoxTrigger)
+			else
 			{
-
-				ARYUClimbingActor* ClimbAct = Cast<ARYUClimbingActor>(BoxTrigger->GetOwner());
-// 				CanClimbUpTagName = "CanClimbUp";
-// 				CanClimbDownTagName = "CanClimbDown";
-// 
-// 				LeftPositionTagName = "Left";
-// 				RightPositionTagName = "Right";
-				if (ClimbAct)
+				if (Val < -0.5)
 				{
-					if ((ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMBUP) &&
-						(BoxTrigger->ComponentTags[0] == CanClimbUpTagName) &&
-						(BoxTrigger->ComponentTags[1] == LeftPositionTagName))
-					{
-						//Get ClimbUpPosition Left
-						SetLedgeHangPosition(ClimbAct->LeftHangPosition->GetComponentLocation(), LeftPositionTagName);
-					}
+					bDoOnceClimbInput = true;
+					ClimbUpOrDown = ERYUClimbUpOrDownMode::CLIMDOWN;
+				}
+			}
 
-					if ((ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMBUP) &&
-						(BoxTrigger->ComponentTags[0] == CanClimbUpTagName) &&
-						(BoxTrigger->ComponentTags[1] == RightPositionTagName))
+			if (ClimbUpOrDown != ERYUClimbUpOrDownMode::NONE)
+			{
+				for (int i = 0; i < CapsuleOverlappedComponents.Num(); i++)
+				{
+					UBoxComponent* BoxTrigger = Cast<UBoxComponent>(CapsuleOverlappedComponents[i]);
+					//BLUB save the Overlapped Components not the actors and check tags (die ich ja schon hab)
+					if (BoxTrigger)
 					{
-						//Get ClimbUpPosition Right
-						SetLedgeHangPosition(ClimbAct->RightHangPosition->GetComponentLocation(), RightPositionTagName);
-					}
 
-					if ((ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMDOWN) &&
-						(BoxTrigger->ComponentTags[0] == CanClimbDownTagName) &&
-						(BoxTrigger->ComponentTags[1] == LeftPositionTagName))
-					{
-						//Get ClimbDownPosition Left
-						SetLedgeHangPosition(ClimbAct->LeftHangPosition->GetComponentLocation(), LeftPositionTagName);
-					}
+						ARYUClimbingActor* ClimbAct = Cast<ARYUClimbingActor>(BoxTrigger->GetOwner());
+						if (ClimbAct)
+						{
+							if ((ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMBUP) &&
+								(BoxTrigger->ComponentTags[0] == CanClimbUpTagName) &&
+								(BoxTrigger->ComponentTags[1] == LeftPositionTagName))
+							{
+								//Get ClimbUpPosition Left
+								SetLedgeHangPosition(ClimbAct->LeftHangPosition->GetComponentLocation(), LeftPositionTagName);
+							}
 
-					if ((ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMDOWN) &&
-						(BoxTrigger->ComponentTags[0] == CanClimbDownTagName) &&
-						(BoxTrigger->ComponentTags[1] == RightPositionTagName))
-					{
-						//Get ClimbDownPosition Right
-						SetLedgeHangPosition(ClimbAct->RightHangPosition->GetComponentLocation(), RightPositionTagName);
+							if ((ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMBUP) &&
+								(BoxTrigger->ComponentTags[0] == CanClimbUpTagName) &&
+								(BoxTrigger->ComponentTags[1] == RightPositionTagName))
+							{
+								//Get ClimbUpPosition Right
+								SetLedgeHangPosition(ClimbAct->RightHangPosition->GetComponentLocation(), RightPositionTagName);
+							}
+
+							if ((ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMDOWN) &&
+								(BoxTrigger->ComponentTags[0] == CanClimbDownTagName) &&
+								(BoxTrigger->ComponentTags[1] == LeftPositionTagName))
+							{
+								//Get ClimbDownPosition Left
+								SetLedgeHangPosition(ClimbAct->LeftHangPosition->GetComponentLocation(), LeftPositionTagName);
+							}
+
+							if ((ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMDOWN) &&
+								(BoxTrigger->ComponentTags[0] == CanClimbDownTagName) &&
+								(BoxTrigger->ComponentTags[1] == RightPositionTagName))
+							{
+								//Get ClimbDownPosition Right
+								SetLedgeHangPosition(ClimbAct->RightHangPosition->GetComponentLocation(), RightPositionTagName);
+							}
+						}
+
 					}
 				}
-				
+			
 			}
-		}
 
-	
-		if (ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMBUP)
-		{
-			CanClimbUp(Val, GetActorLocation());
 
-		}
+			if (ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMBUP)
+			{
+				CanClimbUp(Val, GetActorLocation());
 
-		if (ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMDOWN)
-		{
-			//BelowActor
-			CanClimbDown(Val);
+			}
+
+			if (ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMDOWN)
+			{
+				CanClimbDown(Val);
+			}
 		}
 	}
 	
@@ -870,12 +872,14 @@ void ARYUCharacterIchi::CanGrabLedgeAndClimb(float Val)
 			}
 
 
-			if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 0.0f, 101.0f))
+			//YOU IDIOT !
+
+			if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 0.0f, 110.0f))
 			{
 				LedgePosi = ERYULedgePosition::Above_080cm;
 			}
 
-			if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 101.01f, 130.0f))
+			if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 110.01f, 130.0f))
 			{
 				LedgePosi = ERYULedgePosition::Above_100cm;
 			}
@@ -900,6 +904,48 @@ void ARYUCharacterIchi::CanGrabLedgeAndClimb(float Val)
 	}
 }
 
+
+void ARYUCharacterIchi::CanGrabLedges(float Val)
+{
+	if (SphereOverlappedActor != nullptr)
+	{
+		//we can only have one Tag resp. the first Tag is used
+		TArray<FName> OverlapTags = SphereOverlappedActor->Tags;
+		if (OverlapTags.Num() != 1)
+		{
+			UE_LOG(LogTemp,Log, TEXT("Please add only one Tag."))
+		}
+		else
+		{
+			if (Val > 0.8)
+			{
+				
+				if (!CustMovementComp->IsFalling())
+				{
+					CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBUPLEDGE));
+
+					ERYULedgePosition LedgePosi;
+
+					/** Add here more cases... */
+					if (OverlapTags[0] == "Above_080") LedgePosi = ERYULedgePosition::Above_080cm;
+					if (OverlapTags[0] == "Above_100") LedgePosi = ERYULedgePosition::Above_100cm;;
+					if (OverlapTags[0] == "Above_150") LedgePosi = ERYULedgePosition::Above_150cm;
+					if (OverlapTags[0] == "Above_200") LedgePosi = ERYULedgePosition::Above_200cm;
+					if (OverlapTags[0] == "climbing") LedgePosi = ERYULedgePosition::Above_450cm;
+					if (OverlapTags[0] == "hurdle") LedgePosi = ERYULedgePosition::Hurdle_080cm;
+
+
+					//** and of course add reactions (animations) in the BP_Character_ichi
+					CustMovementComp->OnCanClimbLedge.Broadcast(LedgePosi);
+
+				}
+				
+				
+			}
+		}
+
+	}
+}
 
 void ARYUCharacterIchi::HangOnLedgeAndClimb(float Val)
 {	
@@ -985,6 +1031,15 @@ void ARYUCharacterIchi::HangOnLedgeAndClimb(float Val)
 
 	
 
+}
+
+
+void ARYUCharacterIchi::CheckOverlappingComponents()
+{
+	for (int i = 0; i < CapsuleOverlappedComponents.Num(); i++)
+	{
+		UE_LOG(LogTemp, Log, TEXT("OvAc: %s"), *CapsuleOverlappedComponents[i]->GetName());
+	}
 }
 
 void ARYUCharacterIchi::SetAllowClimbUpTrue()

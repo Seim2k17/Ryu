@@ -31,6 +31,8 @@ protected:
 	UFUNCTION()
 	void OnTriggerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

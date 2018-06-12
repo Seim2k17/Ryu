@@ -79,6 +79,8 @@ public:
 
 	void ResetDoOnceClimbInput();
 
+	void CheckOverlappingComponents();
+
 protected:
 
 	// Called when the game starts or when spawned
@@ -108,7 +110,11 @@ protected:
 
 	void CheckClimbingLedge() override;
 
+	//"OLD" Traced solution for obstacles
 	void CanGrabLedgeAndClimb(float Val);
+
+	//"NEW" tagged Solution for Obstacles
+	void CanGrabLedges(float Val);
 
 	void HangOnLedgeAndClimb(float Val);
 
@@ -170,4 +176,5 @@ private:
 	FName TraceTagFalling = "FallingDownTraceTag";
 
 	bool bDoOnceClimbInput;
+
 };
