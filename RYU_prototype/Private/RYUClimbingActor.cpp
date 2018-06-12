@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RYUClimbingActor.h"
 #include "Components/StaticMeshComponent.h"
@@ -106,7 +106,7 @@ void ARYUClimbingActor::BeginPlay()
 
 void ARYUClimbingActor::OnTriggerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	//move it to the player because mostly the player enters the trigger not the platform enters the player except it�s moving but not for now
+	//move it to the player because mostly the player enters the trigger not the platform enters the player except it´s moving but not for now
 // 	ARYUCharacterIchi* MyChar = Cast<ARYUCharacterIchi>(OtherActor);
 // 	if (MyChar)
 // 	{

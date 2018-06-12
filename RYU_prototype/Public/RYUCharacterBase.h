@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -14,6 +14,7 @@
 
 class UUserWidget;
 class USphereComponent;
+class UBoxComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChangeActivePlayer);
 
@@ -95,15 +96,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Climbing")
 	ERYULedgeSideEntered GetLedgeSideEntered();
 
-	UFUNCTION()
-		void AddCapsuleOverlappedActor(AActor* OvActor);
-
-	UFUNCTION()
-		//void RemoveCapsuleOverlappedActor(UPrimitiveComponent* OvComp);
-		void RemoveCapsuleOverlappedActor(AActor* OvActor);
-
 	UFUNCTION(BlueprintCallable)
-		ARYUClimbingActor* GetOverlappedClimbingActor(FName UpOrDown, FName LeftOrRight);
+		UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);
 
 	UFUNCTION()
 		void OnHandleCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
@@ -147,7 +141,7 @@ protected:
 
 	AActor* SphereOverlappedActor;
 
-	TArray<AActor*> CapsuleOverlappedActors;
+	TArray<UPrimitiveComponent*> CapsuleOverlappedComponents;
 
 	FName CanClimbUpTagName;
 	FName CanClimbDownTagName;

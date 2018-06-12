@@ -8,6 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "Character/RYUENUM_LedgePos.h"
 #include "Runtime/Engine/Classes/Engine/Engine.h"
 #include "Components/ClimbAssetComponent.h"
@@ -751,9 +752,7 @@ void ARYUCharacterIchi::CanClimbUpAndDown(float Val, FVector StartClimbPosition)
 	{
 		bDoOnceClimbInput = true;
 
-		ARYUClimbingActor* AboveActor = nullptr;
-		ARYUClimbingActor* BelowActor = nullptr;
-
+		
 		ERYUClimbUpOrDownMode ClimbUpOrDown = ERYUClimbUpOrDownMode::NONE;
 
 		if (Val > 0.8)
@@ -768,48 +767,70 @@ void ARYUCharacterIchi::CanClimbUpAndDown(float Val, FVector StartClimbPosition)
 			}
 		}
 
-		for (int i = 0; i < CapsuleOverlappedActors.Num(); i++)
+		for (int i = 0; i < CapsuleOverlappedComponents.Num(); i++)
 		{
+			UBoxComponent* BoxTrigger = Cast<UBoxComponent>(CapsuleOverlappedComponents[i]);
 			//AFTERMAX TALK: BAEMM ON THE HEAD FACEPALM
 			//BLUB save the Overlapped Components not the actors and check tags (die ich ja schon hab)
 			//ARYUClimbingActor* RCA = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i]);
 			//Positionen der actor vergleichen der der in der z-Posi groesser ist ist oben
-			if (i > 0)
+			if (BoxTrigger)
 			{
-				if (CapsuleOverlappedActors[i]->GetActorLocation().Z < CapsuleOverlappedActors[i - 1]->GetActorLocation().Z)
+
+				ARYUClimbingActor* ClimbAct = Cast<ARYUClimbingActor>(BoxTrigger->GetOwner());
+// 				CanClimbUpTagName = "CanClimbUp";
+// 				CanClimbDownTagName = "CanClimbDown";
+// 
+// 				LeftPositionTagName = "Left";
+// 				RightPositionTagName = "Right";
+				if (ClimbAct)
 				{
-					AboveActor = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i - 1]);
-					BelowActor = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i]);
+					if ((ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMBUP) &&
+						(BoxTrigger->ComponentTags[0] == CanClimbUpTagName) &&
+						(BoxTrigger->ComponentTags[1] == LeftPositionTagName))
+					{
+						//Get ClimbUpPosition Left
+						SetLedgeHangPosition(ClimbAct->LeftHangPosition->GetComponentLocation(), LeftPositionTagName);
+					}
+
+					if ((ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMBUP) &&
+						(BoxTrigger->ComponentTags[0] == CanClimbUpTagName) &&
+						(BoxTrigger->ComponentTags[1] == RightPositionTagName))
+					{
+						//Get ClimbUpPosition Right
+						SetLedgeHangPosition(ClimbAct->RightHangPosition->GetComponentLocation(), RightPositionTagName);
+					}
+
+					if ((ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMDOWN) &&
+						(BoxTrigger->ComponentTags[0] == CanClimbDownTagName) &&
+						(BoxTrigger->ComponentTags[1] == LeftPositionTagName))
+					{
+						//Get ClimbDownPosition Left
+						SetLedgeHangPosition(ClimbAct->LeftHangPosition->GetComponentLocation(), LeftPositionTagName);
+					}
+
+					if ((ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMDOWN) &&
+						(BoxTrigger->ComponentTags[0] == CanClimbDownTagName) &&
+						(BoxTrigger->ComponentTags[1] == RightPositionTagName))
+					{
+						//Get ClimbDownPosition Right
+						SetLedgeHangPosition(ClimbAct->RightHangPosition->GetComponentLocation(), RightPositionTagName);
+					}
 				}
-				else
-				{
-					AboveActor = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i]);
-					BelowActor = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i-1]);
-				}
+				
 			}
 		}
 
-		//ToDo: calc. & set Position
+	
 		if (ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMBUP)
 		{
-
-			// 	if (OtherComp->ComponentTags[1] == LeftPositionTagName)
-			// 	{
-			// 		SetLedgeHangPosition(ARY->LeftHangPosition->GetComponentLocation(), LeftPositionTagName);
-			// 		UE_LOG(LogTemp, Log, TEXT("TAG: %s"), *LeftPositionTagName.ToString());
-			// 	}
-			// 
-			// 	(OtherComp->ComponentTags[0] == CanClimbUpTagName)
-			// 	if (OtherComp->ComponentTags[0] == CanClimbDownTagName)
-			//AboveActor: Left or Right ?
-			SetLedgeHangPosition(AboveActor->LeftHangPosition->GetComponentLocation(), LeftPositionTagName);
 			CanClimbUp(Val, GetActorLocation());
+
 		}
 
 		if (ClimbUpOrDown == ERYUClimbUpOrDownMode::CLIMDOWN)
 		{
 			//BelowActor
-			SetLedgeHangPosition(BelowActor->LeftHangPosition->GetComponentLocation(), LeftPositionTagName);
 			CanClimbDown(Val);
 		}
 	}

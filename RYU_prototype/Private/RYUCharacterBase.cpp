@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RYUCharacterBase.h"
 #include "Camera/CameraComponent.h"
@@ -160,7 +160,7 @@ void ARYUCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//doesn´t work properly FUCKSHITSUCKER
+	//doesnÂ´t work properly FUCKSHITSUCKER
 	//CheckClimbDownTracer();
 }
 
@@ -261,7 +261,7 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 */
 /************************************************************************/
 //A: if there is a possible ledge Hit in Height 
-//@ToDo: If there are more than one ledges layered -> takes the above --> FAIL (=can´t climb)
+//@ToDo: If there are more than one ledges layered -> takes the above --> FAIL (=canÂ´t climb)
 bool HitLedgeHeight = GetWorld()->SweepSingleByChannel(HitresultHeight, SweepStartHeight, SweepEndHeight, SweepRotHeight,
 	ECollisionChannel::ECC_EngineTraceChannel2, FCollisionShape::MakeSphere(2), ColParams);
 
@@ -445,61 +445,28 @@ ERYULedgeSideEntered ARYUCharacterBase::GetLedgeSideEntered()
 	return ESideEntered;
 }
 
-void ARYUCharacterBase::AddCapsuleOverlappedActor(AActor* OvActor)
+UBoxComponent* ARYUCharacterBase::GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight)
 {
-	CapsuleOverlappedActors.Add(OvActor);
-}
+	UBoxComponent* OverlappedClimbingComp = nullptr;
 
-
-//void ARYUCharacterBase::RemoveCapsuleOverlappedActor(UPrimitiveComponent* OvComponent)
-void ARYUCharacterBase::RemoveCapsuleOverlappedActor(AActor* OvActor)
-{
-
-
-	CapsuleOverlappedActors.RemoveSingle(OvActor);
-// 	ARYUClimbingActor* RCA = nullptr;
-// 	
-// 	//it´s a trigger for sure
-// 	TArray<UPrimitiveComponent*> OvTrigger;
-// 
-// 	for (int i; i < CapsuleOverlappedActors.Num(); i++)
-// 	{
-// 
-// 	}
-// 	
-// 	if (RCA != nullptr)
-// 	{
-// 		CapsuleOverlappedActors.RemoveSingle(RCA);
-// 	}
-// 	
-}
-
-ARYUClimbingActor* ARYUCharacterBase::GetOverlappedClimbingActor(FName UpOrDown, FName LeftOrRight)
-{
-	ARYUClimbingActor* OverlappedClimbingActor = nullptr;
-
-	for (int i = 0; i < CapsuleOverlappedActors.Num(); i++)
+	for (int i = 0; i < CapsuleOverlappedComponents.Num(); i++)
 	{
-		ARYUClimbingActor* OvCA = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i]);
-		if (OvCA)
+		UBoxComponent* OvCC = Cast<UBoxComponent>(CapsuleOverlappedComponents[i]);
+		if (OvCC)
 		{
-			//it´s a trigger for sure
-			TArray<UPrimitiveComponent*> OvTrigger;
-			GetOverlappingComponents(OvTrigger);
-
+			//itÂ´s a Boxtrigger for sure
 			//we assume and due gamedesign we pretend that we ONLY can overlapp ONE component from ONE actor but TWO actors at a time
-			UBoxComponent* BoxTrigger = Cast<UBoxComponent>(OvTrigger[0]);
-			if ((BoxTrigger->ComponentTags[0] == UpOrDown) &&
-				(BoxTrigger->ComponentTags[1] == LeftOrRight))
+			if ((OvCC->ComponentTags[0] == UpOrDown) &&
+				(OvCC->ComponentTags[1] == LeftOrRight))
 			{
-				OverlappedClimbingActor = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[i]);
+				OverlappedClimbingComp = OvCC;
 				break;
 			}
 			
 		}
 	}
 	
-	return OverlappedClimbingActor;
+	return OverlappedClimbingComp;
 }
 
 void ARYUCharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -511,12 +478,13 @@ void ARYUCharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* Overlap
 	ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(OtherActor);
 	if (ARY)
 	{
-		CapsuleOverlappedActors.Add(OtherActor);
+		//we work only with the components not with the actor itself
+		CapsuleOverlappedComponents.Add(OtherComp);
 
-		UE_LOG(LogTemp, Log, TEXT("CapslOvlpArray with: %d Actors"), CapsuleOverlappedActors.Num());
+		UE_LOG(LogTemp, Log, TEXT("CapslOvlpArray with: %d Actors"), CapsuleOverlappedComponents.Num());
 
 		//easy check but u need to bee careful !!!
-		if (CapsuleOverlappedActors.Num() > 1)
+		if (CapsuleOverlappedComponents.Num() > 1)
 		{
 			RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
 			return;
@@ -560,5 +528,5 @@ void ARYUCharacterBase::OnHandleCapsuleEndOverlap(UPrimitiveComponent* Overlappe
 	RYUMovement = ERYUMovementMode::STAND;
 	SetLedgeHangPosition(FVector::ZeroVector, "none");
 
-	RemoveCapsuleOverlappedActor(OtherActor);
+	CapsuleOverlappedComponents.RemoveSingle(OtherComp);
 }
