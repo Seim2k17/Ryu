@@ -6,6 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "SingleDoorActor.generated.h"
 
+class USceneComponent;
+class UStaticMeshComponent;
+class UBoxComponent;
+
 UCLASS()
 class RYU_PROTOTYPE_API ASingleDoorActor : public AActor
 {
@@ -31,6 +35,18 @@ public:
 		void OpenCloseDoor();
 	UFUNCTION()
 		virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+		UStaticMeshComponent* DoorFrameMesh;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+		UStaticMeshComponent* DoorMesh;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+		UBoxComponent* TriggerBox;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+		USceneComponent* RealRoot;
 
 private:
 	bool DoorIsOpen;

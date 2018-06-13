@@ -99,6 +99,7 @@ protected:
 		void DeactivateCoyotoeJumpPossible();
 
 	/** Called for side to side input */
+	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void MoveRight(float Val);
 
 	void CanClimbDown(float Val);

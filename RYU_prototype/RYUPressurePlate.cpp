@@ -64,7 +64,7 @@ void ARYUPressurePlate::BeginPlay()
 	if (TriggerZone != nullptr)
 	{
 		TriggerZone->SetRelativeLocation(FVector(0, 0, 54));
-		TriggerZone->SetRelativeScale3D(FVector(3.0, 3.0, 1.0));
+		TriggerZone->SetBoxExtent(FVector(105, 105, 32));
 	}
 	
 
@@ -73,10 +73,10 @@ void ARYUPressurePlate::BeginPlay()
 	if (TheWorld != nullptr)
 	{
 		AGameModeBase* GameMode = UGameplayStatics::GetGameMode(TheWorld);
-		ARYUGameMode* RYUGameMode = (ARYUGameMode*)(GameMode);
-		if (RYUGameMode != nullptr)
+		ARYUGameMode* RYUGameMode = Cast<ARYUGameMode>(GameMode);
+		if (RYUGameMode)
 		{
-			RYUGameMode->RYUBlockTypeDelegate.BindUObject(this, &ARYUPressurePlate::SetBoxTypeOnPlate);
+			//RYUGameMode->RYUBlockTypeDelegate.BindUObject(this, &ARYUPressurePlate::SetBoxTypeOnPlate);
 		}
 	}
 			
@@ -110,8 +110,12 @@ void ARYUPressurePlate::NotifyActorBeginOverlap(AActor* otherActor)
 	if (TheWorld != nullptr)
 	{
 		AGameModeBase *GameMode = UGameplayStatics::GetGameMode(TheWorld);
-		ARYUGameMode *RYUGameMode = (ARYUGameMode*)(GameMode);
-		RYUGameMode->RYUStandardDelegate.ExecuteIfBound();
+		ARYUGameMode * RYUGameMode = Cast<ARYUGameMode>(GameMode);
+		if (RYUGameMode)
+		{
+			RYUGameMode->RYUStandardDelegate.ExecuteIfBound();
+		}
+		
 	}
 	
 }

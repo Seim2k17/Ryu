@@ -4,6 +4,8 @@
 #include "RYUGameMode.h"
 #include "Runtime/Engine/Classes/GameFramework/GameMode.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Components/BoxComponent.h"
+#include "Components/StaticMeshComponent.h"
 
 
 // Sets default values
@@ -12,6 +14,19 @@ ASingleDoorActor::ASingleDoorActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	DoorIsOpen = false;
+
+	RealRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RealRoot = RootComponent;
+
+	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DoorTriggerBox"));
+	TriggerBox->SetupAttachment(RealRoot);
+
+	DoorFrameMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorFrameMesh"));
+	DoorFrameMesh->SetupAttachment(RealRoot),
+
+	DoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMesh"));
+	DoorMesh->SetupAttachment(DoorFrameMesh);
+	
 }
 
 // Called when the game starts or when spawned

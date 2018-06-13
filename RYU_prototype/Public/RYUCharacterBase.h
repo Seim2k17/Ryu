@@ -114,7 +114,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	/** Called for side to side input */
-	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void MoveRight(float Val);
 
 	/** Handle touch inputs. */
