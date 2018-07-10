@@ -1,10 +1,10 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RYUCharacterBase.h"
+#include "Components/InputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/InputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/RYUCustomizeMovementComponent.h"
 #include "Character/RYUENUM_MovementMode.h"
