@@ -36,3 +36,23 @@ ARYU2D_CharacterBase::ARYU2D_CharacterBase(const class FObjectInitializer& Objec
 	SphereTracer->SetRelativeLocation(FVector(60, 0, 0));
 	SphereTracer->SetSphereRadius(100);
 }
+
+void ARYU2D_CharacterBase::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+
+}
+
+void ARYU2D_CharacterBase::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+
+}
+
+void ARYU2D_CharacterBase::Jump()
+{
+
+}
+
+void ARYU2D_CharacterBase::StopJumping()
+{
+
+}
