@@ -19,6 +19,11 @@ public:
 	URYU2D_MovementComponent();
 
 	URYU2D_MovementComponent(const class FObjectInitializer& ObjectInitializer);
+
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
+	float TreshholdYWalkRun;
 	
 	
 };

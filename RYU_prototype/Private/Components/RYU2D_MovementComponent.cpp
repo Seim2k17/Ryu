@@ -13,4 +13,5 @@ URYU2D_MovementComponent::URYU2D_MovementComponent()
 URYU2D_MovementComponent::URYU2D_MovementComponent(const class FObjectInitializer& ObjectInitializer)
 {
 
+
 }

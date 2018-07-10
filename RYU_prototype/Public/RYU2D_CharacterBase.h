@@ -50,6 +50,36 @@ public:
 
 	void StopJumping() override;
 
+	UFUNCTION(BlueprintCallable, Category = "Climbing")
+	void SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide);
+
+	UFUNCTION(BlueprintCallable, Category = "Climbing")
+	FVector GetLedgeHangPosition();
+
+	UFUNCTION(BlueprintCallable, Category = "Climbing")
+	ERYULedgeSideEntered GetLedgeSideEntered();
+
+	UFUNCTION(BlueprintCallable)
+	UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);
+
+	UFUNCTION()
+	void OnHandleCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+
+	UFUNCTION()
+	void OnHandleCapsuleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+protected:
+
+	virtual void BeginPlay() override;
+
+	/** Called for side to side input */
+	void MoveRight(float Val);
+
+	//CHECK ! is it used ANYMORE ?
+	void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
+
+
 /************************************************************************/
 /* MEMBER                                                               */
 /************************************************************************/
@@ -72,6 +102,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
 	ERYUClimbingMode RYUClimbingMode;
 
+	
 protected:
 
 	/**ANIMATIONS as extra Component*/
@@ -82,6 +113,31 @@ protected:
 	/** To look for ledges to Climb and other Stuff in front of the Character*/
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* SphereTracer;
+
+	//* Climbing Tags for Objects
+	FName CanClimbUpTagName;
+	FName CanClimbDownTagName;
+
+	//** Tags for Platforms
+	FName LeftLedgePosiTagName;
+	FName RightLedgePosiTagName;
+
+
+	//** Overlapped CapsuleStuff*/
+	TArray<UPrimitiveComponent*> CapsuleOverlappedComponents;
+
+	AActor* SphereOverlappedActor;
+	UPrimitiveComponent* SphereOverlappedComponent;
 	
+private:
+
+	bool bSphereTracerOverlap;
 	
+	bool bJumpJustStarted;
+	
+	float TreshholdYWalkRun;
+
+	FVector LedgeHangPosition;
+	ERYULedgeSideEntered ESideEntered;
+	bool bLedgeHeightInRange;
 };
