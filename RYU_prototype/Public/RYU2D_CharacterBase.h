@@ -24,11 +24,11 @@ class RYU_PROTOTYPE_API ARYU2D_CharacterBase : public APaperCharacter
 {
 	GENERATED_BODY()
 
-public:
-
 /************************************************************************/
 /* METHODS                                                              */
 /************************************************************************/
+
+public:
 
 	ARYU2D_CharacterBase();
 
