@@ -130,12 +130,12 @@ protected:
 	AActor* SphereOverlappedActor;
 	UPrimitiveComponent* SphereOverlappedComponent;
 	
+	bool bJumpJustStarted;
+
 private:
 
 	bool bSphereTracerOverlap;
-	
-	bool bJumpJustStarted;
-	
+
 	float TreshholdYWalkRun;
 
 	FVector LedgeHangPosition;

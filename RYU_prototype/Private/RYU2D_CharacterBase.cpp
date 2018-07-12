@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RYU2D_CharacterBase.h"
 #include "Camera/CameraComponent.h"
@@ -120,7 +120,7 @@ UBoxComponent* ARYU2D_CharacterBase::GetOverlappedClimbingComponent(FName UpOrDo
 		UBoxComponent* OvCC = Cast<UBoxComponent>(CapsuleOverlappedComponents[i]);
 		if (OvCC)
 		{
-			//it�s a Boxtrigger for sure
+			//it´s a Boxtrigger for sure
 			//we assume and due gamedesign we pretend that we ONLY can overlapp ONE component from ONE actor but TWO actors at a time
 			if ((OvCC->ComponentTags[0] == UpOrDown) &&
 				(OvCC->ComponentTags[1] == LeftOrRight))

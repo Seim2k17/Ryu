@@ -8,6 +8,7 @@
 
 //@ToDo: look later when movement impl.
 //class URYU2D_MovementComponent;
+class UPaperFlipbook;
 
 /**
  * 
@@ -42,14 +43,15 @@ public:
 
 	void DebugSomething();
 	
-	void Climb(float Val);
-
+	
 	#if WITH_EDITOR
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	#endif
 
 
 protected:
+
+	void BeginPlay() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -60,15 +62,46 @@ protected:
 	/** Called for Climbing input */
 	void MoveUp(float Value);
 
+	void Climb(float Val);
+
+	/** Called to choose the correct animation to play based on the character's movement state */
+	void UpdateAnimation();
+
+	void UpdateCharacter();
+
+	UFUNCTION()
+	void FlipbookFinishedPlaying();
+
+	void BeginRunFlipbookFinished();
+
+	void EndRunFlipbookFinished();
+
+	void StartTurnFlipbookFinished();
+
+	void PlayFlipBookAnimation(UPaperFlipbook* AnimationToPlay, bool bAnimationIsLooping);
+
+	UFUNCTION()
+	void HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+
+	UFUNCTION()
+	void HandleSphereColliderEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+
+
 private:
 
 	void InitializeCharacterValues();
+
 
 /************************************************************************/
 /* MEMBER                                                               */
 /************************************************************************/
 
 public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	FVector TurnPositionOffset;
 
 protected:
 
@@ -82,4 +115,12 @@ protected:
 
 
 private:
+
+	float fDeltaSeconds;
+
+	float bDebugOutputActive;
+
+	FVector currA;
+	FVector currV;
+
 };
