@@ -1,10 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "RYU2D_CharacterBase.h"
 #include "RYU2D_CharacterPrince.generated.h"
+
+//@ToDo: look later when movement impl.
+//class URYU2D_MovementComponent;
 
 /**
  * 
@@ -24,7 +27,7 @@ public:
 
 
 	//UPROPERTY(Category = Character, VAnywhere, BlueprintReadOnly)
-	URYU2D_MovementComponent* MovementComp;
+	//URYU2D_MovementComponent* MovementComp;
 
 	virtual void PostInitializeComponents() override;
 
@@ -54,16 +57,29 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void MoveRight(float Val);
 
+	/** Called for Climbing input */
+	void MoveUp(float Value);
+
 private:
 
 	void InitializeCharacterValues();
-	/************************************************************************/
+
+/************************************************************************/
 /* MEMBER                                                               */
 /************************************************************************/
 
 public:
 
 protected:
+
+
+	bool bPlayTurnAni;
+
+	bool bStartedNoLoopAnimation;
+
+	//**MOVEMENT*
+	bool bLookRight;
+
 
 private:
 };

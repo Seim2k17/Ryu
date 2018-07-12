@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "PaperCharacter.h"
-#include "RYUENUM_MovementMode.h"
+#include "RYU2DENUM_Movement.h"
 #include "RYUENUM_ClimbingMode.h"
+#include "RYUENUM_LedgeSideEntered.h"
 #include "RYU2D_CharacterBase.generated.h"
 
 class URYU2D_AnimationComponent;
@@ -96,7 +97,7 @@ public:
 
 	/** State of the Character Movement*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
-	ERYUMovementMode RYUMovement;
+	EPlayerMovement PlayerMovement;
 
 	/** State of the Character Climbing State */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")

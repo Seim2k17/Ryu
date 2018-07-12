@@ -14,11 +14,22 @@ class RYU_PROTOTYPE_API URYU2D_MovementComponent : public UCharacterMovementComp
 {
 	GENERATED_BODY()
 	
+/************************************************************************/
+/* METHODS                                                              */
+/************************************************************************/
+
 public:
 
 	URYU2D_MovementComponent();
 
 	URYU2D_MovementComponent(const class FObjectInitializer& ObjectInitializer);
+
+
+/************************************************************************/
+/* MEMBER                                                               */
+/************************************************************************/
+
+public:
 
 protected:
 

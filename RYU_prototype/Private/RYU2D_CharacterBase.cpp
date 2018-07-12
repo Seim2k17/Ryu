@@ -8,6 +8,7 @@
 #include "Components/RYU2D_AnimationComponent.h"
 #include "Components/RYU2D_MovementComponent.h"
 #include "RYUENUM_LedgeSideEntered.h"
+#include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
 #include "Components/BoxComponent.h"
 
@@ -39,7 +40,7 @@ ARYU2D_CharacterBase::ARYU2D_CharacterBase(const class FObjectInitializer& Objec
 	SphereTracer->SetRelativeLocation(FVector(60, 0, 0));
 	SphereTracer->SetSphereRadius(60);
 
-	RYUMovement = ERYUMovementMode::STAND;
+	PlayerMovement = EPlayerMovement::STAND;
 	
 	ESideEntered = ERYULedgeSideEntered::NONE;
 
@@ -73,10 +74,10 @@ void ARYU2D_CharacterBase::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* O
 		(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
 		(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
 		(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE) &&
-		(RYUMovement != ERYUMovementMode::CLIMB))
+		(PlayerMovement != EPlayerMovement::CLIMBING))
 	{
 		UE_LOG(LogTemp, Log, TEXT("SphereTracer: Mode: Walk Activated"));
-		RYUMovement = ERYUMovementMode::WALK;
+		PlayerMovement = EPlayerMovement::WALK;
 	}
 }
 
@@ -99,12 +100,12 @@ void ARYU2D_CharacterBase::OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimi
 			(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
 			(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
 			(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE) &&
-			(RYUMovement != ERYUMovementMode::CLIMB))
+			(PlayerMovement != EPlayerMovement::CLIMBING))
 
 		{
 			UE_LOG(LogTemp, Log, TEXT("SphereTracer: Mode: CanTraceActivated"));
-			//RYUMovement = ERYUMovementMode::CANTRACELEDGE;
-			RYUMovement = ERYUMovementMode::CANGRABLEDGE;
+			//PlayerMovement = EPlayerMovementMode::CANTRACELEDGE;
+			PlayerMovement = EPlayerMovement::CANGRABLEDGE;
 		}
 
 	}
@@ -199,7 +200,7 @@ void ARYU2D_CharacterBase::OnHandleCapsuleEndOverlap(UPrimitiveComponent* Overla
 {
 	UE_LOG(LogTemp, Log, TEXT("CapslOvlp out: %s"), *OtherComp->GetName());
 	RYUClimbingMode = ERYUClimbingMode::NONE;
-	RYUMovement = ERYUMovementMode::STAND;
+	PlayerMovement = EPlayerMovement::STAND;
 	SetLedgeHangPosition(FVector::ZeroVector, "none");
 
 	CapsuleOverlappedComponents.RemoveSingle(OtherComp);
@@ -265,16 +266,16 @@ void ARYU2D_CharacterBase::MoveRight(float Val)
 	{
 		if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > TreshholdYWalkRun)
 		{
-			RYUMovement = ERYUMovementMode::RUN;
+			PlayerMovement = EPlayerMovement::RUN;
 		}
 		else
 		{
-			RYUMovement = ERYUMovementMode::WALK;
+			PlayerMovement = EPlayerMovement::WALK;
 		}
 	}
 	else
 	{
-		RYUMovement = ERYUMovementMode::STAND;
+		PlayerMovement = EPlayerMovement::STAND;
 	}
 	// add movement in that direction
 	AddMovementInput(FVector(0.f, -1.f, 0.f), Val);
