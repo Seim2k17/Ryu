@@ -62,12 +62,6 @@ void ARYU2D_CharacterPrince::InitializeCharacterValues()
 	GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f);
 	GetCapsuleComponent()->SetCapsuleRadius(40.0f);
 
-	CameraBoom->TargetArmLength = 500.0f;
-	CameraBoom->SocketOffset = FVector(0.0f, 0.0f, 75.0f);
-	CameraBoom->bAbsoluteRotation = true;
-	CameraBoom->bDoCollisionTest = false;
-	CameraBoom->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
-
 	// Configure character movement
 	GetCharacterMovement()->GravityScale = 2.0f;
 	GetCharacterMovement()->AirControl = 0.80f;
@@ -80,10 +74,19 @@ void ARYU2D_CharacterPrince::InitializeCharacterValues()
 	SphereCollider->SetRelativeLocation(FVector(25.0f, 0.0f, 0.0f));
 	*/
 
+
+	CameraBoom->TargetArmLength = 500.0f;
+	CameraBoom->SocketOffset = FVector(0.0f, 0.0f, 75.0f);
+	CameraBoom->bAbsoluteRotation = true;
+	CameraBoom->bDoCollisionTest = false;
+	CameraBoom->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
+
 	// Prevent all automatic rotation behavior on the camera, character, and camera component
 	CameraBoom->bAbsoluteRotation = true;
 	SideViewCameraComponent->bUsePawnControlRotation = false;
 	SideViewCameraComponent->bAutoActivate = true;
+	SideViewCameraComponent->ProjectionMode = ECameraProjectionMode::Orthographic;
+	SideViewCameraComponent->OrthoWidth = 900.0f;
 	GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	// Lock character motion onto the XZ plane, so the character can't move in or out of the screen
@@ -96,6 +99,11 @@ void ARYU2D_CharacterPrince::InitializeCharacterValues()
 	GetCharacterMovement()->bUseFlatBaseForFloorChecks = true;
 
 	PlayerMovement = EPlayerMovement::STAND;
+
+	CurrentTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("Timeline"));
+	onTimelineCallback.BindUFunction(this, FName("TimelineCallback"));
+	onTimelineFinishedCallback.BindUFunction(this, FName("TimelineFinishedCallback"));
+
 }
 
 
@@ -114,6 +122,7 @@ void ARYU2D_CharacterPrince::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Temp save for Timelinestuff
 	fDeltaSeconds = DeltaTime;
 
 	UpdateCharacter();
@@ -154,12 +163,12 @@ void ARYU2D_CharacterPrince::UpdateCharacter()
 
 	if (PlayerMovement == EPlayerMovement::CLIMBING)
 	{
-		/*@ToDo
+		/*@ToDo */
 		if (CurrentTimeline != NULL)
 		{
 			CurrentTimeline->TickComponent(fDeltaSeconds, ELevelTick::LEVELTICK_TimeOnly, NULL);
 		}
-		*/
+	
 	}
 }
 
@@ -228,7 +237,6 @@ void ARYU2D_CharacterPrince::SetupPlayerInputComponent(class UInputComponent* Pl
 void ARYU2D_CharacterPrince::MoveRight(float Val)
 {
 	/*UpdateChar();*/
-	UE_LOG(LogTemp, Log, TEXT("MoveRight"));
 	// Apply the input to the character motion
 	if (Val != 0)
 	{
@@ -309,11 +317,53 @@ void ARYU2D_CharacterPrince::MoveRight(float Val)
 void ARYU2D_CharacterPrince::MoveUp(float Value)
 {
 
+	switch (PlayerMovement)
+	{
+		//@ToDo: check for special cases !
+	case EPlayerMovement::STAND:
+		if (Value != 0)
+		{
+			if (Animation2DComponent->ClimbUpFloatCurve)
+			{
+				SetCurrentTimelineParams(Animation2DComponent->ClimbUpFloatCurve, false, true);
+				UE_LOG(LogTemp, Log, TEXT("Climb up with Timeline"));
+			}
+
+			Climb(Value);
+			
+		}
+		break;
+	default:
+		break;
+	}
+
+	
 }
 
 void ARYU2D_CharacterPrince::Climb(float Val)
 {
+	if (Val > 0)
+	{
+		PlayerMovement = EPlayerMovement::CLIMBING;
 
+		//@ToDo: only set ClimbingMode when there is a ledge to climb!
+		RYUClimbingMode = ERYUClimbingMode::NONE;
+		
+		//** Initialize the Start End Endpoints 
+		Animation2DComponent->ClimbUpStartTimelineLocation = GetActorLocation();
+		Animation2DComponent->ClimbUpEndTimelineLocation = FVector(Animation2DComponent->ClimbUpStartTimelineLocation.X, Animation2DComponent->ClimbUpStartTimelineLocation.Y, 
+			Animation2DComponent->ClimbUpStartTimelineLocation.Z + Animation2DComponent->ClimbUpOffset);
+
+		//GetMovementComponent()->SetMovementMode(MOVE_Flying);
+
+		PlayTimeline();
+
+	}
+	else
+	{
+		//@ToDo: Character climbs down OR get into Crouchmode !
+		PlayerMovement = EPlayerMovement::CLIMBING;
+	}
 }
 
 
@@ -456,6 +506,74 @@ void ARYU2D_CharacterPrince::HandleSphereColliderEndOverlap(UPrimitiveComponent*
 }
 
 
+/** Start Timeline specific Stuff*/
+
+void ARYU2D_CharacterPrince::TimelineCallback(float val)
+{
+	// This function is called for every tick in the timeline.
+	UE_LOG(LogTemp, Log, TEXT("Here incr. z-Location: %s"), *FString::SanitizeFloat(val));
+
+	FVector StartTLLocation;
+	FVector EndTLLocation;
+
+	switch (PlayerMovement)
+	{
+	case EPlayerMovement::CLIMBING:
+		//@ToDo: look for ClimbUp vs. Down etc // see mix from 3D LedgeClimbing but wo Rootmotion ...
+		StartTLLocation = Animation2DComponent->ClimbUpStartTimelineLocation;
+		EndTLLocation = Animation2DComponent->ClimbUpEndTimelineLocation;
+		break;
+	default:
+		break;
+	}
+	
+	SetActorLocation(FMath::Lerp(StartTLLocation, EndTLLocation, val));
+	//AddActorLocalOffset(FVector(0,0,CurrentTimeline->));
+}
+
+
+void ARYU2D_CharacterPrince::TimelineFinishedCallback()
+{
+	// This function is called when the timeline finishes playing.
+	switch (PlayerMovement)
+	{
+	case EPlayerMovement::CLIMBING:
+		SetActorLocation(Animation2DComponent->ClimbUpEndTimelineLocation);
+		break;
+	default:
+		break;
+	}
+	
+}
+
+
+void ARYU2D_CharacterPrince::PlayTimeline()
+{
+	if (CurrentTimeline != NULL)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Play a timeline from Start"));
+		CurrentTimeline->PlayFromStart();
+	}
+
+}
+
+
+void ARYU2D_CharacterPrince::SetCurrentTimelineParams(UCurveFloat* FloatCurve, bool TimelineIsLooping, bool IgnoreTimeDilation)
+{
+	//Add Float curve to the timeline and bind it to the interpfunction´s delegate
+	//3rd Parameter = floatValue, Propertyname, Bind all Stuff
+	CurrentTimeline->AddInterpFloat(FloatCurve, onTimelineCallback, FName("Movement"));
+	CurrentTimeline->SetTimelineFinishedFunc(onTimelineFinishedCallback);
+
+	// Timeline Settings
+	CurrentTimeline->SetLooping(TimelineIsLooping);
+	//false = it moves as the global Time Dileation
+	CurrentTimeline->SetIgnoreTimeDilation(IgnoreTimeDilation);
+
+}
+
+/** End Timeline specific Stuff*/
+
 /** Output Log on Screen */
 void ARYU2D_CharacterPrince::DrawDebugInfosOnScreen()
 {
@@ -476,12 +594,14 @@ void ARYU2D_CharacterPrince::DrawDebugInfosOnScreen()
 
 		switch (PlayerMovement)
 		{
-		case EPlayerMovement::WALK:
-			MoveMode = "WALKING";
+		case EPlayerMovement::BEGINRUN:
+			MoveMode = "BEGIN RUNNING";
 			break;
-
 		case EPlayerMovement::RUN:
 			MoveMode = "RUNNING";
+			break;
+		case EPlayerMovement::ENDRUN:
+			MoveMode = "END RUNNING";
 			break;
 		case EPlayerMovement::JUMPUP:
 			MoveMode = "JUMPING";

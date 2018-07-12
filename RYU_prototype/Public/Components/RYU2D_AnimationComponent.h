@@ -23,6 +23,8 @@ protected:
 
 public:	
 
+	/**linked Animations */
+
 	// The animation to play while running around
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* RunningAnimation;
@@ -47,5 +49,19 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 		class UPaperFlipbook* ClimbDownAnimation;
+
+	/**and resp. Curves to some Animations */
+
+	UPROPERTY(EditAnywhere, Category = "Timeline")
+	UCurveFloat* ClimbUpFloatCurve;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Timeline")
+	FVector ClimbUpStartTimelineLocation;
+
+	UPROPERTY(VisibleAnywhere, Category = "Timeline")
+	FVector ClimbUpEndTimelineLocation;
+
+	UPROPERTY(EditAnywhere, Category = "Timeline")
+	float ClimbUpOffset;
 
 };

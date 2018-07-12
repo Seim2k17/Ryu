@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "RYU2D_CharacterBase.h"
+#include "Components/TimelineComponent.h"
 #include "RYU2D_CharacterPrince.generated.h"
 
 //@ToDo: look later when movement impl.
 //class URYU2D_MovementComponent;
 class UPaperFlipbook;
+
 
 /**
  * 
@@ -87,6 +89,31 @@ protected:
 	UFUNCTION()
 	void HandleSphereColliderEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	/** Start-TIMELINE-SECTION */
+	//Updatefunction for the Timeline
+	UFUNCTION()
+	void TimelineCallback(float val);
+
+	//When Finished the Timeline
+	UFUNCTION()
+	void TimelineFinishedCallback();
+
+	void PlayTimeline();
+
+	void SetCurrentTimelineParams(UCurveFloat* FloatCurve, bool TimelineIsLooping, bool IgnoreTimeDilation);
+
+	/*onTimelineCallback contains the signature of the function that is
+	going to execute every time we tick our timeline.
+	Think of onTimelineCallback as a delegate!*/
+	/** Declare our delegate function to be binded with TimelineCallback */
+	FOnTimelineFloat onTimelineCallback{};
+
+	//FOnTimelineEventStatic onTimelineFinishedCallback;
+
+	/** Declare our delegateFunction to be binded to TimelineFinishedCallback()*/
+	FOnTimelineEvent onTimelineFinishedCallback{};
+
+	/** END-TIMELINE-SECTION */
 
 
 private:
@@ -113,6 +140,12 @@ protected:
 	//**MOVEMENT*
 	bool bLookRight;
 
+	//** TimeLine Stuff */
+	UPROPERTY()
+	TEnumAsByte<ETimelineDirection::Type> TimelineDirection;
+
+	UPROPERTY()
+	UTimelineComponent* CurrentTimeline;
 
 private:
 
