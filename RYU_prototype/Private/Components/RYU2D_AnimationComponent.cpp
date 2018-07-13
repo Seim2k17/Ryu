@@ -12,7 +12,7 @@ URYU2D_AnimationComponent::URYU2D_AnimationComponent()
 
 	// ...
 
-	//ClimbUpOffset = 50.0f;
+	ClimbUpOffset = 10.0f;
 }
 
 

@@ -50,6 +50,9 @@ public:
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	#endif
 
+	//Public due Customized CharMovementComponent
+	void Climb(float Val);
+
 
 protected:
 
@@ -63,8 +66,6 @@ protected:
 
 	/** Called for Climbing input */
 	void MoveUp(float Value);
-
-	void Climb(float Val);
 
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();

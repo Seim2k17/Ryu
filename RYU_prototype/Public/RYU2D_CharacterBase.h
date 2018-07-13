@@ -103,6 +103,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
 	ERYUClimbingMode RYUClimbingMode;
 
+	/** To look for ledges to Climb and other Stuff in front of the Character*/
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	USphereComponent* SphereTracer;
+
 	
 protected:
 
@@ -110,10 +114,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	URYU2D_AnimationComponent* Animation2DComponent;
-
-	/** To look for ledges to Climb and other Stuff in front of the Character*/
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	USphereComponent* SphereTracer;
 
 	//* Climbing Tags for Objects
 	FName CanClimbUpTagName;

@@ -323,10 +323,11 @@ void ARYU2D_CharacterPrince::MoveUp(float Value)
 	case EPlayerMovement::STAND:
 		if (Value != 0)
 		{
+			UE_LOG(LogTemp, Log, TEXT("Climb up with Timeline"));
 			if (Animation2DComponent->ClimbUpFloatCurve)
 			{
 				SetCurrentTimelineParams(Animation2DComponent->ClimbUpFloatCurve, false, true);
-				UE_LOG(LogTemp, Log, TEXT("Climb up with Timeline"));
+				
 			}
 
 			Climb(Value);
@@ -560,6 +561,7 @@ void ARYU2D_CharacterPrince::PlayTimeline()
 
 void ARYU2D_CharacterPrince::SetCurrentTimelineParams(UCurveFloat* FloatCurve, bool TimelineIsLooping, bool IgnoreTimeDilation)
 {
+	UE_LOG(LogTemp, Log, TEXT("Set TimeLine Params for Timeline %s"),*FloatCurve->GetName());
 	//Add Float curve to the timeline and bind it to the interpfunction´s delegate
 	//3rd Parameter = floatValue, Propertyname, Bind all Stuff
 	CurrentTimeline->AddInterpFloat(FloatCurve, onTimelineCallback, FName("Movement"));
