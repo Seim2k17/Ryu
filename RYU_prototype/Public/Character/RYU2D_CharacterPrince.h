@@ -53,7 +53,6 @@ public:
 	//Public due Customized CharMovementComponent
 	void Climb(float Val);
 
-
 protected:
 
 	void BeginPlay() override;
@@ -80,6 +79,8 @@ protected:
 	void EndRunFlipbookFinished();
 
 	void StartTurnFlipbookFinished();
+
+	void ClimbingFlipbookFinished();
 
 	void PlayFlipBookAnimation(UPaperFlipbook* AnimationToPlay, bool bAnimationIsLooping);
 
@@ -116,11 +117,23 @@ protected:
 
 	/** END-TIMELINE-SECTION */
 
+	/* Climbing Methods*/
+	UFUNCTION(BlueprintCallable, Category = "Climbing")
+	void CanClimbUp(float Val, FVector StartClimbUpPosition);
+
+	void CanClimbDown(float Val);
+
+	void CanClimbUpAndDown(float Val, FVector StartClimbPosition);
+
+	void HangOnLedgeAndClimb(float Val);
+
+	void CanGrabLedges(float Val);
+
+	void JumpUpOrDown(float Val, FVector StartJumpPosition);
 
 private:
 
 	void InitializeCharacterValues();
-
 
 /************************************************************************/
 /* MEMBER                                                               */

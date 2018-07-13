@@ -136,12 +136,106 @@ void URYU2D_MovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 
 void URYU2D_MovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 {
+	Super::PhysCustom(deltaTime, Iterations);
 
+	if (deltaTime < MIN_TICK_TIME)
+	{
+		return;
+	}
+
+	switch (CustomMovementMode)
+	{
+	case ERYUClimbingMode::CLIMBUPLEDGE:
+		if (!bDoStuffOnce)
+		{
+			bDoStuffOnce = true;
+			UE_LOG(LogTemp, Log, TEXT("I´m climbing up the ledge!"));
+		}
+		PhysClimbingLedge(deltaTime, Iterations);
+		break;
+	case ERYUClimbingMode::CLIMBDOWNLEDGE:
+		if (!bDoStuffOnce)
+		{
+			bDoStuffOnce = true;
+			UE_LOG(LogTemp, Log, TEXT("I´m climbing down the ledge!"));
+		}
+		PhysClimbingLedge(deltaTime, Iterations);
+		break;
+	case ERYUClimbingMode::HANGONLEDGE:
+		//Just Hang around
+		if (!bDoStuffOnce)
+		{
+			bDoStuffOnce = true;
+			UE_LOG(LogTemp, Log, TEXT("Hanging!"));
+		}
+		break;
+	case ERYUClimbingMode::FALLDOWNLEDGE:
+		if (!bDoStuffOnce)
+		{
+			bDoStuffOnce = true;
+			UE_LOG(LogTemp, Log, TEXT("I´m falling down the ledge!"));
+		}
+		PhysClimbingLedge(deltaTime, Iterations);
+		//PhysFallingLedge(deltaTime, Iterations);
+		break;
+	case ERYUClimbingMode::CLIMBLADDERUP:
+		PhysClimbingLadder(deltaTime, Iterations);
+		break;
+	case ERYUClimbingMode::CLIMBLADDERDOWN:
+		PhysClimbingLadder(deltaTime, Iterations);
+		break;
+	}
 }
 
 
 void URYU2D_MovementComponent::PhysClimbingLedge(float deltaTime, int32 Iterations)
 {
+	//TODo: updates the movement take modified walking state ! ATM FlyingState active
+
+	/** Following is copypasted from CharacterMovementComponent::PhysFlying and ajdusted to Phyclimbing*/
+
+	//RestorePreAdditiveRootMotionVelocity();
+
+
+	//ApplyRootMotionToVelocity(deltaTime);
+
+	Iterations++;
+	bJustTeleported = false;
+
+	FVector OldLocation = UpdatedComponent->GetComponentLocation();
+	const FVector Adjusted = Velocity * deltaTime;
+	FHitResult Hit(1.f);
+	SafeMoveUpdatedComponent(Adjusted, UpdatedComponent->GetComponentQuat(), true, Hit);
+
+	if (Hit.Time < 1.f)
+	{
+		const FVector GravDir = FVector(0.f, 0.f, -1.f);
+		const FVector VelDir = Velocity.GetSafeNormal();
+		const float UpDown = GravDir | VelDir;
+
+		bool bSteppedUp = false;
+		if ((FMath::Abs(Hit.ImpactNormal.Z) < 0.2f) && (UpDown < 0.5f) && (UpDown > -0.2f) && CanStepUp(Hit))
+		{
+			float stepZ = UpdatedComponent->GetComponentLocation().Z;
+			bSteppedUp = StepUp(GravDir, Adjusted * (1.f - Hit.Time), Hit);
+			if (bSteppedUp)
+			{
+				OldLocation.Z = UpdatedComponent->GetComponentLocation().Z + (OldLocation.Z - stepZ);
+			}
+		}
+
+		if (!bSteppedUp)
+		{
+			//adjust and try again
+			HandleImpact(Hit, deltaTime, Adjusted);
+			SlideAlongSurface(Adjusted, (1.f - Hit.Time), Hit.Normal, Hit, true);
+		}
+	}
+
+	if (!bJustTeleported && !HasAnimRootMotion() && !CurrentRootMotion.HasOverrideVelocity())
+	{
+		Velocity = (UpdatedComponent->GetComponentLocation() - OldLocation) / deltaTime;
+	}
 
 }
 
@@ -179,7 +273,7 @@ bool URYU2D_MovementComponent::DoJump(bool bReplayingMoves)
 		}
 	}
 
-	//** Princespecific Stuff
+	//** Princespecific Stuff // use jumping for climbing up ? --> maybe NO
 	ARYU2D_CharacterPrince* MyChar = Cast<ARYU2D_CharacterPrince>(CharacterOwner);
 	if (MyChar && (MyChar->RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPLEDGE))
 	{
@@ -190,12 +284,43 @@ bool URYU2D_MovementComponent::DoJump(bool bReplayingMoves)
 
 void URYU2D_MovementComponent::ResetClimbingState()
 {
+	ARYU2D_CharacterBase* MyChar = Cast<ARYU2D_CharacterBase>(CharacterOwner);
 
+	if (MyChar)
+	{
+		//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
+		//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
+		UE_LOG(LogTemp, Log, TEXT("ClimbReset."));
+		MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		MyChar->SphereTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		MyChar->SphereTracer->SetEnableGravity(true);
+		MyChar->GetMesh()->SetEnableGravity(true);
+		MyChar->GetCapsuleComponent()->SetEnableGravity(true);
+		
+		SetAllowClimbUpFalse();
+		
+		SetMovementMode(MOVE_Walking);
+
+		if ((MyChar->PlayerMovement != EPlayerMovement::CANGRABLEDGE))
+		{
+			MyChar->PlayerMovement = EPlayerMovement::STAND;
+		}
+
+		if ((MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
+			(MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
+			(MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN))
+		{
+			MyChar->RYUClimbingMode = ERYUClimbingMode::NONE;
+		}
+
+		ResetDoOnceClimbInput();
+		
+	}
 }
 
 void URYU2D_MovementComponent::SetNormalMaxJumpCount(int32 MaxJumps)
 {
-
+	NormalMaxJumpCount = MaxJumps;
 }
 
 int32 URYU2D_MovementComponent::GetNormalMaxJumpCount()
@@ -205,6 +330,31 @@ int32 URYU2D_MovementComponent::GetNormalMaxJumpCount()
 
 void URYU2D_MovementComponent::ClimbDownLedgeFinished()
 {
-
+	ARYU2D_CharacterPrince* MyChar = Cast<ARYU2D_CharacterPrince>(CharacterOwner);
+	MyChar->PlayerMovement = EPlayerMovement::CLIMBING;
+	MyChar->RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+	SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::HANGONLEDGE));
+	SetAllowClimbUpTrue();
 }
 
+void URYU2D_MovementComponent::SetAllowClimbUpTrue()
+{
+	UE_LOG(LogTemp, Log, TEXT("bAlloClimbing: true"));
+	ARYU2D_CharacterPrince* MyChar = Cast<ARYU2D_CharacterPrince>(CharacterOwner);
+	bClimbUpAllowed = true;
+	MyChar->PlayerMovement = EPlayerMovement::CLIMBING;
+	MyChar->RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+}
+
+
+void URYU2D_MovementComponent::SetAllowClimbUpFalse()
+{
+	UE_LOG(LogTemp, Log, TEXT("bAlloClimbing: false"));
+	bClimbUpAllowed = false;
+}
+
+
+void URYU2D_MovementComponent::ResetDoOnceClimbInput()
+{
+	bDoOnceClimbInput = false;
+}

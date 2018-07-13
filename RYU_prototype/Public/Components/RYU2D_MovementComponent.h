@@ -63,7 +63,14 @@ protected:
 
 	virtual void PhysClimbingLadder(float deltaTime, int32 Iterations);
 
-	bool bClimbUpAllowed;
+	UFUNCTION()
+	void SetAllowClimbUpTrue();
+
+	UFUNCTION()
+	void SetAllowClimbUpFalse();
+
+	void ResetDoOnceClimbInput();
+
 
 /************************************************************************/
 /* MEMBER                                                               */
@@ -120,5 +127,7 @@ private:
 
 	bool bDoStuffOnce;
 	
-	
+	bool bDoOnceClimbInput;
+
+	bool bClimbUpAllowed;
 };

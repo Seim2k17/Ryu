@@ -200,7 +200,8 @@ void ARYU2D_CharacterBase::OnHandleCapsuleEndOverlap(UPrimitiveComponent* Overla
 {
 	UE_LOG(LogTemp, Log, TEXT("CapslOvlp out: %s"), *OtherComp->GetName());
 	RYUClimbingMode = ERYUClimbingMode::NONE;
-	PlayerMovement = EPlayerMovement::STAND;
+	//does not function for 2D Stuff
+	//PlayerMovement = EPlayerMovement::STAND;
 	SetLedgeHangPosition(FVector::ZeroVector, "none");
 
 	CapsuleOverlappedComponents.RemoveSingle(OtherComp);

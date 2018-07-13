@@ -212,11 +212,38 @@ void ARYU2D_CharacterPrince::UpdateAnimation()
 		}
 		return;
 	case EPlayerMovement::CLIMBING:
-		if (!bStartedNoLoopAnimation && Animation2DComponent->EndRunAnimation)
+		switch (RYUClimbingMode)
 		{
-			PlayFlipBookAnimation(Animation2DComponent->ClimbUpAnimation, false);
-			return;
+			case ERYUClimbingMode::NONE:
+				if (!bStartedNoLoopAnimation && Animation2DComponent->JumpUpAndFallAnimation)
+				{
+					PlayFlipBookAnimation(Animation2DComponent->JumpUpAndFallAnimation, false);
+					return;
+				}
+			case ERYUClimbingMode::CANCLIMBUPLEDGE:
+				break;
+			case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
+				break;
+			case ERYUClimbingMode::CANCLIMBUPANDDOWN:
+				break;
+			case ERYUClimbingMode::CLIMBDOWNLEDGE:
+				break;
+			case ERYUClimbingMode::CLIMBUPLEDGE:
+				break;
+			case ERYUClimbingMode::FALLDOWNLEDGE:
+				break;
+			case ERYUClimbingMode::HANGONLEDGE:
+				break;
+			case ERYUClimbingMode::CANENTERLADDER:
+				break;
+			case ERYUClimbingMode::CLIMBLADDERUP:
+				break;
+			case ERYUClimbingMode::CLIMBLADDERDOWN:
+				break;
+			default:
+				break;
 		}
+			
 		return;
 
 	default:
@@ -316,43 +343,99 @@ void ARYU2D_CharacterPrince::MoveRight(float Val)
 
 void ARYU2D_CharacterPrince::MoveUp(float Value)
 {
-
-	switch (PlayerMovement)
+	if (Value != 0)
 	{
-		//@ToDo: check for special cases !
-	case EPlayerMovement::STAND:
-		if (Value != 0)
+		switch (PlayerMovement)
 		{
-			UE_LOG(LogTemp, Log, TEXT("Climb up with Timeline"));
-			if (Animation2DComponent->ClimbUpFloatCurve)
+			//@ToDo: check for all special cases !
+		case EPlayerMovement::STAND:
+			RYUClimbingMode = ERYUClimbingMode::NONE;
+			//JumpUpTimeline
+			if (Value > 0)
 			{
-				SetCurrentTimelineParams(Animation2DComponent->ClimbUpFloatCurve, false, true);
-				
+				UE_LOG(LogTemp, Log, TEXT("Climb up with Timeline"));
+				if (Animation2DComponent->ClimbUpFloatCurve)
+				{
+					SetCurrentTimelineParams(Animation2DComponent->JumpUpFloatCurve, false, true);
+				}
 			}
-
+			else
+			{
+				//Crouch
+			}
 			Climb(Value);
-			
-		}
-		break;
-	default:
-		break;
-	}
+			break;
 
-	
+			//...near a ledge needable ??? need to check if this makes fun: soo you need to click 2times the button to climb up ? maybe if there is danger ?
+		case EPlayerMovement::CANGRABLEDGE:
+		{
+			if (RYUClimbingMode == ERYUClimbingMode::NONE)
+			{
+				//UpOrDown the ledge ?
+				CanGrabLedges(Value);
+				break;
+			}
+		}
+		//@ToDo important: LADDER UpANdDown
+		default:
+			break;
+		}
+	}
 }
 
 void ARYU2D_CharacterPrince::Climb(float Val)
 {
+	switch (RYUClimbingMode)
+	{
+
+		case ERYUClimbingMode::NONE:
+			JumpUpOrDown(Val, GetActorLocation());
+			break;
+		case ERYUClimbingMode::CANCLIMBUPLEDGE:
+			CanClimbUp(Val, GetActorLocation());
+			break;
+		case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
+			CanClimbDown(Val);
+			break;
+		case ERYUClimbingMode::CANCLIMBUPANDDOWN:
+			CanClimbUpAndDown(Val, GetActorLocation());
+			break;
+		case ERYUClimbingMode::CLIMBDOWNLEDGE:
+			break;
+		case ERYUClimbingMode::CLIMBUPLEDGE:
+			break;
+		case ERYUClimbingMode::FALLDOWNLEDGE:
+			break;
+		case ERYUClimbingMode::HANGONLEDGE:
+			HangOnLedgeAndClimb(Val);
+			break;
+		case ERYUClimbingMode::CANENTERLADDER:
+			break;
+		case ERYUClimbingMode::CLIMBLADDERUP:
+			break;
+		case ERYUClimbingMode::CLIMBLADDERDOWN:
+			break;
+		default:
+			break;
+
+	}
+}
+
+
+
+void ARYU2D_CharacterPrince::JumpUpOrDown(float Val, FVector StartJumpPosition)
+{
+	//@ToDo RESORT THINGS !!!
 	if (Val > 0)
 	{
 		PlayerMovement = EPlayerMovement::CLIMBING;
 
 		//@ToDo: only set ClimbingMode when there is a ledge to climb!
-		RYUClimbingMode = ERYUClimbingMode::NONE;
 		
+
 		//** Initialize the Start End Endpoints 
 		Animation2DComponent->ClimbUpStartTimelineLocation = GetActorLocation();
-		Animation2DComponent->ClimbUpEndTimelineLocation = FVector(Animation2DComponent->ClimbUpStartTimelineLocation.X, Animation2DComponent->ClimbUpStartTimelineLocation.Y, 
+		Animation2DComponent->ClimbUpEndTimelineLocation = FVector(Animation2DComponent->ClimbUpStartTimelineLocation.X, Animation2DComponent->ClimbUpStartTimelineLocation.Y,
 			Animation2DComponent->ClimbUpStartTimelineLocation.Z + Animation2DComponent->ClimbUpOffset);
 
 		//GetMovementComponent()->SetMovementMode(MOVE_Flying);
@@ -366,6 +449,37 @@ void ARYU2D_CharacterPrince::Climb(float Val)
 		PlayerMovement = EPlayerMovement::CLIMBING;
 	}
 }
+
+
+void ARYU2D_CharacterPrince::CanClimbUp(float Val, FVector param2)
+{
+	
+}
+
+
+void ARYU2D_CharacterPrince::CanClimbDown(float Val)
+{
+	
+}
+
+
+void ARYU2D_CharacterPrince::CanClimbUpAndDown(float Val, FVector param2)
+{
+	
+}
+
+
+void ARYU2D_CharacterPrince::HangOnLedgeAndClimb(float Val)
+{
+	
+}
+
+
+void ARYU2D_CharacterPrince::CanGrabLedges(float Val)
+{
+	
+}
+
 
 
 void ARYU2D_CharacterPrince::Jump()
@@ -421,19 +535,24 @@ void ARYU2D_CharacterPrince::FlipbookFinishedPlaying()
 	UE_LOG(LogTemp, Log, TEXT("FlipBookAni Ended: %d"), GetSprite()->GetFlipbookLengthInFrames());
 	switch (PlayerMovement)
 	{
-	case EPlayerMovement::BEGINRUN:
-		BeginRunFlipbookFinished();
-		break;
-	case EPlayerMovement::ENDRUN:
-		EndRunFlipbookFinished();
-		break;
-	case EPlayerMovement::STARTTURN:
-	{
-		StartTurnFlipbookFinished();
-		break;
+		case EPlayerMovement::BEGINRUN:
+			BeginRunFlipbookFinished();
+			break;
+		case EPlayerMovement::ENDRUN:
+			EndRunFlipbookFinished();
+			break;
+		case EPlayerMovement::STARTTURN:
+		{
+			StartTurnFlipbookFinished();
+			break;
+		}
+		case EPlayerMovement::CLIMBING:
+		{
+			ClimbingFlipbookFinished();
+			break;
+		}
 	}
-
-	}
+	
 }
 
 
@@ -495,6 +614,12 @@ void ARYU2D_CharacterPrince::StartTurnFlipbookFinished()
 	GetSprite()->SetLooping(true);
 }
 
+void ARYU2D_CharacterPrince::ClimbingFlipbookFinished()
+{
+	PlayerMovement = EPlayerMovement::STAND;
+	bStartedNoLoopAnimation = false;
+	GetSprite()->SetLooping(true);
+}
 
 void ARYU2D_CharacterPrince::HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
@@ -561,17 +686,19 @@ void ARYU2D_CharacterPrince::PlayTimeline()
 
 void ARYU2D_CharacterPrince::SetCurrentTimelineParams(UCurveFloat* FloatCurve, bool TimelineIsLooping, bool IgnoreTimeDilation)
 {
-	UE_LOG(LogTemp, Log, TEXT("Set TimeLine Params for Timeline %s"),*FloatCurve->GetName());
-	//Add Float curve to the timeline and bind it to the interpfunction´s delegate
-	//3rd Parameter = floatValue, Propertyname, Bind all Stuff
-	CurrentTimeline->AddInterpFloat(FloatCurve, onTimelineCallback, FName("Movement"));
-	CurrentTimeline->SetTimelineFinishedFunc(onTimelineFinishedCallback);
+	if (FloatCurve)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Set TimeLine Params for Timeline %s"), *FloatCurve->GetName());
+		//Add Float curve to the timeline and bind it to the interpfunction´s delegate
+		//3rd Parameter = floatValue, Propertyname, Bind all Stuff
+		CurrentTimeline->AddInterpFloat(FloatCurve, onTimelineCallback, FName("Movement"));
+		CurrentTimeline->SetTimelineFinishedFunc(onTimelineFinishedCallback);
 
-	// Timeline Settings
-	CurrentTimeline->SetLooping(TimelineIsLooping);
-	//false = it moves as the global Time Dileation
-	CurrentTimeline->SetIgnoreTimeDilation(IgnoreTimeDilation);
-
+		// Timeline Settings
+		CurrentTimeline->SetLooping(TimelineIsLooping);
+		//false = it moves as the global Time Dileation
+		CurrentTimeline->SetIgnoreTimeDilation(IgnoreTimeDilation);
+	}
 }
 
 /** End Timeline specific Stuff*/

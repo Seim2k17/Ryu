@@ -580,7 +580,7 @@ void ARYUCharacterIchi::MoveRight(float Val)
 
 void ARYUCharacterIchi::Climb(float Val)
 {
-	//Move up or Down a ledge...
+		//Move up or Down a ledge...
 		switch (RYUMovement)
 		{
 				//...near a ledge

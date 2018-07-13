@@ -45,12 +45,24 @@ public:
 		class UPaperFlipbook* TurnAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-		class UPaperFlipbook* ClimbUpAnimation;
+		class UPaperFlipbook* JumpUpAndFallAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
-		class UPaperFlipbook* ClimbDownAnimation;
+		class UPaperFlipbook* JumpUpAndHangAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+		class UPaperFlipbook* HangOnLedgeAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+		class UPaperFlipbook* ClimbUpLedgeAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+		class UPaperFlipbook* ClimbDownLedgeAnimation;
 
 	/**and resp. Curves to some Animations */
+
+	UPROPERTY(EditAnywhere, Category = "Timeline")
+	UCurveFloat* JumpUpFloatCurve;
 
 	UPROPERTY(EditAnywhere, Category = "Timeline")
 	UCurveFloat* ClimbUpFloatCurve;
