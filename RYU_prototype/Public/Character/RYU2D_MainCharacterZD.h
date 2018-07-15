@@ -1,32 +1,30 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "RYU2D_CharacterBase.h"
 #include "Components/TimelineComponent.h"
-#include "RYU2D_CharacterPrince.generated.h"
+#include "RYU2D_MainCharacterZD.generated.h"
 
-//@ToDo: look later when movement impl.
+
 class URYU2D_MovementComponent;
-class UPaperFlipbook;
-
 
 /**
  * 
  */
 UCLASS()
-class RYU_PROTOTYPE_API ARYU2D_CharacterPrince : public ARYU2D_CharacterBase
+class RYU_PROTOTYPE_API ARYU2D_MainCharacterZD : public ARYU2D_CharacterBase
 {
 	GENERATED_BODY()
 	
-/************************************************************************/
-/* METHODS                                                              */
-/************************************************************************/
+		/************************************************************************/
+		/* METHODS                                                              */
+		/************************************************************************/
 
 public:
-	
-	ARYU2D_CharacterPrince(const class FObjectInitializer& ObjectInitializer);
+
+	ARYU2D_MainCharacterZD(const class FObjectInitializer& ObjectInitializer);
 
 
 	//UPROPERTY(Category = Character, VAnywhere, BlueprintReadOnly)
@@ -44,14 +42,29 @@ public:
 	void DrawDebugInfosOnScreen();
 
 	void DebugSomething();
-	
-	
-	#if WITH_EDITOR
+
+
+#if WITH_EDITOR
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-	#endif
+#endif
 
 	//Public due Customized CharMovementComponent
 	void Climb(float Val);
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	FVector GetCurrentVelocity();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	FVector GetCurrentAcceleration();
+
+	UFUNCTION(BlueprintPure, Category = "Movement")
+	bool GetIsLookingRight();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void SetLookRight();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void TurnFlipBookFinished();
 
 protected:
 
@@ -66,27 +79,10 @@ protected:
 	/** Called for Climbing input */
 	void MoveUp(float Value);
 
-	/** Called to choose the correct animation to play based on the character's movement state */
-	void UpdateAnimation();
-
-	void UpdateCharacter();
-
-	UFUNCTION()
-	void FlipbookFinishedPlaying();
-
-	void BeginRunFlipbookFinished();
-
-	void EndRunFlipbookFinished();
-
-	void StartTurnFlipbookFinished();
-
-	void ClimbingFlipbookFinished();
-
-	void PlayFlipBookAnimation(UPaperFlipbook* AnimationToPlay, bool bAnimationIsLooping);
-
+	
 	UFUNCTION()
 	void HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+			int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 
 	UFUNCTION()
 	void HandleSphereColliderEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
@@ -131,6 +127,8 @@ protected:
 
 	void JumpUpOrDown(float Val, FVector StartJumpPosition);
 
+	void UpdateCharacter();
+
 private:
 
 	void InitializeCharacterValues();
@@ -141,18 +139,13 @@ private:
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	FVector TurnPositionOffset;
-
+	
 protected:
 
 
 	bool bPlayTurnAni;
 
 	bool bStartedNoLoopAnimation;
-
-	//**MOVEMENT*
-	bool bLookRight;
 
 	//** TimeLine Stuff */
 	UPROPERTY()
@@ -170,9 +163,13 @@ private:
 	FVector currA;
 	FVector currV;
 
+	//**MOVEMENT*
+	bool bLookRight;
+
 	//*ClilmbUpVariables
 	bool bHangPositionSet;
 
 	FVector _StartClimbUpPosition;
-
+	
+	
 };

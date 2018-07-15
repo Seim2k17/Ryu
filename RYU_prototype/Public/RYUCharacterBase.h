@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "RYUENUM_PlayerActive.h"
 #include "Character/RYUENUM_MovementMode.h"
-#include "Character/RYUENUM_ClimbingMode.h"
+#include "Character/RYU2DENUM_ClimbingMode.h"
 #include "RYUENUM_LedgeSideEntered.h"
 #include "RYUClimbingActor.h"
 #include "RYUCharacterBase.generated.h"

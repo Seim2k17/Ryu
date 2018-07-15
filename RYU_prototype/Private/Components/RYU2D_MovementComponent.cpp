@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+ï»¿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RYU2D_MovementComponent.h"
 #include "RYU2D_CharacterBase.h"
@@ -149,7 +149,7 @@ void URYU2D_MovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 		if (!bDoStuffOnce)
 		{
 			bDoStuffOnce = true;
-			UE_LOG(LogTemp, Log, TEXT("I´m climbing up the ledge!"));
+			UE_LOG(LogTemp, Log, TEXT("IÂ´m climbing up the ledge!"));
 		}
 		PhysClimbingLedge(deltaTime, Iterations);
 		break;
@@ -157,7 +157,7 @@ void URYU2D_MovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 		if (!bDoStuffOnce)
 		{
 			bDoStuffOnce = true;
-			UE_LOG(LogTemp, Log, TEXT("I´m climbing down the ledge!"));
+			UE_LOG(LogTemp, Log, TEXT("IÂ´m climbing down the ledge!"));
 		}
 		PhysClimbingLedge(deltaTime, Iterations);
 		break;
@@ -173,7 +173,7 @@ void URYU2D_MovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 		if (!bDoStuffOnce)
 		{
 			bDoStuffOnce = true;
-			UE_LOG(LogTemp, Log, TEXT("I´m falling down the ledge!"));
+			UE_LOG(LogTemp, Log, TEXT("IÂ´m falling down the ledge!"));
 		}
 		PhysClimbingLedge(deltaTime, Iterations);
 		//PhysFallingLedge(deltaTime, Iterations);

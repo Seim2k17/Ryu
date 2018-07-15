@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PaperCharacter.h"
+#include "PaperZDCharacter.h"
 #include "RYU2DENUM_Movement.h"
-#include "RYUENUM_ClimbingMode.h"
+#include "RYU2DENUM_ClimbingMode.h"
 #include "RYUENUM_LedgeSideEntered.h"
+#include "Character/RYU2DENUM_AnimationState.h"
 #include "RYU2D_CharacterBase.generated.h"
 
 class URYU2D_AnimationComponent;
@@ -21,7 +22,7 @@ class USphereComponent;
 * The Sprite component (inherited from APaperCharacter) handles the visuals
 */
 UCLASS(config = Game)
-class RYU_PROTOTYPE_API ARYU2D_CharacterBase : public APaperCharacter
+class RYU_PROTOTYPE_API ARYU2D_CharacterBase : public APaperZDCharacter
 {
 	GENERATED_BODY()
 
@@ -98,6 +99,10 @@ public:
 	/** State of the Character Movement*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
 	EPlayerMovement PlayerMovement;
+
+	/** State of the Character Animation*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+	ERYU2DAnimationState CharAnimation2DState;
 
 	/** State of the Character Climbing State */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")

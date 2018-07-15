@@ -146,10 +146,10 @@ void ARYU2D_CharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* Over
 	if (ARY)
 	{
 
+		PlayerMovement = EPlayerMovement::CANGRABLEDGE;
 
 		//we work only with the components not with the actor itself
-		if (((OtherComp->ComponentTags[0] == CanClimbDownTagName) && ((ARY->bLeftDownTriggerIsActive) || (ARY->bRightDownTriggerIsActive))) &&
-			((OtherComp->ComponentTags[0] == CanClimbUpTagName) && ((ARY->bLeftUpTriggerIsActive) || (ARY->bRightUpTriggerIsActive))))
+		if ((OtherComp->ComponentTags[0] == CanClimbDownTagName) || (OtherComp->ComponentTags[0] == CanClimbUpTagName))
 		{
 			CapsuleOverlappedComponents.Add(OtherComp);
 		}
@@ -213,6 +213,7 @@ void ARYU2D_CharacterBase::OnHandleCapsuleEndOverlap(UPrimitiveComponent* Overla
 void ARYU2D_CharacterBase::SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide)
 {
 	LedgeHangPosition = LedgeTargetPoint;
+	//relict from 3D CharHangPosition !
 	LedgeHangPosition.Z = LedgeHangPosition.Z + 115.0f;
 
 	//	LeftPositionTag = "Left";

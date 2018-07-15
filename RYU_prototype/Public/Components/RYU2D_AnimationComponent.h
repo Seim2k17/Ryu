@@ -59,6 +59,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 		class UPaperFlipbook* ClimbDownLedgeAnimation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+		class UPaperFlipbook* FallingFromLedgeAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+		class UPaperFlipbook* FallingLoopAnimation;
+
 	/**and resp. Curves to some Animations */
 
 	UPROPERTY(EditAnywhere, Category = "Timeline")
