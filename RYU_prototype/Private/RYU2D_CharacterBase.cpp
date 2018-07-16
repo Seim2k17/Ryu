@@ -145,8 +145,13 @@ void ARYU2D_CharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* Over
 	ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(OtherActor);
 	if (ARY)
 	{
-
-		PlayerMovement = EPlayerMovement::CANGRABLEDGE;
+		//if we run into the ClimbingActors
+		if ((PlayerMovement != EPlayerMovement::RUN) &&
+			(PlayerMovement != EPlayerMovement::ENDRUN))
+		{
+			PlayerMovement = EPlayerMovement::CANGRABLEDGE;
+		}
+		
 
 		//we work only with the components not with the actor itself
 		if ((OtherComp->ComponentTags[0] == CanClimbDownTagName) || (OtherComp->ComponentTags[0] == CanClimbUpTagName))
@@ -208,6 +213,20 @@ void ARYU2D_CharacterBase::OnHandleCapsuleEndOverlap(UPrimitiveComponent* Overla
 
 	//Check if an actor is is collided with the SphereTracer
 	OnSphereTracerCheckOverlap(SphereOverlappedActor, SphereOverlappedComponent);
+}
+
+
+void ARYU2D_CharacterBase::CheckOverlappingActors()
+{
+	//if there are CapsuleOverlappingActors set the appr. Movement / ClimbingMode (important for EndFinished-Notifier in the ABP
+	if (CapsuleOverlappedComponents.Num() > 0)
+	{
+		PlayerMovement = EPlayerMovement::CANGRABLEDGE;
+	}
+	else
+	{
+		PlayerMovement = EPlayerMovement::STAND;
+	}
 }
 
 void ARYU2D_CharacterBase::SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide)

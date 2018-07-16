@@ -445,9 +445,6 @@ void ARYU2D_CharacterPrince::MoveRight(float Val)
 			case EPlayerMovement::FALLING:
 				//@ToDo
 				break;
-			case EPlayerMovement::HANGINGLEDGE:
-				//@ToDo
-				break;
 			case EPlayerMovement::CLIMBING:
 				//@ToDo
 				break;

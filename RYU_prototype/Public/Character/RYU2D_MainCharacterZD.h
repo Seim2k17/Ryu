@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -129,6 +129,9 @@ protected:
 
 	void UpdateCharacter();
 
+	UFUNCTION(BlueprintPure, Category = "Movement")
+	float GetMoveRightInput();
+
 private:
 
 	void InitializeCharacterValues();
@@ -171,5 +174,8 @@ private:
 
 	FVector _StartClimbUpPosition;
 	
+	float MoveRightInput;
+
+	float MoveUpInput;
 	
 };

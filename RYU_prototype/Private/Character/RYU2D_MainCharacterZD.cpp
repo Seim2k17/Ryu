@@ -101,34 +101,103 @@ void ARYU2D_MainCharacterZD::InitializeCharacterValues()
 }
 
 
+//* is called in MoveRight(Val), not in Tick anymore, but as MoveRight is bound to an axis this Ticks also
 void ARYU2D_MainCharacterZD::UpdateCharacter()
 {
 	currA = GetCharacterMovement()->GetCurrentAcceleration();
 	currV = this->GetVelocity();
 
-	/*
-	if ((!bStartedNoLoopAnimation) &&
-		(PlayerMovement != EPlayerMovement::STARTTURN) &&
-		(PlayerMovement != EPlayerMovement::BEGINRUN) &&
-		(PlayerMovement != EPlayerMovement::ENDRUN))
+
+	//** ABP-TRANSITION-RULES *******//
+	//** TransitionRules for the ABP, moved it completely to c++ due clarity and complexicity reason
+	if (currV.Z < 0)
 	{
-		float TravelDirection = currV.X;
-		// Set the rotation so that the character faces his direction of travel.
-		if (Controller != nullptr)
+		PlayerMovement = EPlayerMovement::FALLING;
+	}
+	else
+	{
+
+		if ((bLookRight && MoveRightInput < 0) || (!bLookRight && MoveRightInput > 0))
 		{
-			if (TravelDirection < 0.0f)
-			{
-				Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
-				CameraBoom->RelativeRotation = FRotator(0.0f, 90.0f, 0.0f);
-			}
-			else if (TravelDirection > 0.0f)
-			{
-				Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
-				CameraBoom->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
-			}
+			PlayerMovement = EPlayerMovement::STARTTURN;
+		}
+
+		switch (PlayerMovement)
+		{
+			case EPlayerMovement::STAND:
+				if ((bLookRight && (currV.X > 0)) ||
+					(!bLookRight && (currV.X < 0)))
+				{
+					PlayerMovement = EPlayerMovement::BEGINRUN;
+					break;
+				}
+
+				if (MoveUpInput > 0)
+				{
+					switch (RYUClimbingMode)
+					{
+					case ERYUClimbingMode::NONE:
+						break;
+					case ERYUClimbingMode::CANCLIMBUPLEDGE:
+						PlayerMovement = EPlayerMovement::JUMPUP;
+						break;
+					case ERYUClimbingMode::CANCLIMBUPANDDOWN:
+						PlayerMovement = EPlayerMovement::JUMPUP;
+						break;
+					case ERYUClimbingMode::CANENTERLADDER:
+						//@ToDo
+						break;
+					default:
+						break;
+					}
+				}
+				//return;
+				break;
+			case EPlayerMovement::BEGINRUN:
+				if (MoveRightInput == 0)
+				{
+					PlayerMovement = EPlayerMovement::ENDRUN;
+				}
+				else
+				{
+					PlayerMovement = EPlayerMovement::RUN;
+				}
+				//return;
+				break;
+			case EPlayerMovement::RUN:
+				if (MoveRightInput == 0)
+					PlayerMovement = EPlayerMovement::ENDRUN;
+				//return; 
+				break;
+			case EPlayerMovement::ENDTURN:
+				PlayerMovement = EPlayerMovement::STAND;
+				//return;
+				break;
+			case EPlayerMovement::FALLING:
+				PlayerMovement = EPlayerMovement::STANDUP;
+				break;
+				//return;
+			case EPlayerMovement::CLIMBING:
+				
+				switch (RYUClimbingMode)
+				{
+					case ERYUClimbingMode::HANGONLEDGE:
+						if (MoveUpInput < 0)
+						{
+							RYUClimbingMode = ERYUClimbingMode::LETGOLEDGE;
+						}
+						else if (MoveUpInput > 0)
+						{
+							RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
+						}
+						break;
+					default:
+						break;
+				}
+			default:
+				break;
 		}
 	}
-	*/
 }
 
 void ARYU2D_MainCharacterZD::BeginPlay()
@@ -155,7 +224,7 @@ void ARYU2D_MainCharacterZD::Tick(float DeltaTime)
 		DrawDebugInfosOnScreen();
 	}
 
-	UpdateCharacter();
+	//UpdateCharacter();
 }
 
 void ARYU2D_MainCharacterZD::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -178,15 +247,6 @@ void ARYU2D_MainCharacterZD::StopJumping()
 }
 
 
-void ARYU2D_MainCharacterZD::DrawDebugInfosOnScreen()
-{
-
-}
-
-void ARYU2D_MainCharacterZD::DebugSomething()
-{
-
-}
 
 void ARYU2D_MainCharacterZD::Climb(float Val)
 {
@@ -196,30 +256,29 @@ void ARYU2D_MainCharacterZD::Climb(float Val)
 
 void ARYU2D_MainCharacterZD::MoveRight(float Val)
 {
-	/*
-	if (Val > 0)
-	{
-		bLookRight = true;
-	}
-	else if (Val < 0)
-	{
-		bLookRight = false;
-	}
-	*/
+	
+	MoveRightInput = Val;
 
-	if ((PlayerMovement!= EPlayerMovement::BEGINRUN) &&
+	if ((PlayerMovement != EPlayerMovement::BEGINRUN) &&
 		(PlayerMovement != EPlayerMovement::ENDRUN) &&
 		(PlayerMovement != EPlayerMovement::STARTTURN) &&
-		(PlayerMovement != EPlayerMovement::TURN))
+		(PlayerMovement != EPlayerMovement::ENDTURN))
+	{
+
+		if ((bLookRight && Val > 0) || (!bLookRight && Val < 0))
 		{
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Val);
 		}
-	
+	}
+
+	//** due its better for complexicity AND clarity we do most of the ABP_Transition_Logic here in c++ 
+	UpdateCharacter();
+
 }
 
 void ARYU2D_MainCharacterZD::MoveUp(float Value)
 {
-
+	MoveUpInput = Value;
 }
 
 void ARYU2D_MainCharacterZD::HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -314,18 +373,18 @@ void ARYU2D_MainCharacterZD::SetLookRight()
 
 void ARYU2D_MainCharacterZD::TurnFlipBookFinished()
 {
-	PlayerMovement = EPlayerMovement::STAND;
-
-	float TravelDirection = currV.X;
+	//float TravelDirection = currV.X;
 	// Set the rotation so that the character faces his direction of travel.
 	if (Controller != nullptr)
 	{
-		if (TravelDirection < 0.0f)
+		//if (TravelDirection < 0.0f)
+		if (bLookRight)
 		{
 			Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
 			CameraBoom->RelativeRotation = FRotator(0.0f, 90.0f, 0.0f);
 		}
-		else if (TravelDirection > 0.0f)
+		//else if (TravelDirection > 0.0f)
+		else
 		{
 			Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
 			CameraBoom->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
@@ -333,4 +392,99 @@ void ARYU2D_MainCharacterZD::TurnFlipBookFinished()
 	}
 
 	bLookRight = !bLookRight;
+
+	PlayerMovement = EPlayerMovement::ENDTURN;
+	//PlayerMovement = EPlayerMovement::STAND;
+}
+
+float ARYU2D_MainCharacterZD::GetMoveRightInput()
+{
+	return MoveRightInput;
+}
+
+
+void ARYU2D_MainCharacterZD::DrawDebugInfosOnScreen()
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("V(x): %s"), *currV.ToString()), false);
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(x): %s"), *currA.ToString()), false);
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green, FString::Printf(TEXT("Looking Right: %s"), bLookRight ? TEXT("true") : TEXT("false"), false));
+	}
+
+	FString MoveMode;
+	FString ClimbMode;
+
+	switch (PlayerMovement)
+	{
+	case EPlayerMovement::BEGINRUN:
+		MoveMode = "BEGIN RUNNING";
+		break;
+	case EPlayerMovement::RUN:
+		MoveMode = "RUNNING";
+		break;
+	case EPlayerMovement::ENDRUN:
+		MoveMode = "END RUNNING";
+		break;
+	case EPlayerMovement::JUMPUP:
+		MoveMode = "JUMPING";
+		break;
+	case EPlayerMovement::CANGRABLEDGE:
+		MoveMode = "CanGrabLedge";
+		break;
+	case EPlayerMovement::CLIMBING:
+		MoveMode = "Climbing";
+		break;
+	case EPlayerMovement::STARTTURN:
+		MoveMode = "StartTurning";
+	case EPlayerMovement::ENDTURN:
+		MoveMode = "EndTurning";
+		break;
+	default:
+		MoveMode = "STANDING";
+	}
+
+	switch (RYUClimbingMode)
+	{
+	case ERYUClimbingMode::NONE:
+		ClimbMode = "Climbing inactive";
+		break;
+	case ERYUClimbingMode::HANGONLEDGE:
+		ClimbMode = "HangingOnLedge";
+		break;
+	case ERYUClimbingMode::CLIMBDOWNLEDGE:
+		ClimbMode = "ClimbingDownLedge";
+		break;
+	case ERYUClimbingMode::CLIMBUPLEDGE:
+		ClimbMode = "ClimbingUpLedge";
+		break;
+	case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
+		ClimbMode = "CanClimbDownLedge";
+		break;
+	case ERYUClimbingMode::CANCLIMBUPLEDGE:
+		ClimbMode = "CanClimbUpLedge";
+		break;
+	case ERYUClimbingMode::CANCLIMBUPANDDOWN:
+		ClimbMode = "CanClimbUpAndDownLedge";
+		break;
+	case ERYUClimbingMode::FALLDOWNLEDGE:
+		ClimbMode = "FallingDownLedge";
+		break;
+	case ERYUClimbingMode::CLIMBLADDERUP:
+		ClimbMode = "ClimbingUpLadder";
+		break;
+	case ERYUClimbingMode::CLIMBLADDERDOWN:
+		ClimbMode = "ClimbingDownLadder";
+		break;
+	default:
+		break;
+	}
+
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("Movement: %s"), *MoveMode), false);
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("ClimbingMode: %s"), *ClimbMode), false);
+}
+
+void ARYU2D_MainCharacterZD::DebugSomething()
+{
+
 }

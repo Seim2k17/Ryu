@@ -71,6 +71,9 @@ public:
 	UFUNCTION()
 	void OnHandleCapsuleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void CheckOverlappingActors();
+
 protected:
 
 	virtual void BeginPlay() override;
