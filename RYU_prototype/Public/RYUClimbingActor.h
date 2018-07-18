@@ -73,6 +73,19 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UChildActorComponent* RightHangPosition;
 
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UChildActorComponent* DownLeftStandPosition;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UChildActorComponent* DownRightStandPosition;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UChildActorComponent* UpLeftStandPosition;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UChildActorComponent* UpRightStandPosition;
+	
+
 	UPROPERTY(VisibleAnywhere, Category = "Trigger")
 	FName CanClimbUpTag;
 

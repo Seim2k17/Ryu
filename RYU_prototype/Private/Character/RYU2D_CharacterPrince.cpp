@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "ClimbAssetComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/RYU2D_AnimationComponent.h"
 #include "RYU2D_AnimationComponent.h"
 #include "Components/RYU2D_MovementComponent.h"
 
@@ -21,6 +22,8 @@ ARYU2D_CharacterPrince::ARYU2D_CharacterPrince(const class FObjectInitializer& O
 	bDebugOutputActive = true;
 
 	CreateDefaultSubobject<UClimbAssetComponent>(TEXT("ClimbAssetComponent"));
+
+	Animation2DComponent = CreateDefaultSubobject<URYU2D_AnimationComponent>(TEXT("P2D_Animations"));
 
 	InitializeCharacterValues();
 }
@@ -487,8 +490,10 @@ void ARYU2D_CharacterPrince::MoveRight(float Val)
 
 void ARYU2D_CharacterPrince::MoveUp(float Value)
 {
+	
 	if (Value != 0)
 	{
+		UE_LOG(LogTemp, Log, TEXT("Climb up Prince is gone"));
 		switch (PlayerMovement)
 		{
 			//@ToDo: check for all special cases !

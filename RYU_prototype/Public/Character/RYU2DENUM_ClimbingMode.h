@@ -8,6 +8,7 @@ enum class ERYUClimbingMode : uint8
 	CANCLIMBUPLEDGE UMETA(DisplayName = "Can Climb Up Ledges"),
 	CANCLIMBDOWNLEDGE UMETA(DisplayName = "Can Climb Down Ledges"),
 	CANCLIMBUPANDDOWN UMETA(DisplayName = "Can Climb Up&&Down Ledges"),
+	JUMPTOLEDGE UMETA(DisplayName = "Jump Up to Ledge"),
 	CLIMBDOWNLEDGE UMETA(DisplayName = "Climbing Down Ledges"),
 	CLIMBUPLEDGE UMETA(DisplayName = "Climbing Up Ledges"),
 	FALLDOWNLEDGE UMETA(DisplayName = "Fall Down from Ledges"),

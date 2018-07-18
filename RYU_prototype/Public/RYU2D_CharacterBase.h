@@ -10,7 +10,6 @@
 #include "Character/RYU2DENUM_AnimationState.h"
 #include "RYU2D_CharacterBase.generated.h"
 
-class URYU2D_AnimationComponent;
 class USphereComponent;
 
 /**
@@ -74,6 +73,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void CheckOverlappingActors();
 
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -84,6 +84,7 @@ protected:
 	//CHECK ! is it used ANYMORE ?
 	void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
 
+	void CheckOverlappingComponents();
 
 /************************************************************************/
 /* MEMBER                                                               */
@@ -118,10 +119,7 @@ public:
 	
 protected:
 
-	/**ANIMATIONS as extra Component*/
-
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	URYU2D_AnimationComponent* Animation2DComponent;
+	
 
 	//* Climbing Tags for Objects
 	FName CanClimbUpTagName;
@@ -140,13 +138,20 @@ protected:
 	
 	bool bJumpJustStarted;
 
+	FVector LedgeHangPosition;
+
+	FVector ClimbUpStandUpPosition;
+
+	FVector ClimbUpStandDownPosition;
+
+	ERYULedgeSideEntered ESideEntered;
+
 private:
 
 	bool bSphereTracerOverlap;
 
 	float TreshholdYWalkRun;
 
-	FVector LedgeHangPosition;
-	ERYULedgeSideEntered ESideEntered;
+	
 	bool bLedgeHeightInRange;
 };

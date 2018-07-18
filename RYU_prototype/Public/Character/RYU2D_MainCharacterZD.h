@@ -9,6 +9,7 @@
 
 
 class URYU2D_MovementComponent;
+class URYU2D_CurveDataComponent;
 
 /**
  * 
@@ -43,13 +44,19 @@ public:
 
 	void DebugSomething();
 
+	UFUNCTION(BlueprintCallable, Category = "Debug")
+		void ChangeMovementMode();
+
+	UFUNCTION(BlueprintCallable, Category = "Debug")
+		void ChangeClimbingMode();
+
 
 #if WITH_EDITOR
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 
 	//Public due Customized CharMovementComponent
-	void Climb(float Val);
+	void Climb();
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	FVector GetCurrentVelocity();
@@ -65,6 +72,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void TurnFlipBookFinished();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void ClimbUpFlipBookFinished();
 
 protected:
 
@@ -90,7 +100,10 @@ protected:
 	/** Start-TIMELINE-SECTION */
 	//Updatefunction for the Timeline
 	UFUNCTION()
-	void TimelineCallback(float val);
+	void TimelineCallbackFloat(float val);
+
+	UFUNCTION()
+	void TimelineCallbackVector(FVector Vec);
 
 	//When Finished the Timeline
 	UFUNCTION()
@@ -98,13 +111,17 @@ protected:
 
 	void PlayTimeline();
 
-	void SetCurrentTimelineParams(UCurveFloat* FloatCurve, bool TimelineIsLooping, bool IgnoreTimeDilation);
+	void SetCurrentTimelineParamsFloat(UCurveFloat* FloatCurveX, UCurveFloat* FloatCurveZ, bool TimelineIsLooping, bool IgnoreTimeDilation);
+
+	void SetCurrentTimelineParamsVector(UCurveVector* VectorCurve, bool TimelineIsLooping, bool IgnoreTimeDilation);
 
 	/*onTimelineCallback contains the signature of the function that is
 	going to execute every time we tick our timeline.
 	Think of onTimelineCallback as a delegate!*/
 	/** Declare our delegate function to be binded with TimelineCallback */
-	FOnTimelineFloat onTimelineCallback{};
+	FOnTimelineFloat onTimelineCallbackFloat{};
+
+	FOnTimelineVector onTimelineCallbackVector{};
 
 	//FOnTimelineEventStatic onTimelineFinishedCallback;
 
@@ -136,6 +153,7 @@ private:
 
 	void InitializeCharacterValues();
 
+	void CheckJumpUpState();
 /************************************************************************/
 /* MEMBER                                                               */
 /************************************************************************/
@@ -156,6 +174,9 @@ protected:
 
 	UPROPERTY()
 	UTimelineComponent* CurrentTimeline;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	URYU2D_CurveDataComponent* Curve2DComponent;
 
 private:
 

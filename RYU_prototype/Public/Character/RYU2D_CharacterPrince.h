@@ -9,6 +9,7 @@
 
 //@ToDo: look later when movement impl.
 class URYU2D_MovementComponent;
+class URYU2D_AnimationComponent;
 class UPaperFlipbook;
 
 
@@ -160,6 +161,11 @@ protected:
 
 	UPROPERTY()
 	UTimelineComponent* CurrentTimeline;
+
+	/**ANIMATIONS as extra Component*/
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	URYU2D_AnimationComponent* Animation2DComponent;
 
 private:
 

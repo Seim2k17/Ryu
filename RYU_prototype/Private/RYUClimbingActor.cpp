@@ -38,6 +38,18 @@ ARYUClimbingActor::ARYUClimbingActor()
 
 	RightHangPosition = CreateDefaultSubobject<UChildActorComponent>(TEXT("RightHangPosition"));
 	RightHangPosition->SetupAttachment(Root);
+
+	DownLeftStandPosition = CreateDefaultSubobject<UChildActorComponent>(TEXT("DownLeftStandPosition"));
+	DownLeftStandPosition->SetupAttachment(Root);
+
+	DownRightStandPosition = CreateDefaultSubobject<UChildActorComponent>(TEXT("DownRightStandPosition"));
+	DownRightStandPosition->SetupAttachment(Root);
+
+	UpRightStandPosition = CreateDefaultSubobject<UChildActorComponent>(TEXT("UpRightStandPosition"));
+	UpRightStandPosition->SetupAttachment(Root);
+
+	UpLeftStandPosition = CreateDefaultSubobject<UChildActorComponent>(TEXT("UpLeftStandPosition"));
+	UpLeftStandPosition->SetupAttachment(Root);
 	
 	InitializeValues();
 

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RYU2D_MainCharacterZD.h"
 #include "RYU2D_MovementComponent.h"
@@ -8,6 +8,8 @@
 #include "Components/CapsuleComponent.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/RYU2D_MovementComponent.h"
+#include "Components/RYU2D_CurveDataComponent.h"
+#include "Curves/CurveVector.h"
 
 
 
@@ -17,6 +19,8 @@ ARYU2D_MainCharacterZD::ARYU2D_MainCharacterZD(const class FObjectInitializer& O
 	PrimaryActorTick.bCanEverTick = true;
 
 	bDebugOutputActive = true;
+
+	Curve2DComponent = CreateDefaultSubobject<URYU2D_CurveDataComponent>(TEXT("FloatCurves"));
 
 	InitializeCharacterValues();
 }
@@ -96,109 +100,11 @@ void ARYU2D_MainCharacterZD::InitializeCharacterValues()
 	CharAnimation2DState = ERYU2DAnimationState::IDLE;
 
 	CurrentTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("Timeline"));
-	onTimelineCallback.BindUFunction(this, FName("TimelineCallback"));
+	onTimelineCallbackFloat.BindUFunction(this, FName("TimelineCallbackFloat"));
+	onTimelineCallbackVector.BindUFunction(this, FName("TimelineCallbackVector"));
 	onTimelineFinishedCallback.BindUFunction(this, FName("TimelineFinishedCallback"));
 }
 
-
-//* is called in MoveRight(Val), not in Tick anymore, but as MoveRight is bound to an axis this Ticks also
-void ARYU2D_MainCharacterZD::UpdateCharacter()
-{
-	currA = GetCharacterMovement()->GetCurrentAcceleration();
-	currV = this->GetVelocity();
-
-
-	//** ABP-TRANSITION-RULES *******//
-	//** TransitionRules for the ABP, moved it completely to c++ due clarity and complexicity reason
-	if (currV.Z < 0)
-	{
-		PlayerMovement = EPlayerMovement::FALLING;
-	}
-	else
-	{
-
-		if ((bLookRight && MoveRightInput < 0) || (!bLookRight && MoveRightInput > 0))
-		{
-			PlayerMovement = EPlayerMovement::STARTTURN;
-		}
-
-		switch (PlayerMovement)
-		{
-			case EPlayerMovement::STAND:
-				if ((bLookRight && (currV.X > 0)) ||
-					(!bLookRight && (currV.X < 0)))
-				{
-					PlayerMovement = EPlayerMovement::BEGINRUN;
-					break;
-				}
-
-				if (MoveUpInput > 0)
-				{
-					switch (RYUClimbingMode)
-					{
-					case ERYUClimbingMode::NONE:
-						break;
-					case ERYUClimbingMode::CANCLIMBUPLEDGE:
-						PlayerMovement = EPlayerMovement::JUMPUP;
-						break;
-					case ERYUClimbingMode::CANCLIMBUPANDDOWN:
-						PlayerMovement = EPlayerMovement::JUMPUP;
-						break;
-					case ERYUClimbingMode::CANENTERLADDER:
-						//@ToDo
-						break;
-					default:
-						break;
-					}
-				}
-				//return;
-				break;
-			case EPlayerMovement::BEGINRUN:
-				if (MoveRightInput == 0)
-				{
-					PlayerMovement = EPlayerMovement::ENDRUN;
-				}
-				else
-				{
-					PlayerMovement = EPlayerMovement::RUN;
-				}
-				//return;
-				break;
-			case EPlayerMovement::RUN:
-				if (MoveRightInput == 0)
-					PlayerMovement = EPlayerMovement::ENDRUN;
-				//return; 
-				break;
-			case EPlayerMovement::ENDTURN:
-				PlayerMovement = EPlayerMovement::STAND;
-				//return;
-				break;
-			case EPlayerMovement::FALLING:
-				PlayerMovement = EPlayerMovement::STANDUP;
-				break;
-				//return;
-			case EPlayerMovement::CLIMBING:
-				
-				switch (RYUClimbingMode)
-				{
-					case ERYUClimbingMode::HANGONLEDGE:
-						if (MoveUpInput < 0)
-						{
-							RYUClimbingMode = ERYUClimbingMode::LETGOLEDGE;
-						}
-						else if (MoveUpInput > 0)
-						{
-							RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
-						}
-						break;
-					default:
-						break;
-				}
-			default:
-				break;
-		}
-	}
-}
 
 void ARYU2D_MainCharacterZD::BeginPlay()
 {
@@ -224,7 +130,8 @@ void ARYU2D_MainCharacterZD::Tick(float DeltaTime)
 		DrawDebugInfosOnScreen();
 	}
 
-	//UpdateCharacter();
+	//** due its better for complexicity AND clarity we do most of the ABP_Transition_Logic here in c++ 
+	UpdateCharacter();
 }
 
 void ARYU2D_MainCharacterZD::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -238,22 +145,18 @@ void ARYU2D_MainCharacterZD::SetupPlayerInputComponent(class UInputComponent* Pl
 
 void ARYU2D_MainCharacterZD::Jump()
 {
-
+	bPressedJump = true;
 }
 
 void ARYU2D_MainCharacterZD::StopJumping()
 {
+	bPressedJump = false;
 
+	Super::ResetJumpState();
 }
 
 
-
-void ARYU2D_MainCharacterZD::Climb(float Val)
-{
-
-}
-
-
+//Move Left or Right
 void ARYU2D_MainCharacterZD::MoveRight(float Val)
 {
 	
@@ -270,15 +173,158 @@ void ARYU2D_MainCharacterZD::MoveRight(float Val)
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Val);
 		}
 	}
-
-	//** due its better for complexicity AND clarity we do most of the ABP_Transition_Logic here in c++ 
-	UpdateCharacter();
-
 }
 
+//Move Up or Down
 void ARYU2D_MainCharacterZD::MoveUp(float Value)
 {
 	MoveUpInput = Value;
+}
+
+void ARYU2D_MainCharacterZD::Climb()
+{
+	switch (RYUClimbingMode)
+	{
+	case ERYUClimbingMode::HANGONLEDGE:
+		if (MoveUpInput < 0)
+		{
+			RYUClimbingMode = ERYUClimbingMode::LETGOLEDGE;
+		}
+		else if (MoveUpInput > 0)
+		{
+			/*Without a Timeline but we need to adjust the Pivotpoint in EVERY Frame this SUCKS! maybe i can automatisize it when making my own animatins in PS (like we did in Visionaire with a positioning expotfile?)*/
+			/*
+			Curve2DComponent->ClimbUpStartTimelineLocation = GetActorLocation();
+			Curve2DComponent->ClimbUpEndTimelineLocation = FVector(Curve2DComponent->ClimbUpStartTimelineLocation.X + Curve2DComponent->ClimbUpOffsetX, Curve2DComponent->ClimbUpStartTimelineLocation.Y,
+				Curve2DComponent->ClimbUpStartTimelineLocation.Z + Curve2DComponent->ClimbUpOffsetZ);
+
+			SetCurrentTimelineParamsFloat(Curve2DComponent->ClimbUpFloatCurveX, Curve2DComponent->ClimbUpFloatCurveZ, false, true);
+			PlayTimeline();
+			*/
+			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBUPLEDGE));
+			RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+//* is called in MoveRight(Val), not in Tick anymore, but as MoveRight is bound to an axis this Ticks also
+void ARYU2D_MainCharacterZD::UpdateCharacter()
+{
+	currA = GetCharacterMovement()->GetCurrentAcceleration();
+	currV = this->GetVelocity();
+
+
+	//** ABP-TRANSITION-RULES *******//
+	//** TransitionRules for the ABP, moved it completely to c++ due clarity and complexicity reason
+	if (currV.Z < 0)
+	{
+		PlayerMovement = EPlayerMovement::FALLING;
+	}
+	else
+	{
+		//@ToDo curV.Z > 0 (was auch immer das heisst)
+		//
+		if ((bLookRight && MoveRightInput < 0) || (!bLookRight && MoveRightInput > 0))
+		{
+			PlayerMovement = EPlayerMovement::STARTTURN;
+		}
+
+		switch (PlayerMovement)
+		{
+		case EPlayerMovement::STAND:
+			if ((bLookRight && (currV.X > 0)) ||
+				(!bLookRight && (currV.X < 0)))
+			{
+				PlayerMovement = EPlayerMovement::BEGINRUN;
+				break;
+			}
+
+			CheckJumpUpState();
+
+			//return;
+			break;
+		case EPlayerMovement::BEGINRUN:
+			if (MoveRightInput == 0)
+			{
+				PlayerMovement = EPlayerMovement::ENDRUN;
+			}
+			else
+			{
+				PlayerMovement = EPlayerMovement::RUN;
+			}
+			//return;
+			break;
+		case EPlayerMovement::RUN:
+			if (MoveRightInput == 0)
+				PlayerMovement = EPlayerMovement::ENDRUN;
+			//return; 
+			break;
+		case EPlayerMovement::ENDTURN:
+			PlayerMovement = EPlayerMovement::STAND;
+			//return;
+			break;
+		case EPlayerMovement::FALLING:
+			PlayerMovement = EPlayerMovement::STANDUP;
+			break;
+			//return;
+		case EPlayerMovement::CLIMBING:
+			Climb();
+		case EPlayerMovement::CANGRABLEDGE:
+			CheckJumpUpState();
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+
+void ARYU2D_MainCharacterZD::CheckJumpUpState()
+{
+	
+	if (MoveUpInput > 0)
+	{
+		/*
+		Curve2DComponent->ClimbUpStartTimelineLocation = GetActorLocation();
+		Curve2DComponent->ClimbUpEndTimelineLocation = FVector(Curve2DComponent->ClimbUpStartTimelineLocation.X, Curve2DComponent->ClimbUpStartTimelineLocation.Y,
+			Curve2DComponent->ClimbUpStartTimelineLocation.Z + Curve2DComponent->ClimbUpOffsetZ);
+		*/
+		switch (RYUClimbingMode)
+		{
+		case ERYUClimbingMode::NONE:
+			PlayerMovement = EPlayerMovement::JUMPUP;
+			//** Initialize the Start End Endpoints 
+			//MovementComp->SetMovementMode(MOVE_Flying);
+
+			//MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::HANGONLEDGE));
+			//SetCurrentTimelineParamsFloat(Curve2DComponent->JumpUpFloatCurve, nullptr, false, true);
+			//PlayTimeline();
+			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::JUMPTOLEDGE));
+			break;
+		case ERYUClimbingMode::CANCLIMBUPLEDGE:
+		{
+			PlayerMovement = EPlayerMovement::CLIMBING;
+			//SetCurrentTimelineParamsFloat(Curve2DComponent->JumpUpAndHangFloatCurve, nullptr, false, true);
+			//PlayTimeline();
+			FVector PosChar = FVector(ClimbUpStandDownPosition.X, ClimbUpStandDownPosition.Y, ClimbUpStandDownPosition.Z + 50);
+			SetActorLocation(PosChar);
+			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::JUMPTOLEDGE));
+			break;
+		}
+			
+		case ERYUClimbingMode::CANCLIMBUPANDDOWN:
+			PlayerMovement = EPlayerMovement::CLIMBING;
+			break;
+		case ERYUClimbingMode::CANENTERLADDER:
+			//@ToDo
+			break;
+		default:
+			break;
+		}
+	}
 }
 
 void ARYU2D_MainCharacterZD::HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
@@ -291,24 +337,160 @@ void ARYU2D_MainCharacterZD::HandleSphereColliderEndOverlap(UPrimitiveComponent*
 
 }
 
-void ARYU2D_MainCharacterZD::TimelineCallback(float val)
+void ARYU2D_MainCharacterZD::TimelineCallbackFloat(float val)
 {
+	// This function is called for every tick in the timeline.
+	//UE_LOG(LogTemp, Log, TEXT("Here incr. z-Location: %s"), *FString::SanitizeFloat(val));
 
+	FVector StartTLLocation;
+	FVector EndTLLocation;
+
+	StartTLLocation = Curve2DComponent->ClimbUpStartTimelineLocation;
+	EndTLLocation = Curve2DComponent->ClimbUpEndTimelineLocation;
+
+	//Switch PMove needable ? ? ? or are all timelines handled the same ?
+	switch (PlayerMovement)
+	{
+	case EPlayerMovement::JUMPUP:
+		//@ToDo: look for ClimbUp vs. Down etc // see mix from 3D LedgeClimbing but wo Rootmotion ...
+		
+		break;
+	default:
+		break;
+	}
+
+	SetActorLocation(FMath::Lerp(StartTLLocation, EndTLLocation, val));
+	//AddActorLocalOffset(FVector(0,0,CurrentTimeline->));
+}
+
+void ARYU2D_MainCharacterZD::TimelineCallbackVector(FVector Vec)
+{
+	// This function is called for every tick in the timeline.
+	//UE_LOG(LogTemp, Log, TEXT("Here incr. z-Location: %s"), *FString::SanitizeFloat(val));
+
+	FVector StartTLLocation;
+	FVector EndTLLocation;
+
+	StartTLLocation = Curve2DComponent->ClimbUpStartTimelineLocation;
+	EndTLLocation = Curve2DComponent->ClimbUpEndTimelineLocation;
+
+	//Switch PMove needable ? ? ? or are all timelines handled the same ?
+	switch (PlayerMovement)
+	{
+	case EPlayerMovement::JUMPUP:
+		//@ToDo: look for ClimbUp vs. Down etc // see mix from 3D LedgeClimbing but wo Rootmotion ...
+
+		break;
+	default:
+		break;
+	}
+
+	SetActorLocation(FMath::Lerp(StartTLLocation, EndTLLocation, Vec));
+	//AddActorLocalOffset(FVector(0,0,CurrentTimeline->));
 }
 
 void ARYU2D_MainCharacterZD::TimelineFinishedCallback()
 {
+	// This function is called when the timeline finishes playing.
 
+	//SetActorLocation(Curve2DComponent->ClimbUpEndTimelineLocation);
+
+	//we use this to set back the movementmode now we go to the fun stuff the real climbing !
+
+	switch (PlayerMovement)
+	{
+	case EPlayerMovement::JUMPUP:
+		MovementComp->SetMovementMode(MOVE_Walking);
+		break;
+	default:
+		break;
+	}
+
+	switch (RYUClimbingMode)
+	{
+	case ERYUClimbingMode::NONE:
+		break;
+	case ERYUClimbingMode::CANCLIMBUPLEDGE:
+		break;
+	case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
+		break;
+	case ERYUClimbingMode::CANCLIMBUPANDDOWN:
+		break;
+	case ERYUClimbingMode::JUMPTOLEDGE:
+		break;
+	case ERYUClimbingMode::CLIMBDOWNLEDGE:
+		break;
+	case ERYUClimbingMode::CLIMBUPLEDGE:
+		MovementComp->SetMovementMode(MOVE_Walking);
+		break;
+	case ERYUClimbingMode::FALLDOWNLEDGE:
+		break;
+	case ERYUClimbingMode::HANGONLEDGE:
+		break;
+	case ERYUClimbingMode::LETGOLEDGE:
+		break;
+	case ERYUClimbingMode::CANENTERLADDER:
+		break;
+	case ERYUClimbingMode::CLIMBLADDERUP:
+		break;
+	case ERYUClimbingMode::CLIMBLADDERDOWN:
+		break;
+	default:
+		break;
+	}
 }
 
 void ARYU2D_MainCharacterZD::PlayTimeline()
 {
+	if (CurrentTimeline != NULL)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Play a timeline from Start"));
+		CurrentTimeline->PlayFromStart();
+	}
+}
+
+void ARYU2D_MainCharacterZD::SetCurrentTimelineParamsFloat(UCurveFloat* FloatCurveX, UCurveFloat* FloatCurveZ,  bool TimelineIsLooping, bool IgnoreTimeDilation)
+{
+	if (FloatCurveX)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Set TimeLine Params for Timeline X %s"), *FloatCurveX->GetName());
+		CurrentTimeline->AddInterpFloat(FloatCurveX, onTimelineCallbackFloat, FName("MovementX"));
+	}
+
+	if (FloatCurveZ)
+	{
+
+		UE_LOG(LogTemp, Log, TEXT("Set TimeLine Params for Timeline Z %s"), *FloatCurveZ->GetName());
+		//Add Float curve to the timeline and bind it to the interpfunction´s delegate
+		//3rd Parameter = floatValue, Propertyname, Bind all Stuff
+
+		CurrentTimeline->AddInterpFloat(FloatCurveZ, onTimelineCallbackFloat, FName("MovementZ"));
+	}
+
+		CurrentTimeline->SetTimelineFinishedFunc(onTimelineFinishedCallback);
+
+		// Timeline Settings
+		CurrentTimeline->SetLooping(TimelineIsLooping);
+		//false = it moves as the global Time Dileation
+		CurrentTimeline->SetIgnoreTimeDilation(IgnoreTimeDilation);
 
 }
 
-void ARYU2D_MainCharacterZD::SetCurrentTimelineParams(UCurveFloat* FloatCurve, bool TimelineIsLooping, bool IgnoreTimeDilation)
+void ARYU2D_MainCharacterZD::SetCurrentTimelineParamsVector(UCurveVector* VectorCurve, bool TimelineIsLooping, bool IgnoreTimeDilation)
 {
+	if (VectorCurve)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Set TimeLine Params for Timeline %s"), *VectorCurve->GetName());
+		//Add Float curve to the timeline and bind it to the interpfunction´s delegate
+		//3rd Parameter = floatValue, Propertyname, Bind all Stuff
+		CurrentTimeline->AddInterpVector(VectorCurve, onTimelineCallbackVector, FName("MovementVec"));
+		CurrentTimeline->SetTimelineFinishedFunc(onTimelineFinishedCallback);
 
+		// Timeline Settings
+		CurrentTimeline->SetLooping(TimelineIsLooping);
+		//false = it moves as the global Time Dileation
+		CurrentTimeline->SetIgnoreTimeDilation(IgnoreTimeDilation);
+	}
 }
 
 void ARYU2D_MainCharacterZD::CanClimbUp(float Val, FVector StartClimbUpPosition)
@@ -393,14 +575,29 @@ void ARYU2D_MainCharacterZD::TurnFlipBookFinished()
 
 	bLookRight = !bLookRight;
 
-	PlayerMovement = EPlayerMovement::ENDTURN;
-	//PlayerMovement = EPlayerMovement::STAND;
+	CheckOverlappingActors();
 }
+
+void ARYU2D_MainCharacterZD::ClimbUpFlipBookFinished()
+{
+	UE_LOG(LogTemp, Log, TEXT("Call From Notify: ClimbUpFlippbookFinished"));
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SphereTracer->SetEnableGravity(true);
+	GetCapsuleComponent()->SetEnableGravity(true);
+	MovementComp->SetMovementMode(MOVE_Walking);
+	SetActorLocation(ClimbUpStandUpPosition);
+	CheckOverlappingActors();
+}
+
+
 
 float ARYU2D_MainCharacterZD::GetMoveRightInput()
 {
 	return MoveRightInput;
 }
+
+
+//****DEBUGSECTION*******//
 
 
 void ARYU2D_MainCharacterZD::DrawDebugInfosOnScreen()
@@ -487,4 +684,58 @@ void ARYU2D_MainCharacterZD::DrawDebugInfosOnScreen()
 void ARYU2D_MainCharacterZD::DebugSomething()
 {
 
+}
+
+void ARYU2D_MainCharacterZD::ChangeMovementMode()
+{
+	switch (PlayerMovement)
+	{
+	case EPlayerMovement::STAND:
+		PlayerMovement = EPlayerMovement::CANGRABLEDGE;
+		break;
+	case EPlayerMovement::CANGRABLEDGE:
+		PlayerMovement = EPlayerMovement::JUMPUP;
+		break;
+	case EPlayerMovement::JUMPUP:
+		PlayerMovement = EPlayerMovement::CLIMBING;
+		break;
+	case EPlayerMovement::CLIMBING:
+		PlayerMovement = EPlayerMovement::STAND;
+		break;
+	case EPlayerMovement::SNEAK:
+		break;
+	case EPlayerMovement::STANDUP:
+		break;
+	case EPlayerMovement::COMBAT:
+		break;
+	default:
+		break;
+	}
+}
+
+void ARYU2D_MainCharacterZD::ChangeClimbingMode()
+{
+	switch (RYUClimbingMode)
+	{
+	case ERYUClimbingMode::NONE:
+		RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPLEDGE;
+		break;
+	case ERYUClimbingMode::CANCLIMBUPLEDGE:
+		RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+		break;
+	case ERYUClimbingMode::CANCLIMBUPANDDOWN:
+		RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+		break;
+	case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
+		RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+		break;
+	case ERYUClimbingMode::HANGONLEDGE:
+		RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
+		break;
+	case ERYUClimbingMode::CLIMBUPLEDGE:
+		RYUClimbingMode = ERYUClimbingMode::NONE;
+		break;
+	default:
+		break;
+	}
 }

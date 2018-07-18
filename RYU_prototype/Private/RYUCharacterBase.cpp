@@ -489,18 +489,19 @@ void ARYUCharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* Overlap
 	ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(OtherActor);
 	if (ARY)
 	{
-
+		int i = 0;
 
 		//we work only with the components not with the actor itself
 		if (((OtherComp->ComponentTags[0] == CanClimbDownTagName) && ((ARY->bLeftDownTriggerIsActive) || (ARY->bRightDownTriggerIsActive))) &&
 			((OtherComp->ComponentTags[0] == CanClimbUpTagName) && ((ARY->bLeftUpTriggerIsActive) || (ARY->bRightUpTriggerIsActive))))
 		{
 			CapsuleOverlappedComponents.Add(OtherComp);
+			i++;
+			UE_LOG(LogTemp, Log, TEXT("CapslOvlpArray[%d] : %s"), i, *CapsuleOverlappedComponents[i]->GetName());
 		}
 		
-
-		UE_LOG(LogTemp, Log, TEXT("CapslOvlpArray with: %d Actors"), CapsuleOverlappedComponents.Num());
-
+		UE_LOG(LogTemp, Log, TEXT("CapslOvlpArray FUCK with: %d Actors"), CapsuleOverlappedComponents.Num());
+		
 		//easy check but u need to bee careful !!!
 		if (CapsuleOverlappedComponents.Num() > 1)
 		{
