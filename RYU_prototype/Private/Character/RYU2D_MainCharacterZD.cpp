@@ -162,15 +162,32 @@ void ARYU2D_MainCharacterZD::MoveRight(float Val)
 	
 	MoveRightInput = Val;
 
+	/*
 	if ((PlayerMovement != EPlayerMovement::BEGINRUN) &&
 		(PlayerMovement != EPlayerMovement::ENDRUN) &&
 		(PlayerMovement != EPlayerMovement::STARTTURN) &&
 		(PlayerMovement != EPlayerMovement::ENDTURN))
+		*/
+	//@ToDO
+	//** needs rework when turning whole running
+	if((PlayerMovement == EPlayerMovement::STAND) ||
+		(PlayerMovement == EPlayerMovement::RUN) ||
+		(PlayerMovement == EPlayerMovement::STARTTURN) ||
+		(PlayerMovement == EPlayerMovement::WALK))
+
 	{
 
 		if ((bLookRight && Val > 0) || (!bLookRight && Val < 0))
 		{
-			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Val);
+			if (PlayerMovement == EPlayerMovement::STARTTURN)
+			{
+				AddMovementInput(FVector(1.0f, 0.0f, 0.0f), 0.5f);
+			}
+			else
+			{
+				AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Val);
+			}
+			
 		}
 	}
 }
@@ -221,7 +238,11 @@ void ARYU2D_MainCharacterZD::UpdateCharacter()
 	//** TransitionRules for the ABP, moved it completely to c++ due clarity and complexicity reason
 	if (currV.Z < 0)
 	{
-		PlayerMovement = EPlayerMovement::FALLING;
+		if (PlayerMovement != EPlayerMovement::FALLING)
+		{
+			PlayerMovement = EPlayerMovement::STARTFALLING;
+		}
+		
 	}
 	else
 	{
@@ -258,13 +279,28 @@ void ARYU2D_MainCharacterZD::UpdateCharacter()
 			//return;
 			break;
 		case EPlayerMovement::RUN:
-			if (MoveRightInput == 0)
+			
+			if ((bLookRight && MoveRightInput < 0) || (!bLookRight && MoveRightInput > 0))
+			{
+				PlayerMovement = EPlayerMovement::STARTTURN;
+				return;
+			}
+
+			if ((PlayerMovement != EPlayerMovement::STARTTURN) &&
+				//MoveRightInput == 0
+				(currV.X == 0))
+			{
 				PlayerMovement = EPlayerMovement::ENDRUN;
+			}
+
 			//return; 
 			break;
 		case EPlayerMovement::ENDTURN:
 			PlayerMovement = EPlayerMovement::STAND;
 			//return;
+			break;
+		case EPlayerMovement::STARTFALLING:
+			PlayerMovement = EPlayerMovement::STANDUP;
 			break;
 		case EPlayerMovement::FALLING:
 			PlayerMovement = EPlayerMovement::STANDUP;
@@ -287,11 +323,7 @@ void ARYU2D_MainCharacterZD::CheckJumpUpState()
 	
 	if (MoveUpInput > 0)
 	{
-		/*
-		Curve2DComponent->ClimbUpStartTimelineLocation = GetActorLocation();
-		Curve2DComponent->ClimbUpEndTimelineLocation = FVector(Curve2DComponent->ClimbUpStartTimelineLocation.X, Curve2DComponent->ClimbUpStartTimelineLocation.Y,
-			Curve2DComponent->ClimbUpStartTimelineLocation.Z + Curve2DComponent->ClimbUpOffsetZ);
-		*/
+	
 		switch (RYUClimbingMode)
 		{
 		case ERYUClimbingMode::NONE:
@@ -300,9 +332,16 @@ void ARYU2D_MainCharacterZD::CheckJumpUpState()
 			//MovementComp->SetMovementMode(MOVE_Flying);
 
 			//MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::HANGONLEDGE));
-			//SetCurrentTimelineParamsFloat(Curve2DComponent->JumpUpFloatCurve, nullptr, false, true);
-			//PlayTimeline();
+
+			Curve2DComponent->ClimbUpStartTimelineLocation = GetActorLocation();
+			Curve2DComponent->ClimbUpEndTimelineLocation = FVector(Curve2DComponent->ClimbUpStartTimelineLocation.X, Curve2DComponent->ClimbUpStartTimelineLocation.Y,
+				Curve2DComponent->ClimbUpStartTimelineLocation.Z + Curve2DComponent->ClimbUpOffsetZ);
+
+			
 			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::JUMPTOLEDGE));
+			SetCurrentTimelineParamsFloat(nullptr, Curve2DComponent->JumpUpFloatCurve, false, true);
+			PlayTimeline();
+			
 			break;
 		case ERYUClimbingMode::CANCLIMBUPLEDGE:
 		{
@@ -340,7 +379,7 @@ void ARYU2D_MainCharacterZD::HandleSphereColliderEndOverlap(UPrimitiveComponent*
 void ARYU2D_MainCharacterZD::TimelineCallbackFloat(float val)
 {
 	// This function is called for every tick in the timeline.
-	//UE_LOG(LogTemp, Log, TEXT("Here incr. z-Location: %s"), *FString::SanitizeFloat(val));
+	UE_LOG(LogTemp, Log, TEXT("Here incr. z-Location: %s"), *FString::SanitizeFloat(val));
 
 	FVector StartTLLocation;
 	FVector EndTLLocation;
@@ -578,6 +617,29 @@ void ARYU2D_MainCharacterZD::TurnFlipBookFinished()
 	CheckOverlappingActors();
 }
 
+void ARYU2D_MainCharacterZD::TurnRunFlipBookFinished()
+{
+	if (Controller != nullptr)
+	{
+		//if (TravelDirection < 0.0f)
+		if (bLookRight)
+		{
+			Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
+			CameraBoom->RelativeRotation = FRotator(0.0f, 90.0f, 0.0f);
+		}
+		//else if (TravelDirection > 0.0f)
+		else
+		{
+			Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
+			CameraBoom->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
+		}
+	}
+
+	bLookRight = !bLookRight;
+
+	PlayerMovement = EPlayerMovement::RUN;
+}
+
 void ARYU2D_MainCharacterZD::ClimbUpFlipBookFinished()
 {
 	UE_LOG(LogTemp, Log, TEXT("Call From Notify: ClimbUpFlippbookFinished"));
@@ -634,8 +696,15 @@ void ARYU2D_MainCharacterZD::DrawDebugInfosOnScreen()
 		break;
 	case EPlayerMovement::STARTTURN:
 		MoveMode = "StartTurning";
+		break;
 	case EPlayerMovement::ENDTURN:
 		MoveMode = "EndTurning";
+		break;
+	case EPlayerMovement::STARTFALLING:
+		MoveMode = "StartFalling";
+		break;
+	case EPlayerMovement::FALLING:
+		MoveMode = "Falling";
 		break;
 	default:
 		MoveMode = "STANDING";

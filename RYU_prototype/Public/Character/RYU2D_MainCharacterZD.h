@@ -74,6 +74,9 @@ public:
 	void TurnFlipBookFinished();
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void TurnRunFlipBookFinished();
+
+	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void ClimbUpFlipBookFinished();
 
 protected:
