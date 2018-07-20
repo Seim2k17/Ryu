@@ -73,6 +73,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void CheckOverlappingActors();
 
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void FlipCharacter();
+
 
 protected:
 
@@ -116,6 +119,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	USphereComponent* SphereTracer;
 
+
+	bool bLookRight;
+	
 	
 protected:
 
@@ -140,9 +146,9 @@ protected:
 
 	FVector LedgeHangPosition;
 
-	FVector ClimbUpStandUpPosition;
+	FVector ClimbStandUpPosition;
 
-	FVector ClimbUpStandDownPosition;
+	FVector ClimbStandDownPosition;
 
 	ERYULedgeSideEntered ESideEntered;
 
@@ -154,4 +160,5 @@ private:
 
 	
 	bool bLedgeHeightInRange;
+	
 };

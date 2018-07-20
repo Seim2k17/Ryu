@@ -45,10 +45,10 @@ public:
 	void DebugSomething();
 
 	UFUNCTION(BlueprintCallable, Category = "Debug")
-		void ChangeMovementMode();
+	void ChangeMovementMode();
 
 	UFUNCTION(BlueprintCallable, Category = "Debug")
-		void ChangeClimbingMode();
+	void ChangeClimbingMode();
 
 
 #if WITH_EDITOR
@@ -77,7 +77,9 @@ public:
 	void TurnRunFlipBookFinished();
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	void ClimbUpFlipBookFinished();
+	void ClimbLedgeFlipBookFinished();
+
+
 
 protected:
 
@@ -156,7 +158,7 @@ private:
 
 	void InitializeCharacterValues();
 
-	void CheckJumpUpState();
+	void CheckMoveUpState();
 /************************************************************************/
 /* MEMBER                                                               */
 /************************************************************************/
@@ -191,7 +193,8 @@ private:
 	FVector currV;
 
 	//**MOVEMENT*
-	bool bLookRight;
+	//now in BaseClass !
+	//bool bLookRight;
 
 	//*ClilmbUpVariables
 	bool bHangPositionSet;

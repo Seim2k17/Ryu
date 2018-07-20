@@ -8,6 +8,7 @@ enum class EPlayerMovement : uint8
 	STAND UMETA(DisplayName = "Standing"),
 	WALK UMETA(DisplayName = "Walking"),
 	STARTTURN UMETA(DisplayName = "Start Turning"),
+	STARTTURNRUN UMETA(DisplayName = "Start Turning while Running"),
 	ENDTURN UMETA(DisplayName = "End Turning"),
 	BEGINRUN UMETA(DisplayName = "Begin Running"),
 	RUN UMETA(DisplayName = "Running Loop"),

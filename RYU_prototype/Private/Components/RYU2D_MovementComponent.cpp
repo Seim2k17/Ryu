@@ -77,29 +77,27 @@ void URYU2D_MovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 	{
 		//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
 		//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
-		MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		MyChar->SphereTracer->SetEnableGravity(false);
-		//No need here --> managed in ABP
-		MyChar->GetSprite()->SetLooping(false);
-		MyChar->GetSprite()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//MyChar->GetMesh()->SetEnableGravity(false);
-		MyChar->GetCapsuleComponent()->SetEnableGravity(false);
+		//DONOT SET PARAMETER WHEN ABP ANIMATION ACTIVE !
+		SetNoCollisionCharacterPrefs();
 		MyChar->PlayerMovement = EPlayerMovement::CLIMBING;
 		MyChar->RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
 		UE_LOG(LogTemp, Log, TEXT("... to CLIMB-UP LEDGE"));
+		
 		break;
 	}
 	case ERYUClimbingMode::CLIMBDOWNLEDGE:
 	{
 		//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
 		//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
+		MyChar->FlipCharacter();
+		//DONOT SET PARAMETER WHEN ABP ANIMATION ACTIVE !
+		SetNoCollisionCharacterPrefs();
 		ClimbDownStartPosition = MyChar->GetActorLocation();
-		MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//MyChar->SphereTracer->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//MyChar->SphereTracer->SetEnableGravity(false);
-		//MyChar->GetMesh()->SetEnableGravity(false);
-		MyChar->GetCapsuleComponent()->SetEnableGravity(false);
+		MyChar->PlayerMovement = EPlayerMovement::CLIMBING;
+		MyChar->RYUClimbingMode = ERYUClimbingMode::CLIMBDOWNLEDGE;
 		UE_LOG(LogTemp, Log, TEXT("... to CLIMB-DOWN LEDGE"));
+
+		
 		break;
 	}
 	case ERYUClimbingMode::HANGONLEDGE:
@@ -173,7 +171,7 @@ void URYU2D_MovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 			bDoStuffOnce = true;
 			UE_LOG(LogTemp, Log, TEXT("I´m climbing down the ledge!"));
 		}
-		PhysClimbingLedge(deltaTime, Iterations);
+		//PhysClimbingLedge(deltaTime, Iterations);
 		break;
 	case ERYUClimbingMode::HANGONLEDGE:
 		//Just Hang around
@@ -314,26 +312,15 @@ void URYU2D_MovementComponent::ResetClimbingState()
 		MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		MyChar->SphereTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		MyChar->SphereTracer->SetEnableGravity(true);
-		MyChar->GetMesh()->SetEnableGravity(true);
 		MyChar->GetCapsuleComponent()->SetEnableGravity(true);
 		
-		SetAllowClimbUpFalse();
+		//SetAllowClimbUpFalse();
 		
 		SetMovementMode(MOVE_Walking);
 
-		if ((MyChar->PlayerMovement != EPlayerMovement::CANGRABLEDGE))
-		{
-			MyChar->PlayerMovement = EPlayerMovement::STAND;
-		}
-
-		if ((MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
-			(MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
-			(MyChar->RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN))
-		{
-			MyChar->RYUClimbingMode = ERYUClimbingMode::NONE;
-		}
-
 		ResetDoOnceClimbInput();
+
+		MyChar->CheckOverlappingActors();
 		
 	}
 }
@@ -355,6 +342,22 @@ void URYU2D_MovementComponent::ClimbDownLedgeFinished()
 	MyChar->RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
 	SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::HANGONLEDGE));
 	SetAllowClimbUpTrue();
+}
+
+
+void URYU2D_MovementComponent::SetNoCollisionCharacterPrefs()
+{
+	ARYU2D_CharacterBase* MyChar = Cast<ARYU2D_CharacterBase>(CharacterOwner);
+	if (MyChar)
+	{
+		MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		MyChar->SphereTracer->SetEnableGravity(false);
+		MyChar->GetCapsuleComponent()->SetEnableGravity(false);
+		//No need here --> managed in ABP
+		MyChar->GetSprite()->SetLooping(false);
+		MyChar->GetSprite()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	
 }
 
 void URYU2D_MovementComponent::SetAllowClimbUpTrue()

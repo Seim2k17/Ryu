@@ -46,6 +46,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ClimbDownLedgeFinished();
 
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	void SetNoCollisionCharacterPrefs();
+
 protected:
 
 	// Called when the game starts

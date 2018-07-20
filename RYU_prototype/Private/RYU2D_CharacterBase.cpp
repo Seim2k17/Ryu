@@ -254,8 +254,8 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 					//@Relict?
 					SetLedgeHangPosition(ARY->LeftHangPosition->GetComponentLocation(), LeftLedgePosiTagName);
 					//NewPositioning
-					ClimbUpStandDownPosition = ARY->DownLeftStandPosition->GetComponentLocation();
-					ClimbUpStandUpPosition = ARY->UpLeftStandPosition->GetComponentLocation();
+					ClimbStandDownPosition = ARY->DownLeftStandPosition->GetComponentLocation();
+					ClimbStandUpPosition = ARY->UpLeftStandPosition->GetComponentLocation();
 					UE_LOG(LogTemp, Log, TEXT("TAG: %s"), *LeftLedgePosiTagName.ToString());
 				}
 
@@ -264,14 +264,38 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 					//@Relict?
 					SetLedgeHangPosition(ARY->RightHangPosition->GetComponentLocation(), RightLedgePosiTagName);
 					//NewPositioning
-					ClimbUpStandDownPosition = ARY->DownRightStandPosition->GetComponentLocation();
-					ClimbUpStandUpPosition = ARY->UpRightStandPosition->GetComponentLocation();
+					ClimbStandDownPosition = ARY->DownRightStandPosition->GetComponentLocation();
+					ClimbStandUpPosition = ARY->UpRightStandPosition->GetComponentLocation();
 					UE_LOG(LogTemp, Log, TEXT("TAG: %s"), *RightLedgePosiTagName.ToString());
 				}
 			}
 		}
 	}
 	
+}
+
+
+void ARYU2D_CharacterBase::FlipCharacter()
+{
+	//float TravelDirection = currV.X;
+	// Set the rotation so that the character faces his direction of travel.
+	if (Controller != nullptr)
+	{
+		//if (TravelDirection < 0.0f)
+		if (bLookRight)
+		{
+			Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
+			CameraBoom->RelativeRotation = FRotator(0.0f, 90.0f, 0.0f);
+		}
+		//else if (TravelDirection > 0.0f)
+		else
+		{
+			Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
+			CameraBoom->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
+		}
+	}
+
+	bLookRight = !bLookRight;
 }
 
 void ARYU2D_CharacterBase::SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide)
