@@ -146,11 +146,15 @@ void ARYU2D_MainCharacterZD::SetupPlayerInputComponent(class UInputComponent* Pl
 void ARYU2D_MainCharacterZD::Jump()
 {
 	bPressedJump = true;
+
+	bJumpJustStarted = true;
 }
 
 void ARYU2D_MainCharacterZD::StopJumping()
 {
 	bPressedJump = false;
+
+	bJumpJustStarted = false;
 
 	Super::ResetJumpState();
 }
@@ -235,7 +239,7 @@ void ARYU2D_MainCharacterZD::UpdateCharacter()
 
 	//** ABP-TRANSITION-RULES *******//
 	//** TransitionRules for the ABP, moved it completely to c++ due clarity and complexicity reason
-	if (currV.Z < 0)
+	if (currV.Z < -500)
 	{
 		if (PlayerMovement != EPlayerMovement::FALLING)
 		{
@@ -256,7 +260,9 @@ void ARYU2D_MainCharacterZD::UpdateCharacter()
 			}
 			else
 			{
-				if(PlayerMovement ==  EPlayerMovement::STAND) PlayerMovement = EPlayerMovement::STARTTURN;
+				if((PlayerMovement ==  EPlayerMovement::STAND) ||
+					(PlayerMovement == EPlayerMovement::CANGRABLEDGE))
+					PlayerMovement = EPlayerMovement::STARTTURN;
 			}
 			
 		}
@@ -679,6 +685,7 @@ void ARYU2D_MainCharacterZD::DrawDebugInfosOnScreen()
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("V(x): %s"), *currV.ToString()), false);
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red, FString::Printf(TEXT("a(x): %s"), *currA.ToString()), false);
 		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green, FString::Printf(TEXT("Looking Right: %s"), bLookRight ? TEXT("true") : TEXT("false"), false));
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green, FString::Printf(TEXT("Is jumping: %s"), bJumpJustStarted ? TEXT("true") : TEXT("false"), false));
 	}
 
 	FString MoveMode;
@@ -718,6 +725,15 @@ void ARYU2D_MainCharacterZD::DrawDebugInfosOnScreen()
 		break;
 	case EPlayerMovement::STANDUP:
 		MoveMode = "StandUp";
+		break;
+	case EPlayerMovement::JUMPSTART:
+		MoveMode = "StartJumpFwd";
+		break;
+	case EPlayerMovement::JUMPLOOP:
+		MoveMode = "LoopJumpFwd";
+		break;
+	case EPlayerMovement::JUMPEND:
+		MoveMode = "EndJump";
 		break;
 	default:
 		MoveMode = "STANDING";

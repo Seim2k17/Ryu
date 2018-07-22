@@ -204,5 +204,7 @@ private:
 	float MoveRightInput;
 
 	float MoveUpInput;
+
+	
 	
 };

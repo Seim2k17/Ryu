@@ -121,6 +121,8 @@ public:
 
 
 	bool bLookRight;
+
+	
 	
 	
 protected:
@@ -135,6 +137,8 @@ protected:
 	FName LeftLedgePosiTagName;
 	FName RightLedgePosiTagName;
 
+	UPROPERTY(BlueprintReadOnly, Category = "Movement")
+	bool bJumpJustStarted;
 
 	//** Overlapped CapsuleStuff*/
 	TArray<UPrimitiveComponent*> CapsuleOverlappedComponents;
@@ -142,8 +146,6 @@ protected:
 	AActor* SphereOverlappedActor;
 	UPrimitiveComponent* SphereOverlappedComponent;
 	
-	bool bJumpJustStarted;
-
 	FVector LedgeHangPosition;
 
 	FVector ClimbStandUpPosition;
