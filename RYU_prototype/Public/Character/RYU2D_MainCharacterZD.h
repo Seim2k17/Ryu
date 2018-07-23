@@ -79,8 +79,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void ClimbLedgeFlipBookFinished();
 
-
-
+	
 protected:
 
 	void BeginPlay() override;
@@ -154,6 +153,12 @@ protected:
 	UFUNCTION(BlueprintPure, Category = "Movement")
 	float GetMoveRightInput();
 
+	UFUNCTION()
+	void SneakPressed();
+
+	UFUNCTION()
+	void SneakReleased();
+
 private:
 
 	void InitializeCharacterValues();
@@ -164,7 +169,8 @@ private:
 /************************************************************************/
 
 public:
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float SneakMultiplier;
 	
 protected:
 
@@ -205,6 +211,7 @@ private:
 
 	float MoveUpInput;
 
-	
-	
+	float SneakMultiplierValue;
+
+	bool bSneakIsPressed;
 };

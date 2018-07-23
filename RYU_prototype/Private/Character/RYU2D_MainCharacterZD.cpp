@@ -103,6 +103,13 @@ void ARYU2D_MainCharacterZD::InitializeCharacterValues()
 	onTimelineCallbackFloat.BindUFunction(this, FName("TimelineCallbackFloat"));
 	onTimelineCallbackVector.BindUFunction(this, FName("TimelineCallbackVector"));
 	onTimelineFinishedCallback.BindUFunction(this, FName("TimelineFinishedCallback"));
+
+	bSneakIsPressed = false;
+
+	//*if not set
+	//SneakMultiplier = 1.0f;
+
+	SneakMultiplierValue = SneakMultiplier;
 }
 
 
@@ -141,6 +148,8 @@ void ARYU2D_MainCharacterZD::SetupPlayerInputComponent(class UInputComponent* Pl
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARYU2D_MainCharacterZD::MoveRight);
 	PlayerInputComponent->BindAxis("Climb", this, &ARYU2D_MainCharacterZD::MoveUp);
+	PlayerInputComponent->BindAction("Sneak", IE_Pressed, this, &ARYU2D_MainCharacterZD::SneakPressed);
+	PlayerInputComponent->BindAction("Sneak", IE_Released, this, &ARYU2D_MainCharacterZD::SneakReleased);
 }
 
 void ARYU2D_MainCharacterZD::Jump()
@@ -164,7 +173,17 @@ void ARYU2D_MainCharacterZD::StopJumping()
 void ARYU2D_MainCharacterZD::MoveRight(float Val)
 {
 	
-	MoveRightInput = Val;
+	//for slow Movement , @ToDo: Clamp for ControllerInput (AxisValus...)
+	if (bSneakIsPressed)
+	{
+		SneakMultiplierValue = SneakMultiplier;
+	}
+	else
+	{
+		SneakMultiplierValue = 1.0f;
+	}
+
+	MoveRightInput = Val * SneakMultiplierValue;
 
 	/*
 	if ((PlayerMovement != EPlayerMovement::BEGINRUN) &&
@@ -189,7 +208,7 @@ void ARYU2D_MainCharacterZD::MoveRight(float Val)
 
 		if ((bLookRight && Val > 0) || (!bLookRight && Val < 0))
 		{
-			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Val);
+			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput);
 		}
 		
 	}
@@ -249,6 +268,8 @@ void ARYU2D_MainCharacterZD::UpdateCharacter()
 	}
 	else
 	{
+		if (bSneakIsPressed) PlayerMovement = EPlayerMovement::SNEAK;
+
 		//@ToDo curV.Z > 0 (was auch immer das heisst)
 		//
 		if ((bLookRight && MoveRightInput < 0) || (!bLookRight && MoveRightInput > 0))
@@ -674,6 +695,18 @@ float ARYU2D_MainCharacterZD::GetMoveRightInput()
 	return MoveRightInput;
 }
 
+
+void ARYU2D_MainCharacterZD::SneakPressed()
+{
+	SneakMultiplierValue = SneakMultiplier;
+	bSneakIsPressed = true;
+}
+
+void ARYU2D_MainCharacterZD::SneakReleased()
+{
+	SneakMultiplierValue = 1.0f;
+	bSneakIsPressed = false;
+}
 
 //****DEBUGSECTION*******//
 
