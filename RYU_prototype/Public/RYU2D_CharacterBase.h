@@ -143,6 +143,8 @@ protected:
 	//** Overlapped CapsuleStuff*/
 	TArray<UPrimitiveComponent*> CapsuleOverlappedComponents;
 
+	TSet<AActor*> CapsuleOverlappedActors;
+
 	AActor* SphereOverlappedActor;
 	UPrimitiveComponent* SphereOverlappedComponent;
 	
