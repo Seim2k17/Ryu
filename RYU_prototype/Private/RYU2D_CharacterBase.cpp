@@ -273,6 +273,9 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 						ClimbStandUpPosition = ARY->UpRightStandPosition->GetComponentLocation();
 						UE_LOG(LogTemp, Log, TEXT("TAG: %s"), *RightLedgePosiTagName.ToString());
 					}
+
+					UE_LOG(LogTemp, Log, TEXT("ClimbStandDown: %s"), *ClimbStandDownPosition.ToString());
+					UE_LOG(LogTemp, Log, TEXT("ClimbStandUp: %s"), *ClimbStandUpPosition.ToString());
 				}
 			}
 		}

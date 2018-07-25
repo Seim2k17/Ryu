@@ -202,12 +202,13 @@ void ARYU2D_MainCharacterZD::MoveRight(float Val)
 
 	if((PlayerMovement == EPlayerMovement::STAND) ||
 		(PlayerMovement == EPlayerMovement::RUN) ||
+		(PlayerMovement == EPlayerMovement::CANGRABLEDGE) ||
 		(PlayerMovement == EPlayerMovement::WALK))
 
 	{
-
 		if ((bLookRight && Val > 0) || (!bLookRight && Val < 0))
 		{
+			if (PlayerMovement == EPlayerMovement::CANGRABLEDGE) PlayerMovement = EPlayerMovement::BEGINRUN;
 			AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput);
 		}
 		
@@ -678,8 +679,9 @@ void ARYU2D_MainCharacterZD::ClimbLedgeFlipBookFinished()
 		SphereTracer->SetEnableGravity(true);
 		GetCapsuleComponent()->SetEnableGravity(true);
 		MovementComp->SetMovementMode(MOVE_Walking);
-		SetActorLocation(ClimbStandUpPosition);
 		CheckOverlappingActors();
+		SetActorLocation(ClimbStandUpPosition);
+		
 	}
 		break;
 	
