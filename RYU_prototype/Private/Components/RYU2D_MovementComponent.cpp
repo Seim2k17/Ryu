@@ -89,7 +89,7 @@ void URYU2D_MovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 	{
 		//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
 		//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
-		MyChar->FlipCharacter();
+		//MyChar->FlipCharacter();
 		//DONOT SET PARAMETER WHEN ABP ANIMATION ACTIVE !
 		SetNoCollisionCharacterPrefs();
 		ClimbDownStartPosition = MyChar->GetActorLocation();

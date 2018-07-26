@@ -7,6 +7,7 @@
 #include "Components/CapsuleComponent.h"
 #include "RYUCharacterIchi.h"
 #include "Engine/TargetPoint.h"
+#include "Components/ArrowComponent.h"
 
 
 // Sets default values
@@ -50,6 +51,9 @@ ARYUClimbingActor::ARYUClimbingActor()
 
 	UpLeftStandPosition = CreateDefaultSubobject<UChildActorComponent>(TEXT("UpLeftStandPosition"));
 	UpLeftStandPosition->SetupAttachment(Root);
+
+	UpTriggerDirection = CreateDefaultSubobject<UArrowComponent>(TEXT("UpTriggerDirectionGap"));
+	UpTriggerDirection->SetupAttachment(Root);
 	
 	InitializeValues();
 
@@ -107,6 +111,10 @@ void ARYUClimbingActor::InitializeValues()
 	
 	RightUpTrigger->ComponentTags.Add(RightPositionTag);
 	RightDownTrigger->ComponentTags.Add(RightPositionTag);
+
+	UpTriggerDirection->SetArrowColor(FLinearColor::Yellow);
+	//@ToDo: later show with GameDebugVariable 
+	UpTriggerDirection->SetHiddenInGame(false);
 }
 
 // Called when the game starts or when spawned

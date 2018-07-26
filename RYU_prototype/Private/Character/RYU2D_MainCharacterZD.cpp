@@ -9,6 +9,8 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/RYU2D_MovementComponent.h"
 #include "Components/RYU2D_CurveDataComponent.h"
+#include "Components/ArrowComponent.h"
+#include "RYUClimbingActor.h"
 #include "Curves/CurveVector.h"
 
 
@@ -122,6 +124,8 @@ void ARYU2D_MainCharacterZD::BeginPlay()
 
 	SphereTracer->OnComponentBeginOverlap.AddDynamic(this, &ARYU2D_MainCharacterZD::HandleSphereColliderBeginOverlap);
 	SphereTracer->OnComponentEndOverlap.AddDynamic(this, &ARYU2D_MainCharacterZD::HandleSphereColliderEndOverlap);
+
+	GetArrowComponent()->SetHiddenInGame(false);
 }
 
 
@@ -409,6 +413,9 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 			//FVector PosChar = FVector(ClimbStandUpPosition.X, ClimbStandUpPosition.Y, ClimbStandUpPosition.Z + 50);
 			FVector PosChar = FVector(ClimbStandDownPosition.X, ClimbStandDownPosition.Y, ClimbStandDownPosition.Z + 50);
 			SetActorLocation(PosChar);
+			//@ToDo: search correct Actor
+			//if(GetOverlappedActor(CanClimbDownTagName)) 
+				FlipCharacter();
 			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBDOWNLEDGE));
 			break;
 		}
@@ -691,6 +698,14 @@ void ARYU2D_MainCharacterZD::ClimbLedgeFlipBookFinished()
 	
 }
 
+
+ARYUClimbingActor* ARYU2D_MainCharacterZD::GetOverlappedActor(FName ClimbTagName)
+{
+	//@ToDo: search correct actor
+	//return CapsuleOverlappedActors[0]; next just to deactivate compilererrors
+	ARYUClimbingActor* TestActor = Cast<ARYUClimbingActor>(SphereOverlappedActor);
+	return TestActor;
+}
 
 float ARYU2D_MainCharacterZD::GetMoveRightInput()
 {

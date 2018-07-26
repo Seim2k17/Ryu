@@ -9,6 +9,7 @@
 class UStaticMeshComponent;
 class UBoxComponent;
 class ATargetPoint;
+class UArrowComponent;
 
 UCLASS()
 class RYU_PROTOTYPE_API ARYUClimbingActor : public AActor
@@ -66,6 +67,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Trigger")
 	bool bRightUpTriggerIsActive;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UArrowComponent* UpTriggerDirection;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UChildActorComponent* LeftHangPosition;

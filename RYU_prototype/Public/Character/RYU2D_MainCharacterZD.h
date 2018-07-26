@@ -79,6 +79,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void ClimbLedgeFlipBookFinished();
 
+	UFUNCTION(BlueprintCallable, Category = "ClimbTrigger")
+		ARYUClimbingActor* GetOverlappedActor(FName ClimbTagName);
 	
 protected:
 
