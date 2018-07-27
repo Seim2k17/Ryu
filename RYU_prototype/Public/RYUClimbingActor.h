@@ -34,6 +34,8 @@ protected:
 
 	void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
+	void SetVisibilityTrigger();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

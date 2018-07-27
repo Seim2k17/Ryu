@@ -137,7 +137,7 @@ void ARYU2D_CharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* Over
 {
 	if (PlayerMovement != EPlayerMovement::CLIMBING)
 	{
-		UE_LOG(LogTemp, Log, TEXT("CapslOvlp in: %s "), *OtherComp->GetName());
+		UE_LOG(LogTemp, Log, TEXT("CapsuleOverlap in: %s "), *OtherActor->GetName());
 
 		//ToDo: need to handle other Triggerlements than ClimbingTriggers ???, for now and easyness we only do ClimbingTriggers
 
@@ -157,12 +157,12 @@ void ARYU2D_CharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* Over
 			{
 
 				CapsuleOverlappedComponents.Add(OtherComp);
-				UE_LOG(LogTemp, Log, TEXT("CapslOvlpArray[%d] : %s"), i, *CapsuleOverlappedComponents[i]->GetName());
+				//UE_LOG(LogTemp, Log, TEXT("CapslOvlpArray[%d] : %s"), i, *CapsuleOverlappedComponents[i]->GetName());
 				i++;
 			}
 
 
-			UE_LOG(LogTemp, Log, TEXT("CapslOvlpArray with: %d Actors"), CapsuleOverlappedComponents.Num());
+			//UE_LOG(LogTemp, Log, TEXT("CapslOvlpArray with: %d Actors"), CapsuleOverlappedComponents.Num());
 
 			CheckOverlappingComponents();
 
@@ -192,7 +192,7 @@ void ARYU2D_CharacterBase::CheckOverlappingActors()
 {
 
 	GetOverlappingActors(CapsuleOverlappedActors);
-	UE_LOG(LogTemp, Log, TEXT("Call CheckOverlappingActors"));
+	//UE_LOG(LogTemp, Log, TEXT("Call CheckOverlappingActors"));
 	//if there are CapsuleOverlappingActors set the appr. Movement / ClimbingMode (important for EndFinished-Notifier in the ABP
 	//if (CapsuleOverlappedComponents.Num() > 0)
 	if (CapsuleOverlappedActors.Num() > 0)
@@ -225,6 +225,11 @@ void ARYU2D_CharacterBase::CheckOverlappingActors()
 void ARYU2D_CharacterBase::CheckOverlappingComponents()
 {
 	UE_LOG(LogTemp, Log, TEXT("Call CheckOverlappingComponents: %d"), CapsuleOverlappedComponents.Num());
+	int j = 0;
+	for (j; j < CapsuleOverlappedComponents.Num(); j++)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Actor: %s"), *CapsuleOverlappedComponents[j]->GetName());
+	}
 	if (PlayerMovement != EPlayerMovement::CLIMBING)
 	{
 		//easy check but u need to bee careful !!!
@@ -240,7 +245,7 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 			{
 				if (RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN)
 				{
-					if (CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbDownTagName)
+					if (CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbDownTagName )
 					{
 						UE_LOG(LogTemp, Log, TEXT("CanClimbDown TAG: Overlap In"));
 						RYUClimbingMode = ERYUClimbingMode::CANCLIMBDOWNLEDGE;

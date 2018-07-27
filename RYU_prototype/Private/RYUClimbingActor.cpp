@@ -121,6 +121,8 @@ void ARYUClimbingActor::InitializeValues()
 void ARYUClimbingActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetVisibilityTrigger();
 	
 }
 
@@ -207,6 +209,14 @@ void ARYUClimbingActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
+	SetVisibilityTrigger();
+}
+
+#endif
+
+
+void ARYUClimbingActor::SetVisibilityTrigger()
+{
 	LeftDownTrigger->SetVisibility(bLeftDownTriggerIsActive);
 	LeftDownTrigger->bGenerateOverlapEvents = bLeftDownTriggerIsActive;
 
@@ -219,7 +229,6 @@ void ARYUClimbingActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 	RightUpTrigger->SetVisibility(bRightUpTriggerIsActive);
 	RightUpTrigger->bGenerateOverlapEvents = bRightUpTriggerIsActive;
 }
-#endif
 
 // Called every frame
 void ARYUClimbingActor::Tick(float DeltaTime)
