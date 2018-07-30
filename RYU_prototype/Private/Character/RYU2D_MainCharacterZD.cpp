@@ -413,8 +413,8 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 			//FVector PosChar = FVector(ClimbStandUpPosition.X, ClimbStandUpPosition.Y, ClimbStandUpPosition.Z + 50);
 			FVector PosChar = FVector(ClimbStandDownPosition.X, ClimbStandDownPosition.Y, ClimbStandDownPosition.Z + 50);
 			SetActorLocation(PosChar);
-			//@ToDo: search correct Actor
-			//if(GetOverlappedActor(CanClimbDownTagName)) 
+			//@ToDo: search correct Actor, check if char needs to be flipped
+			if(CheckFlipOverlappedActor(CanClimbDownTagName)) 
 				FlipCharacter();
 			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBDOWNLEDGE));
 			break;
@@ -699,12 +699,12 @@ void ARYU2D_MainCharacterZD::ClimbLedgeFlipBookFinished()
 }
 
 
-ARYUClimbingActor* ARYU2D_MainCharacterZD::GetOverlappedActor(FName ClimbTagName)
+bool ARYU2D_MainCharacterZD::CheckFlipOverlappedActor(FName ClimbTagName)
 {
 	//@ToDo: search correct actor
-	//return CapsuleOverlappedActors[0]; next just to deactivate compilererrors
+	//return CapsuleOverlappedActors[0]; next just to deactivate compilererrors // capsule = primitive components
 	ARYUClimbingActor* TestActor = Cast<ARYUClimbingActor>(SphereOverlappedActor);
-	return TestActor;
+	return false;
 }
 
 float ARYU2D_MainCharacterZD::GetMoveRightInput()
