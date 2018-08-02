@@ -47,16 +47,16 @@ public:
 	UStaticMeshComponent* ClimbMeshComponent;
 
 	UPROPERTY(VisibleAnywhere, Category = "Trigger")
-	UBoxComponent* LeftDownTrigger;
+	UBoxComponent* IsRightUpTrigger;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Trigger")
-	UBoxComponent* RightDownTrigger;
+	UBoxComponent* IsLeftUpTrigger;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Trigger")
-	UBoxComponent* LeftUpTrigger;
+	UBoxComponent* IsLeftDownTrigger;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Trigger")
-	UBoxComponent* RightUpTrigger;
+	UBoxComponent* IsRightDownTrigger;
 
 	UPROPERTY(EditAnywhere, Category = "Trigger")
 	bool bLeftDownTriggerIsActive;
@@ -71,7 +71,7 @@ public:
 	bool bRightUpTriggerIsActive;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UArrowComponent* UpTriggerDirection;
+	UArrowComponent* ClimbingTriggerDirection;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	UChildActorComponent* LeftHangPosition;

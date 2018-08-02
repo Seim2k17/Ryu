@@ -132,10 +132,12 @@ protected:
 	//* Climbing Tags for Objects
 	FName CanClimbUpTagName;
 	FName CanClimbDownTagName;
+	FName CurrentClimbTagName;
 
 	//** Tags for Platforms
 	FName LeftLedgePosiTagName;
 	FName RightLedgePosiTagName;
+	FName CurrentLedgePosiTagName;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	bool bJumpJustStarted;
@@ -159,6 +161,8 @@ protected:
 private:
 
 	bool bSphereTracerOverlap;
+
+	bool bDoThingsOnce;
 
 	float TreshholdYWalkRun;
 

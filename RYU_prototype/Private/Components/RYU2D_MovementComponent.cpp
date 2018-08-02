@@ -65,7 +65,7 @@ void URYU2D_MovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 {
 	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
 
-	UE_LOG(LogTemp, Log, TEXT("Movement Mode changed ..."));
+	UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): Movement Mode changed ..."));
 
 	ARYU2D_CharacterBase* MyChar = Cast<ARYU2D_CharacterBase>(CharacterOwner);
 
@@ -76,12 +76,12 @@ void URYU2D_MovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 	case ERYUClimbingMode::CLIMBUPLEDGE:
 	{
 		//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
-		//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
+		//UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): Colission %s"),*CapCol.ToString());
 		//DONOT SET PARAMETER WHEN ABP ANIMATION ACTIVE !
 		SetNoCollisionCharacterPrefs();
 		MyChar->PlayerMovement = EPlayerMovement::CLIMBING;
 		MyChar->RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
-		UE_LOG(LogTemp, Log, TEXT("... to CLIMB-UP LEDGE"));
+		UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): ... to CLIMB-UP LEDGE"));
 		
 		break;
 	}
@@ -95,14 +95,14 @@ void URYU2D_MovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 		ClimbDownStartPosition = MyChar->GetActorLocation();
 		MyChar->PlayerMovement = EPlayerMovement::CLIMBING;
 		MyChar->RYUClimbingMode = ERYUClimbingMode::CLIMBDOWNLEDGE;
-		UE_LOG(LogTemp, Log, TEXT("... to CLIMB-DOWN LEDGE"));
+		UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): ... to CLIMB-DOWN LEDGE"));
 
 		
 		break;
 	}
 	case ERYUClimbingMode::HANGONLEDGE:
 	{
-		UE_LOG(LogTemp, Log, TEXT("... to Hanging: Waiting!"));
+		UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): ... to Hanging: Waiting!"));
 		MyChar->PlayerMovement = EPlayerMovement::CLIMBING;
 		MyChar->RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
 		MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -113,7 +113,7 @@ void URYU2D_MovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 	}
 	case ERYUClimbingMode::JUMPTOLEDGE:
 	{
-		UE_LOG(LogTemp,Log,TEXT("... to CustomJumpUp:"))
+		UE_LOG(LogTemp,Log,TEXT("OnMovementModeChanged(): ... to CustomJumpUp:"))
 		
 		break;
 	}
@@ -136,7 +136,7 @@ void URYU2D_MovementComponent::OnMovementModeChanged(EMovementMode PreviousMovem
 		//NoMesh in 2D Dude
 		//MyChar->GetMesh()->SetEnableGravity(false);
 		MyChar->GetCapsuleComponent()->SetEnableGravity(false);
-		UE_LOG(LogTemp, Log, TEXT("... to FLYING"));
+		UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): ... to FLYING"));
 		break;
 	}
 
@@ -161,15 +161,15 @@ void URYU2D_MovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 		if (!bDoStuffOnce)
 		{
 			bDoStuffOnce = true;
-			UE_LOG(LogTemp, Log, TEXT("I´m climbing up the ledge!"));
+			UE_LOG(LogTemp, Log, TEXT("PhysCustom(): I´m climbing up the ledge!"));
 		}
-		PhysClimbingLedge(deltaTime, Iterations);
+		//PhysClimbingLedge(deltaTime, Iterations);
 		break;
 	case ERYUClimbingMode::CLIMBDOWNLEDGE:
 		if (!bDoStuffOnce)
 		{
 			bDoStuffOnce = true;
-			UE_LOG(LogTemp, Log, TEXT("I´m climbing down the ledge!"));
+			UE_LOG(LogTemp, Log, TEXT("PhysCustom(): I´m climbing down the ledge!"));
 		}
 		//PhysClimbingLedge(deltaTime, Iterations);
 		break;
@@ -178,14 +178,14 @@ void URYU2D_MovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 		if (!bDoStuffOnce)
 		{
 			bDoStuffOnce = true;
-			UE_LOG(LogTemp, Log, TEXT("Hanging!"));
+			UE_LOG(LogTemp, Log, TEXT("PhysCustom(): Hanging!"));
 		}
 		break;
 	case ERYUClimbingMode::FALLDOWNLEDGE:
 		if (!bDoStuffOnce)
 		{
 			bDoStuffOnce = true;
-			UE_LOG(LogTemp, Log, TEXT("I´m falling down the ledge!"));
+			UE_LOG(LogTemp, Log, TEXT("PhysCustom(): I´m falling down the ledge!"));
 		}
 		PhysClimbingLedge(deltaTime, Iterations);
 		//PhysFallingLedge(deltaTime, Iterations);
@@ -194,7 +194,7 @@ void URYU2D_MovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 		if (!bDoStuffOnce)
 		{
 			bDoStuffOnce = true;
-			UE_LOG(LogTemp, Log, TEXT("I´m Jumping to the ledge!"));
+			UE_LOG(LogTemp, Log, TEXT("PhysCustom(): I´m Jumping to the ledge!"));
 		}
 	case ERYUClimbingMode::CLIMBLADDERUP:
 		PhysClimbingLadder(deltaTime, Iterations);
@@ -278,7 +278,7 @@ bool URYU2D_MovementComponent::DoJump(bool bReplayingMoves)
 {
 	//Test JumpInput
 
-	//UE_LOG(LogTemp, Warning, TEXT("JumpButton Pressed"));
+	//UE_LOG(LogTemp, Warning, TEXT("DoJump(): JumpButton Pressed"));
 
 	if (CharacterOwner && CharacterOwner->CanJump() || (GetOwner()->GetWorldTimerManager().GetTimerRemaining(Timerhandle_CoyoteTime) > 0.0f))
 	{
@@ -307,8 +307,8 @@ void URYU2D_MovementComponent::ResetClimbingState()
 	if (MyChar)
 	{
 		//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
-		//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
-		UE_LOG(LogTemp, Log, TEXT("ClimbReset."));
+		//UE_LOG(LogTemp, Log, TEXT("ResetClimbingState() Col: %s"),*CapCol.ToString());
+		UE_LOG(LogTemp, Log, TEXT("ResetClimbingState(): ClimbReset."));
 		MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		MyChar->SphereTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		MyChar->SphereTracer->SetEnableGravity(true);
@@ -362,7 +362,7 @@ void URYU2D_MovementComponent::SetNoCollisionCharacterPrefs()
 
 void URYU2D_MovementComponent::SetAllowClimbUpTrue()
 {
-	UE_LOG(LogTemp, Log, TEXT("bAlloClimbing: true"));
+	UE_LOG(LogTemp, Log, TEXT("SetAllowClimbUpTrue(): bAlloClimbing = true"));
 	ARYU2D_CharacterPrince* MyChar = Cast<ARYU2D_CharacterPrince>(CharacterOwner);
 	bClimbUpAllowed = true;
 	MyChar->PlayerMovement = EPlayerMovement::CLIMBING;
@@ -372,7 +372,7 @@ void URYU2D_MovementComponent::SetAllowClimbUpTrue()
 
 void URYU2D_MovementComponent::SetAllowClimbUpFalse()
 {
-	UE_LOG(LogTemp, Log, TEXT("bAlloClimbing: false"));
+	UE_LOG(LogTemp, Log, TEXT("SetAllowClimbUpTrue(): bAlloClimbing = false"));
 	bClimbUpAllowed = false;
 }
 

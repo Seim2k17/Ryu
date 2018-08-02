@@ -9,6 +9,7 @@
 #include "PaperFlipbookComponent.h"
 #include "Components/RYU2D_MovementComponent.h"
 #include "Components/RYU2D_CurveDataComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/ArrowComponent.h"
 #include "RYUClimbingActor.h"
 #include "Curves/CurveVector.h"
@@ -201,7 +202,7 @@ void ARYU2D_MainCharacterZD::MoveRight(float Val)
 	if (PlayerMovement == EPlayerMovement::STARTTURNRUN)
 	{
 		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), -0.1f*Val);
-		UE_LOG(LogTemp, Log, TEXT("Turn while Running %s:"),*FString::SanitizeFloat((-0.1*Val)));
+		UE_LOG(LogTemp, Log, TEXT("MoveRight(): Turn while Running %s:"),*FString::SanitizeFloat((-0.1*Val)));
 	}
 
 	if((PlayerMovement == EPlayerMovement::STAND) ||
@@ -236,7 +237,8 @@ void ARYU2D_MainCharacterZD::Climb()
 		}
 		else if (MoveUpInput > 0)
 		{
-			/*Without a Timeline but we need to adjust the Pivotpoint in EVERY Frame this SUCKS! maybe i can automatisize it when making my own animatins in PS (like we did in Visionaire with a positioning expotfile?)*/
+			/* Without a Timeline but we need to adjust the Pivotpoint in EVERY Frame this SUCKS! maybe i can automatisize it when making my own animatins in PS 
+			   (like we did in PS & Visionaire with a positioning exportfile?)*/
 			/*
 			Curve2DComponent->ClimbUpStartTimelineLocation = GetActorLocation();
 			Curve2DComponent->ClimbUpEndTimelineLocation = FVector(Curve2DComponent->ClimbUpStartTimelineLocation.X + Curve2DComponent->ClimbUpOffsetX, Curve2DComponent->ClimbUpStartTimelineLocation.Y,
@@ -245,6 +247,7 @@ void ARYU2D_MainCharacterZD::Climb()
 			SetCurrentTimelineParamsFloat(Curve2DComponent->ClimbUpFloatCurveX, Curve2DComponent->ClimbUpFloatCurveZ, false, true);
 			PlayTimeline();
 			*/
+
 			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBUPLEDGE));
 			RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
 		}
@@ -282,7 +285,7 @@ void ARYU2D_MainCharacterZD::UpdateCharacter()
 			if (PlayerMovement == EPlayerMovement::RUN)
 			{
 				PlayerMovement = EPlayerMovement::STARTTURNRUN;
-				UE_LOG(LogTemp, Log, TEXT("Started Turn while Running"));
+				UE_LOG(LogTemp, Log, TEXT("UpdateCharacter(): Started Turn while Running"));
 			}
 			else
 			{
@@ -358,7 +361,7 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 	
 	if (MoveUpInput > 0)
 	{
-	
+		UE_LOG(LogTemp, Log, TEXT("CheckMoveUpState()"));
 		switch (RYUClimbingMode)
 		{
 		case ERYUClimbingMode::NONE:
@@ -380,9 +383,19 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 			break;
 		case ERYUClimbingMode::CANCLIMBUPLEDGE:
 		{
-			PlayerMovement = EPlayerMovement::CLIMBING;
 			//SetCurrentTimelineParamsFloat(Curve2DComponent->JumpUpAndHangFloatCurve, nullptr, false, true);
 			//PlayTimeline();
+			UBoxComponent* ClimbTriggerBox = GetOverlappedClimbingComponent(CanClimbUpTagName, CurrentLedgePosiTagName);
+			//@ToDo: search correct Actor, check if char needs to be flipped
+			if (PlayerMovement != EPlayerMovement::CLIMBING)
+			{
+				if (CheckFlipOverlappedActor(ClimbTriggerBox))
+				{
+					FlipCharacter();
+				}
+			}
+			PlayerMovement = EPlayerMovement::CLIMBING;
+			//sets the Movement of the player and approp. Specs
 			FVector PosChar = FVector(ClimbStandDownPosition.X, ClimbStandDownPosition.Y, ClimbStandDownPosition.Z + 50);
 			SetActorLocation(PosChar);
 			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::JUMPTOLEDGE));
@@ -395,6 +408,12 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 		case ERYUClimbingMode::CANENTERLADDER:
 			//@ToDo
 			break;
+		case ERYUClimbingMode::CLIMBUPLEDGE:
+			{
+		
+				break;
+			}
+			
 		default:
 			break;
 		}
@@ -408,14 +427,20 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 			break;
 		case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
 		{
-			PlayerMovement = EPlayerMovement::CLIMBING;
-			RYUClimbingMode = ERYUClimbingMode::CLIMBDOWNLEDGE;
+			
 			//FVector PosChar = FVector(ClimbStandUpPosition.X, ClimbStandUpPosition.Y, ClimbStandUpPosition.Z + 50);
 			FVector PosChar = FVector(ClimbStandDownPosition.X, ClimbStandDownPosition.Y, ClimbStandDownPosition.Z + 50);
 			SetActorLocation(PosChar);
-			//@ToDo: search correct Actor, check if char needs to be flipped
-			if(CheckFlipOverlappedActor(CanClimbDownTagName)) 
-				FlipCharacter();
+			UBoxComponent* ClimbTriggerBox = GetOverlappedClimbingComponent(CanClimbUpTagName, CurrentLedgePosiTagName);
+			if (PlayerMovement != EPlayerMovement::CLIMBING)
+			{
+				if (CheckFlipOverlappedActor(ClimbTriggerBox))
+				{
+					FlipCharacter();
+				}
+			}
+			PlayerMovement = EPlayerMovement::CLIMBING;
+			//RYUClimbingMode = ERYUClimbingMode::CLIMBDOWNLEDGE;
 			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBDOWNLEDGE));
 			break;
 		}
@@ -442,7 +467,7 @@ void ARYU2D_MainCharacterZD::HandleSphereColliderEndOverlap(UPrimitiveComponent*
 void ARYU2D_MainCharacterZD::TimelineCallbackFloat(float val)
 {
 	// This function is called for every tick in the timeline.
-	UE_LOG(LogTemp, Log, TEXT("Here incr. z-Location: %s"), *FString::SanitizeFloat(val));
+	UE_LOG(LogTemp, Log, TEXT("TimelineCallbackFloat(): Here incr. z-Location: %s"), *FString::SanitizeFloat(val));
 
 	FVector StartTLLocation;
 	FVector EndTLLocation;
@@ -468,7 +493,7 @@ void ARYU2D_MainCharacterZD::TimelineCallbackFloat(float val)
 void ARYU2D_MainCharacterZD::TimelineCallbackVector(FVector Vec)
 {
 	// This function is called for every tick in the timeline.
-	//UE_LOG(LogTemp, Log, TEXT("Here incr. z-Location: %s"), *FString::SanitizeFloat(val));
+	//UE_LOG(LogTemp, Log, TEXT("TimelineCallbackVector(): Here incr. z-Location: %s"), *FString::SanitizeFloat(val));
 
 	FVector StartTLLocation;
 	FVector EndTLLocation;
@@ -546,7 +571,7 @@ void ARYU2D_MainCharacterZD::PlayTimeline()
 {
 	if (CurrentTimeline != NULL)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Play a timeline from Start"));
+		UE_LOG(LogTemp, Log, TEXT("PlayTimeline(): Play a timeline from Start"));
 		CurrentTimeline->PlayFromStart();
 	}
 }
@@ -555,14 +580,14 @@ void ARYU2D_MainCharacterZD::SetCurrentTimelineParamsFloat(UCurveFloat* FloatCur
 {
 	if (FloatCurveX)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Set TimeLine Params for Timeline X %s"), *FloatCurveX->GetName());
+		UE_LOG(LogTemp, Log, TEXT("SetCurrentTimelineParamsFloat(): Set TimeLine Params for Timeline X %s"), *FloatCurveX->GetName());
 		CurrentTimeline->AddInterpFloat(FloatCurveX, onTimelineCallbackFloat, FName("MovementX"));
 	}
 
 	if (FloatCurveZ)
 	{
 
-		UE_LOG(LogTemp, Log, TEXT("Set TimeLine Params for Timeline Z %s"), *FloatCurveZ->GetName());
+		UE_LOG(LogTemp, Log, TEXT("SetCurrentTimelineParamsFloat(): Set TimeLine Params for Timeline Z %s"), *FloatCurveZ->GetName());
 		//Add Float curve to the timeline and bind it to the interpfunction´s delegate
 		//3rd Parameter = floatValue, Propertyname, Bind all Stuff
 
@@ -582,7 +607,7 @@ void ARYU2D_MainCharacterZD::SetCurrentTimelineParamsVector(UCurveVector* Vector
 {
 	if (VectorCurve)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Set TimeLine Params for Timeline %s"), *VectorCurve->GetName());
+		UE_LOG(LogTemp, Log, TEXT("SetCurrentTimelineParamsVector(): Set TimeLine Params for Timeline %s"), *VectorCurve->GetName());
 		//Add Float curve to the timeline and bind it to the interpfunction´s delegate
 		//3rd Parameter = floatValue, Propertyname, Bind all Stuff
 		CurrentTimeline->AddInterpVector(VectorCurve, onTimelineCallbackVector, FName("MovementVec"));
@@ -681,13 +706,13 @@ void ARYU2D_MainCharacterZD::ClimbLedgeFlipBookFinished()
 		break;
 	case ERYUClimbingMode::CLIMBUPLEDGE:
 	{
-		UE_LOG(LogTemp, Log, TEXT("Call From Notify: ClimbUpFlippbookFinished"));
+		UE_LOG(LogTemp, Log, TEXT("ClimbLedgeFlipBookFinished(): Call From Notify->ClimbUpFlippbookFinished"));
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		SphereTracer->SetEnableGravity(true);
 		GetCapsuleComponent()->SetEnableGravity(true);
 		MovementComp->SetMovementMode(MOVE_Walking);
-		CheckOverlappingActors();
 		SetActorLocation(ClimbStandUpPosition);
+		CheckOverlappingActors();
 		
 	}
 		break;
@@ -699,13 +724,36 @@ void ARYU2D_MainCharacterZD::ClimbLedgeFlipBookFinished()
 }
 
 
-bool ARYU2D_MainCharacterZD::CheckFlipOverlappedActor(FName ClimbTagName)
+bool ARYU2D_MainCharacterZD::CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger)
 {
 	//@ToDo: search correct actor
 	//return CapsuleOverlappedActors[0]; next just to deactivate compilererrors // capsule = primitive components
-	ARYUClimbingActor* TestActor = Cast<ARYUClimbingActor>(SphereOverlappedActor);
+	
+	if (ClimbingTrigger)
+	{
+		ARYUClimbingActor* ARYCA = Cast<ARYUClimbingActor>(ClimbingTrigger->GetOwner());
+		if (ARYCA)
+		{
+			
+			UArrowComponent* TriggerArrow = ARYCA->ClimbingTriggerDirection;
+			
+			//float DudePitch = this->GetArrowComponent()->GetComponentRotation().Pitch;
+			float DudePitch = this->GetArrowComponent()->GetComponentRotation().Yaw;
+			DudePitch = FMath::CeilToFloat(FMath::Abs(DudePitch));
+			//FMath::CeilToFloat(DudePitch);
+			UE_LOG(LogTemp, Log, TEXT("CheckFlipOverlappedActor(): PitchTriggerActorArrow: %s PitchClimbingDude: %s, Ceiled(Abs,PitchDude): %s"), *TriggerArrow->GetComponentRotation().ToString(), *this->GetArrowComponent()->GetComponentRotation().ToString(), *FString::SanitizeFloat(DudePitch));
+			if (TriggerArrow && (TriggerArrow->GetComponentRotation().Yaw == DudePitch))
+			{
+				UE_LOG(LogTemp, Log, TEXT("CheckFlipOverlappedActor(): Yes it´s a climbing trigger."));
+				return true;
+			}
+			
+		}
+		
+	}
 	return false;
 }
+
 
 float ARYU2D_MainCharacterZD::GetMoveRightInput()
 {

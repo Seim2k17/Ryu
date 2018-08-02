@@ -304,7 +304,7 @@ void ARYU2D_CharacterPrince::PlayFlipBookAnimation(UPaperFlipbook* AnimationToPl
 
 void ARYU2D_CharacterPrince::FlipbookFinishedPlaying()
 {
-	UE_LOG(LogTemp, Log, TEXT("FlipBookAni Ended: %d"), GetSprite()->GetFlipbookLengthInFrames());
+	UE_LOG(LogTemp, Log, TEXT("FlipbookFinishedPlaying(): FlipBookAni Ended in %d"), GetSprite()->GetFlipbookLengthInFrames());
 	switch (CharAnimation2DState)
 	{
 	case ERYU2DAnimationState::BEGINRUN:
@@ -345,7 +345,7 @@ void ARYU2D_CharacterPrince::EndRunFlipbookFinished()
 
 void ARYU2D_CharacterPrince::StartTurnFlipbookFinished()
 {
-	UE_LOG(LogTemp, Log, TEXT("TurnAni Ended"));
+	UE_LOG(LogTemp, Log, TEXT("StartTurnFlipbookFinished(): TurnAni Ended"));
 	// Now setup the rotation of the controller based on the direction we are travelling
 	// Set the rotation so that the character faces his direction of travel.
 	if (Controller != nullptr)
@@ -410,7 +410,7 @@ void ARYU2D_CharacterPrince::MoveRight(float Val)
 	// Apply the input to the character motion
 	if (Val != 0)
 	{
-		//UE_LOG(LogTemp, Log, TEXT("MOVE: %s ; bLookRight: %s ; bPlayTurnAni: %s ; Sprite(looping) %s"), *FString::SanitizeFloat(Val),
+		//UE_LOG(LogTemp, Log, TEXT("MoveRight(): MOVE %s ; bLookRight: %s ; bPlayTurnAni: %s ; Sprite(looping) %s"), *FString::SanitizeFloat(Val),
 		//	bLookRight ? TEXT("true") : TEXT("false"), bPlayTurnAni ? TEXT("true") : TEXT("false"), GetSprite()->IsLooping() ? TEXT("true") : TEXT("false"));
 
 	}
@@ -493,7 +493,7 @@ void ARYU2D_CharacterPrince::MoveUp(float Value)
 	
 	if (Value != 0)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Climb up Prince is gone"));
+		UE_LOG(LogTemp, Log, TEXT("MoveUp(): Climb up Prince is gone"));
 		switch (PlayerMovement)
 		{
 			//@ToDo: check for all special cases !
@@ -503,7 +503,7 @@ void ARYU2D_CharacterPrince::MoveUp(float Value)
 			//JumpUpTimeline
 			if (Value > 0)
 			{
-				UE_LOG(LogTemp, Log, TEXT("Climb up with Timeline"));
+				UE_LOG(LogTemp, Log, TEXT("MoveUp(): Climb up with Timeline"));
 				if (Animation2DComponent->ClimbUpFloatCurve)
 				{
 					SetCurrentTimelineParams(Animation2DComponent->JumpUpFloatCurve, false, true);
@@ -539,11 +539,11 @@ void ARYU2D_CharacterPrince::Climb(float Val)
 	{
 
 		case ERYUClimbingMode::NONE:
-			UE_LOG(LogTemp, Log, TEXT("JUMPUpOrDown"));
+			UE_LOG(LogTemp, Log, TEXT("Climb(): JUMPUpOrDown"));
 			JumpUpOrDown(Val, GetActorLocation());
 			break;
 		case ERYUClimbingMode::CANCLIMBUPLEDGE:
-			UE_LOG(LogTemp, Log, TEXT("CanClimbUp"));
+			UE_LOG(LogTemp, Log, TEXT("Climb(): CanClimbUp"));
 			CanClimbUp(Val, GetActorLocation());
 			break;
 		case ERYUClimbingMode::CANCLIMBDOWNLEDGE:

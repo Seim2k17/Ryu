@@ -80,8 +80,9 @@ public:
 	void ClimbLedgeFlipBookFinished();
 
 	UFUNCTION(BlueprintCallable, Category = "ClimbTrigger")
-	bool CheckFlipOverlappedActor(FName ClimbTagName);
-	
+	bool CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger);
+
+		
 protected:
 
 	void BeginPlay() override;

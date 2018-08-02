@@ -22,17 +22,17 @@ ARYUClimbingActor::ARYUClimbingActor()
 	ClimbMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ClimbableMesh"));
 	ClimbMeshComponent->SetupAttachment(Root);
 
-	LeftDownTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("LeftDownTrigger"));
-	LeftDownTrigger->SetupAttachment(Root);
+	IsRightUpTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("IsRightUpTrigger"));
+	IsRightUpTrigger->SetupAttachment(Root);
 
-	LeftUpTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("LeftUpTrigger"));
-	LeftUpTrigger->SetupAttachment(Root);
+	IsRightDownTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("IsRightDownTrigger"));
+	IsRightDownTrigger->SetupAttachment(Root);
 
-	RightDownTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("RightDownTrigger"));
-	RightDownTrigger->SetupAttachment(Root);
+	IsLeftUpTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("IsLeftUpTrigger"));
+	IsLeftUpTrigger->SetupAttachment(Root);
 
-	RightUpTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("RightUpTrigger"));
-	RightUpTrigger->SetupAttachment(Root);
+	IsLeftDownTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("IsLeftDownTrigger"));
+	IsLeftDownTrigger->SetupAttachment(Root);
 
 	LeftHangPosition = CreateDefaultSubobject<UChildActorComponent>(TEXT("LeftHangPosition"));
 	LeftHangPosition->SetupAttachment(Root);
@@ -52,8 +52,8 @@ ARYUClimbingActor::ARYUClimbingActor()
 	UpLeftStandPosition = CreateDefaultSubobject<UChildActorComponent>(TEXT("UpLeftStandPosition"));
 	UpLeftStandPosition->SetupAttachment(Root);
 
-	UpTriggerDirection = CreateDefaultSubobject<UArrowComponent>(TEXT("UpTriggerDirectionGap"));
-	UpTriggerDirection->SetupAttachment(Root);
+	ClimbingTriggerDirection = CreateDefaultSubobject<UArrowComponent>(TEXT("ClimbingTriggerDirectionGap"));
+	ClimbingTriggerDirection->SetupAttachment(Root);
 	
 	InitializeValues();
 
@@ -72,49 +72,49 @@ void ARYUClimbingActor::InitializeValues()
 	bRightUpTriggerIsActive = true;
 	bRightDownTriggerIsActive = true;
 
-	FVector BoxStartExtend = FVector(70.0f, 30.0f, 15.0f);
-	FVector StartLeftUp = FVector(0.0f, 80.0f, -35.0f);
-	FVector StartLeftDown = FVector(0.0f, 80.0f, 10.0f);
-	FVector StartRightUp = FVector(0.0f, -205.0f, -35.0f);
-	FVector StartRightDown = FVector(0.0f, -205.0f, 10.0f);
+	FVector BoxStartExtend = FVector(20.0f, 125.0f, 20.0f);
+	FVector StartLeftUp = FVector(-10.0f, 0.0f, 10.0f);
+	FVector StartLeftDown = FVector(-10.0f, 0.0f, -35.0f);
+	FVector StartRightUp = FVector(35.0f, 0.0f, 10.0f);
+	FVector StartRightDown = FVector(35.0f, 0.0f, -35.0f);
 
-	LeftUpTrigger->SetBoxExtent(BoxStartExtend);
-	RightUpTrigger->SetBoxExtent(BoxStartExtend);
-	LeftDownTrigger->SetBoxExtent(BoxStartExtend);
-	RightDownTrigger->SetBoxExtent(BoxStartExtend);
+	IsLeftDownTrigger->SetBoxExtent(BoxStartExtend);
+	IsRightDownTrigger->SetBoxExtent(BoxStartExtend);
+	IsRightUpTrigger->SetBoxExtent(BoxStartExtend);
+	IsLeftUpTrigger->SetBoxExtent(BoxStartExtend);
 
-	LeftUpTrigger->SetRelativeLocation(StartLeftUp);
-	LeftDownTrigger->SetRelativeLocation(StartLeftDown);
-	RightUpTrigger->SetRelativeLocation(StartRightUp);
-	RightDownTrigger->SetRelativeLocation(StartRightDown);
+	IsLeftDownTrigger->SetRelativeLocation(StartLeftDown);
+	IsRightUpTrigger->SetRelativeLocation(StartRightUp);
+	IsRightDownTrigger->SetRelativeLocation(StartRightDown);
+	IsLeftUpTrigger->SetRelativeLocation(StartLeftUp);
 
-	LeftUpTrigger->OnComponentBeginOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleBeginOverlap);
-	LeftDownTrigger->OnComponentBeginOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleBeginOverlap);
-	LeftUpTrigger->OnComponentEndOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleEndOverlap);
-	LeftDownTrigger->OnComponentEndOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleEndOverlap);
+	IsLeftDownTrigger->OnComponentBeginOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleBeginOverlap);
+	IsRightUpTrigger->OnComponentBeginOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleBeginOverlap);
+	IsLeftDownTrigger->OnComponentEndOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleEndOverlap);
+	IsRightUpTrigger->OnComponentEndOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleEndOverlap);
 
-	RightUpTrigger->OnComponentBeginOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleBeginOverlap);
-	RightDownTrigger->OnComponentBeginOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleBeginOverlap);
-	RightUpTrigger->OnComponentEndOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleEndOverlap);
-	RightDownTrigger->OnComponentEndOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleEndOverlap);
+	IsRightDownTrigger->OnComponentBeginOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleBeginOverlap);
+	IsLeftUpTrigger->OnComponentBeginOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleBeginOverlap);
+	IsRightDownTrigger->OnComponentEndOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleEndOverlap);
+	IsLeftUpTrigger->OnComponentEndOverlap.AddDynamic(this, &ARYUClimbingActor::OnTriggerHandleEndOverlap);
 
 	LeftHangPosition->SetRelativeLocation(FVector(0, 90.0f, 0));
 	RightHangPosition->SetRelativeLocation(FVector(0, -210.0f, 0));
 
-	LeftUpTrigger->ComponentTags.Add(CanClimbUpTag);
-	RightUpTrigger->ComponentTags.Add(CanClimbUpTag);
-	LeftDownTrigger->ComponentTags.Add(CanClimbDownTag);
-	RightDownTrigger->ComponentTags.Add(CanClimbDownTag);
+	IsLeftDownTrigger->ComponentTags.Add(CanClimbUpTag);
+	IsRightDownTrigger->ComponentTags.Add(CanClimbUpTag);
+	IsRightUpTrigger->ComponentTags.Add(CanClimbDownTag);
+	IsLeftUpTrigger->ComponentTags.Add(CanClimbDownTag);
 
-	LeftUpTrigger->ComponentTags.Add(LeftPositionTag);
-	LeftDownTrigger->ComponentTags.Add(LeftPositionTag);
+	IsLeftDownTrigger->ComponentTags.Add(LeftPositionTag);
+	IsRightUpTrigger->ComponentTags.Add(RightPositionTag);
 	
-	RightUpTrigger->ComponentTags.Add(RightPositionTag);
-	RightDownTrigger->ComponentTags.Add(RightPositionTag);
+	IsRightDownTrigger->ComponentTags.Add(RightPositionTag);
+	IsLeftUpTrigger->ComponentTags.Add(LeftPositionTag);
 
-	UpTriggerDirection->SetArrowColor(FLinearColor::Yellow);
+	ClimbingTriggerDirection->SetArrowColor(FLinearColor::Yellow);
 	//@ToDo: later show with GameDebugVariable 
-	UpTriggerDirection->SetHiddenInGame(false);
+	ClimbingTriggerDirection->SetHiddenInGame(false);
 }
 
 // Called when the game starts or when spawned
@@ -217,17 +217,17 @@ void ARYUClimbingActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 
 void ARYUClimbingActor::SetVisibilityTrigger()
 {
-	LeftDownTrigger->SetVisibility(bLeftDownTriggerIsActive);
-	LeftDownTrigger->bGenerateOverlapEvents = bLeftDownTriggerIsActive;
+	IsLeftDownTrigger->SetVisibility(bLeftDownTriggerIsActive);
+	IsLeftDownTrigger->bGenerateOverlapEvents = bLeftDownTriggerIsActive;
 
-	LeftUpTrigger->SetVisibility(bLeftUpTriggerIsActive);
-	LeftUpTrigger->bGenerateOverlapEvents = bLeftUpTriggerIsActive;
+	IsLeftUpTrigger->SetVisibility(bLeftUpTriggerIsActive);
+	IsLeftUpTrigger->bGenerateOverlapEvents = bLeftUpTriggerIsActive;
 
-	RightDownTrigger->SetVisibility(bRightDownTriggerIsActive);
-	RightDownTrigger->bGenerateOverlapEvents = bRightDownTriggerIsActive;
+	IsRightDownTrigger->SetVisibility(bRightDownTriggerIsActive);
+	IsRightDownTrigger->bGenerateOverlapEvents = bRightDownTriggerIsActive;
 
-	RightUpTrigger->SetVisibility(bRightUpTriggerIsActive);
-	RightUpTrigger->bGenerateOverlapEvents = bRightUpTriggerIsActive;
+	IsRightUpTrigger->SetVisibility(bRightUpTriggerIsActive);
+	IsRightUpTrigger->bGenerateOverlapEvents = bRightUpTriggerIsActive;
 }
 
 // Called every frame
