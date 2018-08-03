@@ -386,6 +386,7 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 			//SetCurrentTimelineParamsFloat(Curve2DComponent->JumpUpAndHangFloatCurve, nullptr, false, true);
 			//PlayTimeline();
 			UBoxComponent* ClimbTriggerBox = GetOverlappedClimbingComponent(CanClimbUpTagName, CurrentLedgePosiTagName);
+						
 			//@ToDo: search correct Actor, check if char needs to be flipped
 			if (PlayerMovement != EPlayerMovement::CLIMBING)
 			{
@@ -429,9 +430,7 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 		{
 			
 			//FVector PosChar = FVector(ClimbStandUpPosition.X, ClimbStandUpPosition.Y, ClimbStandUpPosition.Z + 50);
-			FVector PosChar = FVector(ClimbStandDownPosition.X, ClimbStandDownPosition.Y, ClimbStandDownPosition.Z + 50);
-			SetActorLocation(PosChar);
-			UBoxComponent* ClimbTriggerBox = GetOverlappedClimbingComponent(CanClimbUpTagName, CurrentLedgePosiTagName);
+			UBoxComponent* ClimbTriggerBox = GetOverlappedClimbingComponent(CanClimbDownTagName, CurrentLedgePosiTagName);
 			if (PlayerMovement != EPlayerMovement::CLIMBING)
 			{
 				if (CheckFlipOverlappedActor(ClimbTriggerBox))
@@ -439,8 +438,13 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 					FlipCharacter();
 				}
 			}
+
+			RYUClimbingMode = ERYUClimbingMode::CLIMBDOWNLEDGE;
 			PlayerMovement = EPlayerMovement::CLIMBING;
-			//RYUClimbingMode = ERYUClimbingMode::CLIMBDOWNLEDGE;
+			SetClimbingPositions();
+			FVector PosChar = FVector(ClimbStandDownPosition.X, ClimbStandDownPosition.Y, ClimbStandDownPosition.Z + 50);
+			SetActorLocation(PosChar);
+						
 			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBDOWNLEDGE));
 			break;
 		}
@@ -711,8 +715,12 @@ void ARYU2D_MainCharacterZD::ClimbLedgeFlipBookFinished()
 		SphereTracer->SetEnableGravity(true);
 		GetCapsuleComponent()->SetEnableGravity(true);
 		MovementComp->SetMovementMode(MOVE_Walking);
-		SetActorLocation(ClimbStandUpPosition);
 		CheckOverlappingActors();
+		SetActorLocation(ClimbStandUpPosition);
+		//PlayerMovement = EPlayerMovement::STAND;
+		
+		
+		
 		
 	}
 		break;
@@ -727,10 +735,10 @@ void ARYU2D_MainCharacterZD::ClimbLedgeFlipBookFinished()
 bool ARYU2D_MainCharacterZD::CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger)
 {
 	//@ToDo: search correct actor
-	//return CapsuleOverlappedActors[0]; next just to deactivate compilererrors // capsule = primitive components
-	
 	if (ClimbingTrigger)
 	{
+		UE_LOG(LogTemp, Log, TEXT("CheckFlipOverlappedActor(): execute."));
+
 		ARYUClimbingActor* ARYCA = Cast<ARYUClimbingActor>(ClimbingTrigger->GetOwner());
 		if (ARYCA)
 		{

@@ -110,7 +110,22 @@ void ARYU2D_CharacterBase::OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimi
 
 UBoxComponent* ARYU2D_CharacterBase::GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight)
 {
+
+	UE_LOG(LogTemp, Log, TEXT("GetOverlappedClimbComp(): %s , %s"),*UpOrDown.ToString(),*LeftOrRight.ToString());
+
 	UBoxComponent* OverlappedClimbingComp = nullptr;
+	FName ClimbCheck;
+
+	if (RYUClimbingMode == ERYUClimbingMode::CANCLIMBDOWNLEDGE)
+	{
+		ClimbCheck = CanClimbDownTagName;
+	}
+	if (RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPLEDGE)
+	{
+		ClimbCheck = CanClimbUpTagName;
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("GetOverlappedClimbComp(): ClimbCheck: %s"), *ClimbCheck.ToString());
 
 	for (int i = 0; i < CapsuleOverlappedComponents.Num(); i++)
 	{
@@ -119,7 +134,7 @@ UBoxComponent* ARYU2D_CharacterBase::GetOverlappedClimbingComponent(FName UpOrDo
 		{
 			//it´s a Boxtrigger for sure
 			//we assume and due gamedesign we pretend that we ONLY can overlapp ONE component from ONE actor but TWO actors at a time
-			if ((OvCC->ComponentTags[0] == UpOrDown) &&
+			if ((OvCC->ComponentTags[0] == UpOrDown) && (ClimbCheck == UpOrDown) &&
 				(OvCC->ComponentTags[1] == LeftOrRight))
 			{
 				OverlappedClimbingComp = OvCC;
@@ -156,7 +171,7 @@ void ARYU2D_CharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* Over
 			if ((OtherComp->ComponentTags[0] == CanClimbDownTagName) || (OtherComp->ComponentTags[0] == CanClimbUpTagName))
 			{
 
-				CapsuleOverlappedComponents.Add(OtherComp);
+				CapsuleOverlappedComponents.AddUnique(OtherComp);
 				//UE_LOG(LogTemp, Log, TEXT("OnHandleCapsuleBeginOverlap(): CapslOvlpArray[%d] is %s"), i, *CapsuleOverlappedComponents[i]->GetName());
 				i++;
 			}
@@ -190,7 +205,6 @@ void ARYU2D_CharacterBase::OnHandleCapsuleEndOverlap(UPrimitiveComponent* Overla
 
 void ARYU2D_CharacterBase::CheckOverlappingActors()
 {
-
 	GetOverlappingActors(CapsuleOverlappedActors);
 	//UE_LOG(LogTemp, Log, TEXT("Call CheckOverlappingActors"));
 	//if there are CapsuleOverlappingActors set the appr. Movement / ClimbingMode (important for EndFinished-Notifier in the ABP
@@ -224,11 +238,15 @@ void ARYU2D_CharacterBase::CheckOverlappingActors()
 
 void ARYU2D_CharacterBase::CheckOverlappingComponents()
 {
+
+	
+	///changed some stuff to checkoverlapped actors !!!!
 	UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): %d"), CapsuleOverlappedComponents.Num());
 	int j = 0;
-	for (j; j < CapsuleOverlappedComponents.Num(); j++)
+
+	for (j; j < CapsuleOverlappedActors.Num(); j++)
 	{
-		UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): Actor is %s"), *CapsuleOverlappedComponents[j]->GetName());
+		UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): Actor is %s"), *CapsuleOverlappedActors[j]->GetName());
 	}
 	if (PlayerMovement != EPlayerMovement::CLIMBING)
 	{
@@ -236,57 +254,55 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 		{
 			//bDoThingsOnce = true;
 			//easy check but u need to bee careful !!!
-			if (CapsuleOverlappedComponents.Num() > 1)
+			if (CapsuleOverlappedActors.Num() > 1)
 			{
 				RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
 				return;
 			}
-			else if (CapsuleOverlappedComponents.Num() == 1)
+			else if (CapsuleOverlappedActors.Num() == 1)
 			{
-				ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(CapsuleOverlappedComponents[0]->GetOwner());
+				ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(CapsuleOverlappedActors[0]);
 				if (ARY)
 				{
 					if (RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN)
 					{
-						if (CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbDownTagName)
+						//we assume that we only overlap ONE Component at a time from one Climbing Actor
+						/**
+						if (CapsuleOverlappedComponents.Num() == 0)
 						{
-							UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): CanClimbDown TAG is Overlap In"));
-							RYUClimbingMode = ERYUClimbingMode::CANCLIMBDOWNLEDGE;
-							CurrentClimbTagName = CanClimbDownTagName;
+							CapsuleOverlappedActors[0]->GetOverlappingComponents(CapsuleOverlappedComponents);
 						}
-
-						if (CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbUpTagName)
+						*/
+						
+						if (CapsuleOverlappedComponents.Num() == 1)
 						{
-							UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): CanClimbUp TAG is Overlap In"));
-							RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPLEDGE;
-							CurrentClimbTagName = CanClimbUpTagName;
+							if (CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbDownTagName)
+							{
+								UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): CanClimbDown TAG is Overlap In"));
+								RYUClimbingMode = ERYUClimbingMode::CANCLIMBDOWNLEDGE;
+								CurrentClimbTagName = CanClimbDownTagName;
+							}
+
+							if (CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbUpTagName)
+							{
+								UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): CanClimbUp TAG is Overlap In"));
+								RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPLEDGE;
+								CurrentClimbTagName = CanClimbUpTagName;
+							}
+
+							if (CapsuleOverlappedComponents[0]->ComponentTags[1] == LeftLedgePosiTagName)
+							{
+								CurrentLedgePosiTagName = LeftLedgePosiTagName;
+							}
+
+							if (CapsuleOverlappedComponents[0]->ComponentTags[1] == RightLedgePosiTagName)
+							{
+								CurrentLedgePosiTagName = RightLedgePosiTagName;
+							}
+
+
+							UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): TAG is %s"), *CurrentLedgePosiTagName.ToString());
 						}
-
-
-						//if UpAND DOwn the position needs to be set in Climb !
-						if (CapsuleOverlappedComponents[0]->ComponentTags[1] == LeftLedgePosiTagName)
-						{
-							//@Relict?
-							SetLedgeHangPosition(ARY->LeftHangPosition->GetComponentLocation(), LeftLedgePosiTagName);
-							//NewPositioning
-							ClimbStandDownPosition = ARY->DownLeftStandPosition->GetComponentLocation();
-							ClimbStandUpPosition = ARY->UpRightStandPosition->GetComponentLocation();
-							CurrentLedgePosiTagName = LeftLedgePosiTagName;
-						}
-
-						if (CapsuleOverlappedComponents[0]->ComponentTags[1] == RightLedgePosiTagName)
-						{
-							//@Relict?
-							SetLedgeHangPosition(ARY->RightHangPosition->GetComponentLocation(), RightLedgePosiTagName);
-							//NewPositioning
-							ClimbStandDownPosition = ARY->DownRightStandPosition->GetComponentLocation();
-							ClimbStandUpPosition = ARY->UpLeftStandPosition->GetComponentLocation();
-							CurrentLedgePosiTagName = RightLedgePosiTagName;
-						}
-
-						UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): TAG is %s"), *CurrentLedgePosiTagName.ToString());
-						UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): ClimbStandDownPosi is %s"), *ClimbStandDownPosition.ToString());
-						UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): ClimbStandUp is %s"), *ClimbStandUpPosition.ToString());
 					}
 				}
 			}
@@ -297,6 +313,58 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 	
 }
 
+
+void ARYU2D_CharacterBase::SetClimbingPositions()
+{
+
+	ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(CapsuleOverlappedComponents[0]->GetOwner());
+
+	if (ARY)
+	{
+		//if UpAND DOwn the position needs to be set in Climb !
+		if (CurrentLedgePosiTagName == LeftLedgePosiTagName)
+		{
+			//@Relict?
+			SetLedgeHangPosition(ARY->LeftHangPosition->GetComponentLocation(), LeftLedgePosiTagName);
+			//NewPositioning
+
+			if (RYUClimbingMode == ERYUClimbingMode::CLIMBDOWNLEDGE)
+			{
+				ClimbStandDownPosition = ARY->DownRightStandPosition->GetComponentLocation();
+				ClimbStandUpPosition = ARY->UpLeftStandPosition->GetComponentLocation();
+			}
+			if (RYUClimbingMode == ERYUClimbingMode::CLIMBUPLEDGE)
+			{
+				ClimbStandDownPosition = ARY->DownLeftStandPosition->GetComponentLocation();
+				ClimbStandUpPosition = ARY->UpRightStandPosition->GetComponentLocation();
+			}
+
+		}
+
+		if (CurrentLedgePosiTagName == RightLedgePosiTagName)
+		{
+			//@Relict?
+			SetLedgeHangPosition(ARY->RightHangPosition->GetComponentLocation(), RightLedgePosiTagName);
+			//NewPositioning
+
+			if (RYUClimbingMode == ERYUClimbingMode::CLIMBDOWNLEDGE)
+			{
+				ClimbStandDownPosition = ARY->DownLeftStandPosition->GetComponentLocation();
+				ClimbStandUpPosition = ARY->UpRightStandPosition->GetComponentLocation();
+			}
+			if (RYUClimbingMode == ERYUClimbingMode::CLIMBUPLEDGE)
+			{
+				ClimbStandDownPosition = ARY->DownRightStandPosition->GetComponentLocation();
+				ClimbStandUpPosition = ARY->UpLeftStandPosition->GetComponentLocation();
+			}
+		}
+
+
+		UE_LOG(LogTemp, Log, TEXT("SetClimbingPositions(): ClimbStandDownPosi is %s"), *ClimbStandDownPosition.ToString());
+		UE_LOG(LogTemp, Log, TEXT("SetClimbingPositions(): ClimbStandUp is %s"), *ClimbStandUpPosition.ToString());
+	}
+	
+}
 
 void ARYU2D_CharacterBase::FlipCharacter()
 {

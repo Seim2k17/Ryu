@@ -89,6 +89,8 @@ protected:
 
 	void CheckOverlappingComponents();
 
+	void SetClimbingPositions();
+
 /************************************************************************/
 /* MEMBER                                                               */
 /************************************************************************/
@@ -145,7 +147,7 @@ protected:
 	//** Overlapped CapsuleStuff*/
 	TArray<UPrimitiveComponent*> CapsuleOverlappedComponents;
 
-	TSet<AActor*> CapsuleOverlappedActors;
+	TArray<AActor*> CapsuleOverlappedActors;
 
 	AActor* SphereOverlappedActor;
 	UPrimitiveComponent* SphereOverlappedComponent;
