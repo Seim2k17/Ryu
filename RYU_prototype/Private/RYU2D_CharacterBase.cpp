@@ -205,7 +205,8 @@ void ARYU2D_CharacterBase::OnHandleCapsuleEndOverlap(UPrimitiveComponent* Overla
 
 void ARYU2D_CharacterBase::CheckOverlappingActors()
 {
-	GetOverlappingActors(CapsuleOverlappedActors);
+	//Here We only check for ClimbingActors!
+	GetOverlappingActors(CapsuleOverlappedActors, ARYUClimbingActor::StaticClass());
 	//UE_LOG(LogTemp, Log, TEXT("Call CheckOverlappingActors"));
 	//if there are CapsuleOverlappingActors set the appr. Movement / ClimbingMode (important for EndFinished-Notifier in the ABP
 	//if (CapsuleOverlappedComponents.Num() > 0)
@@ -217,6 +218,12 @@ void ARYU2D_CharacterBase::CheckOverlappingActors()
 		}
 		else
 		{
+			//Check if there is an ledge overlapping
+			for (int i = 0; i < CapsuleOverlappedActors.Num(); i++)
+			{
+				UE_LOG(LogTemp, Log, TEXT("Capsule[%d]: %s"),i,*CapsuleOverlappedActors[i]->GetName());
+			}
+			//Obviously there are 1+ Climbingtrigger
 			PlayerMovement = EPlayerMovement::CANGRABLEDGE;
 		}
 		
@@ -238,7 +245,6 @@ void ARYU2D_CharacterBase::CheckOverlappingActors()
 
 void ARYU2D_CharacterBase::CheckOverlappingComponents()
 {
-
 	
 	///changed some stuff to checkoverlapped actors !!!!
 	UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): %d"), CapsuleOverlappedComponents.Num());
@@ -248,6 +254,7 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 	{
 		UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): Actor is %s"), *CapsuleOverlappedActors[j]->GetName());
 	}
+	//@ToDo: look here for more than1 TriggerOverlappCrap, first need: breakfast
 	if (PlayerMovement != EPlayerMovement::CLIMBING)
 	{
 		if (!bDoThingsOnce)

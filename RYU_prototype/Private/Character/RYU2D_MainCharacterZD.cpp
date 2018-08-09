@@ -470,8 +470,8 @@ void ARYU2D_MainCharacterZD::HandleSphereColliderEndOverlap(UPrimitiveComponent*
 
 void ARYU2D_MainCharacterZD::TimelineCallbackFloat(float val)
 {
-	// This function is called for every tick in the timeline.
-	UE_LOG(LogTemp, Log, TEXT("TimelineCallbackFloat(): Here incr. z-Location: %s"), *FString::SanitizeFloat(val));
+	// This function is called for every tick when the timeline runs.
+	//UE_LOG(LogTemp, Log, TEXT("TimelineCallbackFloat(): Here incr. z-Location: %s"), *FString::SanitizeFloat(val));
 
 	FVector StartTLLocation;
 	FVector EndTLLocation;
