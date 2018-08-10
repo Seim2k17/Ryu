@@ -167,6 +167,9 @@ private:
 	void InitializeCharacterValues();
 
 	void CheckMoveUpState();
+
+	void ResetClimbingState();
+
 /************************************************************************/
 /* MEMBER                                                               */
 /************************************************************************/

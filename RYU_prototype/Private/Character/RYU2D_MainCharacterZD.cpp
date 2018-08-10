@@ -361,7 +361,7 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 	
 	if (MoveUpInput > 0)
 	{
-		UE_LOG(LogTemp, Log, TEXT("CheckMoveUpState()"));
+		//UE_LOG(LogTemp, Log, TEXT("CheckMoveUpState():"));
 		switch (RYUClimbingMode)
 		{
 		case ERYUClimbingMode::NONE:
@@ -460,12 +460,12 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 
 void ARYU2D_MainCharacterZD::HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-
+	//@ToDo: needed ?
 }
 
 void ARYU2D_MainCharacterZD::HandleSphereColliderEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-
+	//@ToDo: needed ?
 }
 
 void ARYU2D_MainCharacterZD::TimelineCallbackFloat(float val)
@@ -701,34 +701,43 @@ void ARYU2D_MainCharacterZD::TurnRunFlipBookFinished()
 
 void ARYU2D_MainCharacterZD::ClimbLedgeFlipBookFinished()
 {
+	UE_LOG(LogTemp, Log, TEXT("ClimbLedgeFlipBookFinished(): Call From Notify->ClimbUpFlippbookFinished"));
+
 	switch (RYUClimbingMode)
 	{
-	case ERYUClimbingMode::CLIMBDOWNLEDGE:
-	{
-		RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
-	}
-		break;
-	case ERYUClimbingMode::CLIMBUPLEDGE:
-	{
-		UE_LOG(LogTemp, Log, TEXT("ClimbLedgeFlipBookFinished(): Call From Notify->ClimbUpFlippbookFinished"));
-		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		SphereTracer->SetEnableGravity(true);
-		GetCapsuleComponent()->SetEnableGravity(true);
-		MovementComp->SetMovementMode(MOVE_Walking);
-		CheckOverlappingActors();
-		SetActorLocation(ClimbStandUpPosition);
-		//PlayerMovement = EPlayerMovement::STAND;
+		case ERYUClimbingMode::CLIMBDOWNLEDGE:
+		{
+			RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+		}
+			break;
+		case ERYUClimbingMode::CLIMBUPLEDGE:
+		{
+			ResetClimbingState();
+			SetActorLocation(ClimbStandUpPosition);
+			//PlayerMovement = EPlayerMovement::STAND;
+			break;
+		}
+		case ERYUClimbingMode::LETGOLEDGE:
+		{
+			UE_LOG(LogTemp, Log, TEXT("ClimbLedgeFlipBookFinished(): LETGOEND"));
+			ResetClimbingState();
+			break;
+		}
 		
-		
-		
-		
-	}
-		break;
 	
-	default:
-		break;
+		default:
+			break;
 	}
 	
+}
+
+void ARYU2D_MainCharacterZD::ResetClimbingState()
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SphereTracer->SetEnableGravity(true);
+	GetCapsuleComponent()->SetEnableGravity(true);
+	MovementComp->SetMovementMode(MOVE_Walking);
+	CheckOverlappingActors();
 }
 
 
@@ -858,6 +867,9 @@ void ARYU2D_MainCharacterZD::DrawDebugInfosOnScreen()
 		break;
 	case ERYUClimbingMode::CLIMBUPLEDGE:
 		ClimbMode = "ClimbingUpLedge";
+		break;
+	case ERYUClimbingMode::LETGOLEDGE:
+		ClimbMode = "LETGOLEDGE";
 		break;
 	case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
 		ClimbMode = "CanClimbDownLedge";

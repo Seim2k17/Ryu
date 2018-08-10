@@ -102,7 +102,7 @@ void ARYU2D_CharacterBase::OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimi
 		{
 			UE_LOG(LogTemp, Log, TEXT("OnSphereTracerCheckOverlap(): SphereTracer->Mode->CanTraceActivated"));
 			//PlayerMovement = EPlayerMovementMode::CANTRACELEDGE;
-			PlayerMovement = EPlayerMovement::CANGRABLEDGE;
+			//PlayerMovement = EPlayerMovement::CANGRABLEDGE;
 		}
 
 	}
@@ -152,11 +152,12 @@ void ARYU2D_CharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* Over
 {
 	if (PlayerMovement != EPlayerMovement::CLIMBING)
 	{
+
 		UE_LOG(LogTemp, Log, TEXT("OnHandleCapsuleBeginOverlap(): CapsuleOverlap in from %s "), *OtherActor->GetName());
 
 		//ToDo: need to handle other Triggerlements than ClimbingTriggers ???, for now and easyness we only do ClimbingTriggers
 
-		ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(OtherActor);
+ 		ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(OtherActor);
 		if (ARY)
 		{
 			//if we run into the ClimbingActors
@@ -180,8 +181,6 @@ void ARYU2D_CharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* Over
 			//UE_LOG(LogTemp, Log, TEXT("OnHandleCapsuleBeginOverlap(): CapslOvlpArray with: %d Actors"), CapsuleOverlappedComponents.Num());
 
 			CheckOverlappingComponents();
-
-
 		}
 	}
 	
@@ -222,6 +221,30 @@ void ARYU2D_CharacterBase::CheckOverlappingActors()
 			for (int i = 0; i < CapsuleOverlappedActors.Num(); i++)
 			{
 				UE_LOG(LogTemp, Log, TEXT("Capsule[%d]: %s"),i,*CapsuleOverlappedActors[i]->GetName());
+				if (RYUClimbingMode == ERYUClimbingMode::LETGOLEDGE)
+				{
+					//o
+					GetOverlappingComponents(CapsuleOverlappedComponents);
+					for (int i = CapsuleOverlappedComponents.Num(); i > 0; i--)
+					{
+						UBoxComponent* CapsEl = Cast<UBoxComponent>(CapsuleOverlappedComponents[i-1]);
+						if (!CapsEl)
+						{
+							CapsuleOverlappedComponents.RemoveAt(i-1);
+						}
+					}
+					//Recheck CapsuleEnterstuff
+					
+					//we work only with the components not with the actor itself
+// 					if ((OtherComp->ComponentTags[0] == CanClimbDownTagName) || (OtherComp->ComponentTags[0] == CanClimbUpTagName))
+// 					{
+// 
+// 						CapsuleOverlappedComponents.AddUnique(OtherComp);
+// 						//UE_LOG(LogTemp, Log, TEXT("OnHandleCapsuleBeginOverlap(): CapslOvlpArray[%d] is %s"), i, *CapsuleOverlappedComponents[i]->GetName());
+// 						i++;
+// 					}
+
+				}
 			}
 			//Obviously there are 1+ Climbingtrigger
 			PlayerMovement = EPlayerMovement::CANGRABLEDGE;
@@ -245,7 +268,6 @@ void ARYU2D_CharacterBase::CheckOverlappingActors()
 
 void ARYU2D_CharacterBase::CheckOverlappingComponents()
 {
-	
 	///changed some stuff to checkoverlapped actors !!!!
 	UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): %d"), CapsuleOverlappedComponents.Num());
 	int j = 0;
@@ -308,7 +330,7 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 							}
 
 
-							UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): TAG is %s"), *CurrentLedgePosiTagName.ToString());
+							UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): Trigger-TAG is %s"), *CurrentLedgePosiTagName.ToString());
 						}
 					}
 				}
