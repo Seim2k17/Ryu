@@ -57,25 +57,25 @@ ARYU2D_CharacterBase::ARYU2D_CharacterBase(const class FObjectInitializer& Objec
 
 void ARYU2D_CharacterBase::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	OnSphereTracerCheckOverlap(OtherActor, OtherComp);
+	//OnSphereTracerCheckOverlap(OtherActor, OtherComp);
 }
 
 void ARYU2D_CharacterBase::OnSphereTracerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	bSphereTracerOverlap = false;
-	bLedgeHeightInRange = false;
-	SphereOverlappedActor = nullptr;
-	UE_LOG(LogTemp, Log, TEXT("OnSphereTracerHandleEndOverlap(): SpherTracer Overlap Out"));
-	if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
-		(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
-		(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
-		(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
-		(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE) &&
-		(PlayerMovement != EPlayerMovement::CLIMBING))
-	{
-		UE_LOG(LogTemp, Log, TEXT("OnSphereTracerHandleEndOverlap(): SphereTracer->Mode->Walk Activated"));
-		PlayerMovement = EPlayerMovement::WALK;
-	}
+// 	bSphereTracerOverlap = false;
+// 	bLedgeHeightInRange = false;
+// 	SphereOverlappedActor = nullptr;
+// 	UE_LOG(LogTemp, Log, TEXT("OnSphereTracerHandleEndOverlap(): SpherTracer Overlap Out"));
+// 	if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE) &&
+// 		(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN) &&
+// 		(RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE) &&
+// 		(RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE) &&
+// 		(RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE) &&
+// 		(PlayerMovement != EPlayerMovement::CLIMBING))
+// 	{
+// 		UE_LOG(LogTemp, Log, TEXT("OnSphereTracerHandleEndOverlap(): SphereTracer->Mode->Walk Activated"));
+// 		PlayerMovement = EPlayerMovement::WALK;
+// 	}
 }
 
 void ARYU2D_CharacterBase::OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp)
@@ -205,7 +205,7 @@ void ARYU2D_CharacterBase::OnHandleCapsuleEndOverlap(UPrimitiveComponent* Overla
 void ARYU2D_CharacterBase::CheckOverlappingActors()
 {
 	//Here We only check for ClimbingActors!
-	GetOverlappingActors(CapsuleOverlappedActors, ARYUClimbingActor::StaticClass());
+	GetCapsuleComponent()->GetOverlappingActors(CapsuleOverlappedActors, ARYUClimbingActor::StaticClass());
 	//UE_LOG(LogTemp, Log, TEXT("Call CheckOverlappingActors"));
 	//if there are CapsuleOverlappingActors set the appr. Movement / ClimbingMode (important for EndFinished-Notifier in the ABP
 	//if (CapsuleOverlappedComponents.Num() > 0)
@@ -220,10 +220,9 @@ void ARYU2D_CharacterBase::CheckOverlappingActors()
 			//Check if there is an ledge overlapping
 			for (int i = 0; i < CapsuleOverlappedActors.Num(); i++)
 			{
-				UE_LOG(LogTemp, Log, TEXT("Capsule[%d]: %s"),i,*CapsuleOverlappedActors[i]->GetName());
+				UE_LOG(LogTemp, Log, TEXT("CheckOverlappingActors(): Capsule[%d]: %s"),i,*CapsuleOverlappedActors[i]->GetName());
 				if (RYUClimbingMode == ERYUClimbingMode::LETGOLEDGE)
 				{
-					//o
 					GetOverlappingComponents(CapsuleOverlappedComponents);
 					for (int i = CapsuleOverlappedComponents.Num(); i > 0; i--)
 					{
@@ -305,6 +304,8 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 						
 						if (CapsuleOverlappedComponents.Num() == 1)
 						{
+							//@ToDo: Check why Char not enters this branch sometimes after LetGoLedgeFinished is Fired (see pop Level1)
+							UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents"));
 							if (CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbDownTagName)
 							{
 								UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): CanClimbDown TAG is Overlap In"));
