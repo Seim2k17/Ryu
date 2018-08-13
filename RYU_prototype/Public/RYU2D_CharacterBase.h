@@ -62,6 +62,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);
+	
+	UFUNCTION(BlueprintCallable)
+	UBoxComponent* GetLowerOverlappedClimbingComponent(FName LowerTrigger);
 
 	UFUNCTION()
 	void OnHandleCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
@@ -89,7 +92,7 @@ protected:
 
 	void CheckOverlappingComponents();
 
-	void SetClimbingPositions();
+	void SetClimbingPositions(UBoxComponent* ClimbTrigger);
 
 /************************************************************************/
 /* MEMBER                                                               */

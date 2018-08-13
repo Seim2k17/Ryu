@@ -10,6 +10,7 @@
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
 #include "Components/BoxComponent.h"
+#include "Math/Vector.h"
 
 
 
@@ -148,6 +149,40 @@ UBoxComponent* ARYU2D_CharacterBase::GetOverlappedClimbingComponent(FName UpOrDo
 }
 
 
+UBoxComponent* ARYU2D_CharacterBase::GetLowerOverlappedClimbingComponent(FName LowerTrigger)
+{
+	UE_LOG(LogTemp, Log, TEXT("GetLowerOverlappedClimbingComponent(): %s"), *LowerTrigger.ToString());
+	UBoxComponent* LowerBox = Cast<UBoxComponent>(CapsuleOverlappedComponents[0]);
+
+	if (CapsuleOverlappedComponents.Num() == 2)
+	{
+		FVector Posi1 = CapsuleOverlappedComponents[0]->GetOwner()->GetActorLocation();
+		FVector Posi2 = CapsuleOverlappedComponents[1]->GetOwner()->GetActorLocation();
+		//we dirty assume that we only stay inside 2 Triggers maximu
+		if (Posi1.Z < Posi2.Z)
+		{
+			if (Cast<UBoxComponent>(CapsuleOverlappedComponents[0]))
+			{
+				LowerBox = Cast<UBoxComponent>(CapsuleOverlappedComponents[0]);
+				UE_LOG(LogTemp, Log, TEXT("GetLowerOverlappedClimbingComponent(): lower Component is %s"), *CapsuleOverlappedActors[0]->GetName());
+			}
+			
+		}
+		else
+		{
+
+			if (Cast<UBoxComponent>(CapsuleOverlappedComponents[1]))
+			{
+				LowerBox = Cast<UBoxComponent>(CapsuleOverlappedComponents[1]);
+				UE_LOG(LogTemp, Log, TEXT("GetLowerOverlappedClimbingComponent(): lower Component is %s"), *CapsuleOverlappedActors[1]->GetName());
+			}
+		}
+	}
+	
+	
+	return LowerBox;
+}
+
 void ARYU2D_CharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	if (PlayerMovement != EPlayerMovement::CLIMBING)
@@ -269,8 +304,17 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 {
 	///changed some stuff to checkoverlapped actors !!!!
 	UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): %d"), CapsuleOverlappedComponents.Num());
+	if (CapsuleOverlappedComponents.Num() >= 1)
+	{
+		for (int k = 0; k < CapsuleOverlappedComponents.Num(); k++)
+		{
+			UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): Component is %s, Owner: %s"), *CapsuleOverlappedComponents[k]->GetName(), *CapsuleOverlappedComponents[k]->GetOwner()->GetName());
+		}
+	}
+	
+	
+	
 	int j = 0;
-
 	for (j; j < CapsuleOverlappedActors.Num(); j++)
 	{
 		UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): Actor is %s"), *CapsuleOverlappedActors[j]->GetName());
@@ -295,12 +339,15 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 					if (RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN)
 					{
 						//we assume that we only overlap ONE Component at a time from one Climbing Actor
-						/**
+						
 						if (CapsuleOverlappedComponents.Num() == 0)
 						{
 							CapsuleOverlappedActors[0]->GetOverlappingComponents(CapsuleOverlappedComponents);
+							//need to delete the comps which are not boxcomponents
+
+							UE_LOG(LogTemp, Log, TEXT("Capsule.Num() war 0"));
 						}
-						*/
+						
 						
 						if (CapsuleOverlappedComponents.Num() == 1)
 						{
@@ -344,10 +391,10 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 }
 
 
-void ARYU2D_CharacterBase::SetClimbingPositions()
+void ARYU2D_CharacterBase::SetClimbingPositions(UBoxComponent* ClimbTrigger)
 {
 
-	ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(CapsuleOverlappedComponents[0]->GetOwner());
+	ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(ClimbTrigger->GetOwner());
 
 	if (ARY)
 	{
