@@ -397,6 +397,7 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 			}
 			PlayerMovement = EPlayerMovement::CLIMBING;
 			//sets the Movement of the player and approp. Specs
+			SetClimbingPositions(ClimbTriggerBox);
 			FVector PosChar = FVector(ClimbStandDownPosition.X, ClimbStandDownPosition.Y, ClimbStandDownPosition.Z + 50);
 			SetActorLocation(PosChar);
 			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::JUMPTOLEDGE));
@@ -441,7 +442,7 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 
 			RYUClimbingMode = ERYUClimbingMode::CLIMBDOWNLEDGE;
 			PlayerMovement = EPlayerMovement::CLIMBING;
-			SetClimbingPositions();
+			SetClimbingPositions(ClimbTriggerBox);
 			FVector PosChar = FVector(ClimbStandDownPosition.X, ClimbStandDownPosition.Y, ClimbStandDownPosition.Z + 50);
 			SetActorLocation(PosChar);
 						
@@ -449,7 +450,27 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 			break;
 		}
 		case ERYUClimbingMode::CANCLIMBUPANDDOWN:
+		{
+			//Get triggerBox wich is lower 
+			UBoxComponent* ClimbTriggerBox = GetLowerOverlappedClimbingComponent(CanClimbDownTagName);
+			if (PlayerMovement != EPlayerMovement::CLIMBING)
+			{
+				if (CheckFlipOverlappedActor(ClimbTriggerBox))
+				{
+					FlipCharacter();
+				}
+			}
+
+			RYUClimbingMode = ERYUClimbingMode::CLIMBDOWNLEDGE;
+			PlayerMovement = EPlayerMovement::CLIMBING;
+			SetClimbingPositions(ClimbTriggerBox);
+			FVector PosChar = FVector(ClimbStandDownPosition.X, ClimbStandDownPosition.Y, ClimbStandDownPosition.Z + 50);
+			SetActorLocation(PosChar);
+
+			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBDOWNLEDGE));
 			break;
+		}
+			
 		
 		default:
 			break;
