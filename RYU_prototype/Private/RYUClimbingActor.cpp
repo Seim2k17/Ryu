@@ -24,7 +24,7 @@ ARYUClimbingActor::ARYUClimbingActor()
 
 	IsRightUpTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("IsRightUpTrigger"));
 	IsRightUpTrigger->SetupAttachment(Root);
-
+	
 	IsRightDownTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("IsRightDownTrigger"));
 	IsRightDownTrigger->SetupAttachment(Root);
 

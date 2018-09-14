@@ -302,7 +302,9 @@ void ARYU2D_CharacterBase::CheckOverlappingActors()
 
 void ARYU2D_CharacterBase::CheckOverlappingComponents()
 {
-	///changed some stuff to checkoverlapped actors !!!!
+	//I think we rewrite this part ! -> think first then code
+	//@ToDo: here is something wrong: at start it adds something like RenderComponent / CollisionCylinder from other Owner than ClimbingActors (like POP_BG_Lv1_2 )
+	//changed some stuff to checkoverlapped actors !!!!
 	UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): %d"), CapsuleOverlappedComponents.Num());
 	if (CapsuleOverlappedComponents.Num() >= 1)
 	{
@@ -351,7 +353,7 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 						
 						if (CapsuleOverlappedComponents.Num() == 1)
 						{
-							//@ToDo: Check why Char not enters this branch sometimes after LetGoLedgeFinished is Fired (see pop Level1)
+							//@ToDo: CRASH: Check why Char not enters this branch sometimes after LetGoLedgeFinished is Fired (see pop Level1)
 							UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents"));
 							if (CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbDownTagName)
 							{

@@ -758,7 +758,7 @@ void ARYU2D_MainCharacterZD::ResetClimbingState()
 	SphereTracer->SetEnableGravity(true);
 	GetCapsuleComponent()->SetEnableGravity(true);
 	MovementComp->SetMovementMode(MOVE_Walking);
-	//CheckOverlappingActors();
+	CheckOverlappingActors();
 }
 
 
