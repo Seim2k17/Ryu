@@ -7,6 +7,7 @@
 #include "RYU2DENUM_Movement.h"
 #include "RYU2DENUM_ClimbingMode.h"
 #include "RYUENUM_LedgeSideEntered.h"
+#include "RYUClimbingActor.h"
 #include "Character/RYU2DENUM_AnimationState.h"
 #include "RYU2D_CharacterBase.generated.h"
 
@@ -151,6 +152,9 @@ protected:
 	TArray<UPrimitiveComponent*> CapsuleOverlappedComponents;
 
 	TArray<AActor*> CapsuleOverlappedActors;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Climbing")
+	TSubclassOf<ARYUClimbingActor> ClimbableActorClass;
 
 	AActor* SphereOverlappedActor;
 	UPrimitiveComponent* SphereOverlappedComponent;

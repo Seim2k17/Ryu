@@ -25,6 +25,9 @@ public:
 	// Sets default values for this actor's properties
 	ARYUHazardBaseActor();
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -58,13 +61,12 @@ protected:
 
 	/** Stop the PainCausingSound*/
 	void StopSoundEffect();
-
-	UPROPERTY()
-	UAudioComponent*  SFXReference;
 	
+
+	/** MEMBERS */
+
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+
 
 	/** Whether volume currently causes damage. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pain Causing")
@@ -110,6 +112,9 @@ protected:
 
 	/** Handle for efficient management of OnTimerTick timer */
 	FTimerHandle TimerHandle_PainTimer;
+
+	UPROPERTY()
+	UAudioComponent*  SFXReference;
 
 	
 	
