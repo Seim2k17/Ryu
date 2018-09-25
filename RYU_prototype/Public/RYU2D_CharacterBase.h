@@ -7,6 +7,7 @@
 #include "RYU2DENUM_Movement.h"
 #include "RYU2DENUM_ClimbingMode.h"
 #include "RYUENUM_LedgeSideEntered.h"
+#include "RYUENUM_LedgePosition.h"
 #include "RYUClimbingActor.h"
 #include "Character/RYU2DENUM_AnimationState.h"
 #include "RYU2D_CharacterBase.generated.h"
@@ -80,6 +81,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void FlipCharacter();
 
+	ERYULedgeSideEntered ARYU2D_CharacterBase::GetLedgeSide();
+
+	ERYULedgePosition ARYU2D_CharacterBase::GetLedgePosition()
+
 
 protected:
 
@@ -140,7 +145,7 @@ protected:
 	FName CanClimbDownTagName;
 	FName CurrentClimbTagName;
 
-	//** Tags for Platforms
+	//** Position Tags for Ledges
 	FName LeftLedgePosiTagName;
 	FName RightLedgePosiTagName;
 	FName CurrentLedgePosiTagName;

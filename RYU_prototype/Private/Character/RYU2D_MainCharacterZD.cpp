@@ -645,20 +645,6 @@ void ARYU2D_MainCharacterZD::SetCurrentTimelineParamsVector(UCurveVector* Vector
 	}
 }
 
-void ARYU2D_MainCharacterZD::CanClimbUp(float Val, FVector StartClimbUpPosition)
-{
-
-}
-
-void ARYU2D_MainCharacterZD::CanClimbDown(float Val)
-{
-
-}
-
-void ARYU2D_MainCharacterZD::CanClimbUpAndDown(float Val, FVector StartClimbPosition)
-{
-
-}
 
 void ARYU2D_MainCharacterZD::HangOnLedgeAndClimb(float Val)
 {

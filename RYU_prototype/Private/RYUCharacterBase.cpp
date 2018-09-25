@@ -502,7 +502,7 @@ void ARYUCharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* Overlap
 		
 		UE_LOG(LogTemp, Log, TEXT("CapslOvlpArray FUCK with: %d Actors"), CapsuleOverlappedComponents.Num());
 		
-		//easy check but u need to bee careful !!!
+		//easy check but u need to be careful !!!
 		if (CapsuleOverlappedComponents.Num() > 1)
 		{
 			RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;

@@ -6,7 +6,6 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/RYU2D_MovementComponent.h"
-#include "RYUENUM_LedgeSideEntered.h"
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
 #include "Components/BoxComponent.h"
@@ -212,8 +211,6 @@ void ARYU2D_CharacterBase::CheckOverlappingActors()
 		PlayerMovement = EPlayerMovement::STAND;
 		RYUClimbingMode = ERYUClimbingMode::NONE;
 	}
-	
-	
 }
 
 
@@ -222,10 +219,52 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 	//I think we rewrite this part ! -> think first then code
 	//@ToDo:
 
-	for (int i = 0; i < CapsuleOverlappedActors.Num(); i++)
+	//BY DESIGN: max. overlapped climbing Triggers == 2
+	//check if overlapped comp right or left
+
+	//check if overlapped comp up or/and down
+
+	int countTrigger = CapsuleOverlappedActors.Num();
+
+	if ( countTrigger > 2)
 	{
-		UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): %s"), *CapsuleOverlappedActors[i]->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("CheckOverlappingComponents(): To many overlapping ClimbingTrigger (%s). Please realign ClimbingAssets!"), *FString::FromInt(countTrigger));
+		UE_LOG(LogTemp, Warning, TEXT("CheckOverlappingComponents(): Trigger are:"));
+		for (int i = 0; i < countTrigger; i++)
+		{
+			UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): %s"), *CapsuleOverlappedActors[i]->GetName());
+		}
 	}
+	else
+	{
+
+		ERYULedgeSideEntered LedgeSide = GetLedgeSide();
+		ERYULedgePosition LedgePosition = GetLedgePosition();
+
+		if (countTrigger == 1)
+		{
+			//check if overlapped comp right or left
+			//check if overlapped comp up or down
+			
+		}
+
+		if (countTrigger == 2)
+		{
+			//check if overlapped comp up or/and down
+			//check if overlapped comp right or left
+		}
+	}
+
+}
+
+ERYULedgeSideEntered ARYU2D_CharacterBase::GetLedgeSide()
+{
+
+}
+
+
+ERYULedgePosition ARYU2D_CharacterBase::GetLedgePosition()
+{
 
 }
 
@@ -308,6 +347,7 @@ void ARYU2D_CharacterBase::FlipCharacter()
 	//coa vs reset ?
 	CheckOverlappingActors();
 }
+
 
 void ARYU2D_CharacterBase::SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide)
 {

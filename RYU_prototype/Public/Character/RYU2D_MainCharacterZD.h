@@ -138,12 +138,7 @@ protected:
 	/** END-TIMELINE-SECTION */
 
 	/* Climbing Methods*/
-	UFUNCTION(BlueprintCallable, Category = "Climbing")
-	void CanClimbUp(float Val, FVector StartClimbUpPosition);
-
-	void CanClimbDown(float Val);
-
-	void CanClimbUpAndDown(float Val, FVector StartClimbPosition);
+	
 
 	void HangOnLedgeAndClimb(float Val);
 
