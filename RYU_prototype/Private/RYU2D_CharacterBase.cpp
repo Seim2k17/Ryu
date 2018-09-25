@@ -184,8 +184,7 @@ UBoxComponent* ARYU2D_CharacterBase::GetLowerOverlappedClimbingComponent(FName L
 
 void ARYU2D_CharacterBase::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	
-	UE_LOG(LogTemp, Log, TEXT("OnHandleCapsuleBeginOverlap(): CapslOvlp out from %s"), *OtherComp->GetName());
+	UE_LOG(LogTemp, Log, TEXT("OnHandleCapsuleBeginOverlap(): CapslOvlp in from %s"), *OtherComp->GetName());
 }
 
 
