@@ -9,7 +9,7 @@
 #include "RYUCustomizeMovementComponent.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCanClimbLedgeStartedSignature, ERYULedgePosition, LedgePosition);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCanClimbLedgeStartedSignature, ERYULedgePosition3D, LedgePosition);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class RYU_PROTOTYPE_API URYUCustomizeMovementComponent : public UCharacterMovementComponent

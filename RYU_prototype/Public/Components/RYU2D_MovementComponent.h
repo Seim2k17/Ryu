@@ -12,7 +12,7 @@
  * 
  */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCanClimb2DLedgeStartedSignature, ERYULedgePosition, LedgePosition);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCanClimb2DLedgeStartedSignature, ERYULedgePosition2D, LedgePosition);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent) )
 class RYU_PROTOTYPE_API URYU2D_MovementComponent : public UCharacterMovementComponent

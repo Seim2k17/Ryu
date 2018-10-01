@@ -242,7 +242,7 @@ void ARYUCharacterIchi::DrawDebugInfosOnScreen()
 void ARYUCharacterIchi::DebugSomething()
 {
 	//CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUMovementMode::CLIMBLEDGE));
-	ERYULedgePosition LedgePosi = ERYULedgePosition::Above_150cm;
+	ERYULedgePosition3D LedgePosi = ERYULedgePosition3D::Above_150cm;
 	CustMovementComp->OnCanClimbLedge.Broadcast(LedgePosi);
 }
 
@@ -852,7 +852,7 @@ void ARYUCharacterIchi::CanGrabLedgeAndClimb(float Val)
 	//Stand near ledge & climb Up or over ledge
 	if (Val > 0.8)
 	{
-		ERYULedgePosition LedgePosi;
+		ERYULedgePosition3D LedgePosi;
 		if (!CustMovementComp->IsFalling())
 		{
 			CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBUPLEDGE));
@@ -863,7 +863,7 @@ void ARYUCharacterIchi::CanGrabLedgeAndClimb(float Val)
 			TArray<FName> AcTags;
 
 			//justInitReason
-			LedgePosi = ERYULedgePosition::NONE;
+			LedgePosi = ERYULedgePosition3D::NONE;
 
 			if (SphereOverlappedActor)
 			{
@@ -876,17 +876,17 @@ void ARYUCharacterIchi::CanGrabLedgeAndClimb(float Val)
 
 			if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 0.0f, 110.0f))
 			{
-				LedgePosi = ERYULedgePosition::Above_080cm;
+				LedgePosi = ERYULedgePosition3D::Above_080cm;
 			}
 
 			if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 110.01f, 130.0f))
 			{
-				LedgePosi = ERYULedgePosition::Above_100cm;
+				LedgePosi = ERYULedgePosition3D::Above_100cm;
 			}
 
 			if (FMath::IsWithinInclusive(LedgeTracerHeight.Z, 130.01f, 180.0f))
 			{
-				LedgePosi = ERYULedgePosition::Above_150cm;
+				LedgePosi = ERYULedgePosition3D::Above_150cm;
 			}
 
 			//possibly a workaround for climbing !?
@@ -895,8 +895,8 @@ void ARYUCharacterIchi::CanGrabLedgeAndClimb(float Val)
 			{
 				UE_LOG(LogTemp, Log, TEXT("There´re Tags"));
 				//Override the Ledgeposition set before, when climbing tagged (Ledgetracer is ignored
-				if (AcTags[0] == "climbing") LedgePosi = ERYULedgePosition::Above_450cm;
-				if (AcTags[0] == "hurdle") LedgePosi = ERYULedgePosition::Hurdle_080cm;
+				if (AcTags[0] == "climbing") LedgePosi = ERYULedgePosition3D::Above_450cm;
+				if (AcTags[0] == "hurdle") LedgePosi = ERYULedgePosition3D::Hurdle_080cm;
 
 			}
 			CustMovementComp->OnCanClimbLedge.Broadcast(LedgePosi);
@@ -924,15 +924,15 @@ void ARYUCharacterIchi::CanGrabLedges(float Val)
 				{
 					CustMovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBUPLEDGE));
 
-					ERYULedgePosition LedgePosi;
+					ERYULedgePosition3D LedgePosi;
 
 					/** Add here more cases... */
-					if (OverlapTags[0] == "Above_080") LedgePosi = ERYULedgePosition::Above_080cm;
-					if (OverlapTags[0] == "Above_100") LedgePosi = ERYULedgePosition::Above_100cm;;
-					if (OverlapTags[0] == "Above_150") LedgePosi = ERYULedgePosition::Above_150cm;
-					if (OverlapTags[0] == "Above_200") LedgePosi = ERYULedgePosition::Above_200cm;
-					if (OverlapTags[0] == "climbing") LedgePosi = ERYULedgePosition::Above_450cm;
-					if (OverlapTags[0] == "hurdle") LedgePosi = ERYULedgePosition::Hurdle_080cm;
+					if (OverlapTags[0] == "Above_080") LedgePosi = ERYULedgePosition3D::Above_080cm;
+					if (OverlapTags[0] == "Above_100") LedgePosi = ERYULedgePosition3D::Above_100cm;;
+					if (OverlapTags[0] == "Above_150") LedgePosi = ERYULedgePosition3D::Above_150cm;
+					if (OverlapTags[0] == "Above_200") LedgePosi = ERYULedgePosition3D::Above_200cm;
+					if (OverlapTags[0] == "climbing") LedgePosi = ERYULedgePosition3D::Above_450cm;
+					if (OverlapTags[0] == "hurdle") LedgePosi = ERYULedgePosition3D::Hurdle_080cm;
 
 
 					//** and of course add reactions (animations) in the BP_Character_ichi

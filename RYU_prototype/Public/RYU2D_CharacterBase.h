@@ -81,10 +81,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void FlipCharacter();
 
-	ERYULedgeSideEntered ARYU2D_CharacterBase::GetLedgeSide();
+	ERYULedgeSideEntered ARYU2D_CharacterBase::GetLedgeSide(int posi);
 
-	ERYULedgePosition ARYU2D_CharacterBase::GetLedgePosition()
+	ERYULedgePosition2D ARYU2D_CharacterBase::GetLedgePosition();
 
+	
+	void RemoveOtherThanBoxItemsFromArray(TArray<UPrimitiveComponent*>& ItemArray) const;
 
 protected:
 
@@ -153,7 +155,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Movement")
 	bool bJumpJustStarted;
 
-	//** Overlapped CapsuleStuff*/
+	//** Overlapped CapsuleStuff, by design we only want to overlap UBoxComp ?*/
 	TArray<UPrimitiveComponent*> CapsuleOverlappedComponents;
 
 	TArray<AActor*> CapsuleOverlappedActors;

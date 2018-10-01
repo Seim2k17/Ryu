@@ -2,7 +2,7 @@
 
 UENUM(BlueprintType)
 
-enum class ERYULedgePosition : uint8
+enum class ERYULedgePosition2D : uint8
 {
 	NONE UMETA(DisplayName = "none"),
 	PosiUp UMETA(DisplayName = "UpLedge"),

@@ -2,7 +2,7 @@
 
 UENUM(BlueprintType)
 
-enum class ERYULedgePosition : uint8
+enum class ERYULedgePosition3D : uint8
 {
 	NONE UMETA(DisplayName = "none"),
 	Front_080cm UMETA(DisplayName = "FrontWall(0.8m)"),

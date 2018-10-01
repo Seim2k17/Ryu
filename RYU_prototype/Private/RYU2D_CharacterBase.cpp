@@ -41,6 +41,8 @@ ARYU2D_CharacterBase::ARYU2D_CharacterBase(const class FObjectInitializer& Objec
 	
 	ESideEntered = ERYULedgeSideEntered::NONE;
 
+
+	//Constant
 	CanClimbUpTagName = "CanClimbUp";
 	CanClimbDownTagName = "CanClimbDown";
 
@@ -224,6 +226,7 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 	//check if overlapped comp up or/and down
 
 	int countTrigger = CapsuleOverlappedActors.Num();
+	UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): %s"), *FString::FromInt(countTrigger));
 
 	if ( countTrigger > 2)
 	{
@@ -236,35 +239,125 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 	}
 	else
 	{
+		PlayerMovement = EPlayerMovement::CANGRABLEDGE;
 
-		ERYULedgeSideEntered LedgeSide = GetLedgeSide();
-		ERYULedgePosition LedgePosition = GetLedgePosition();
-
+				
 		if (countTrigger == 1)
 		{
 			//check if overlapped comp right or left
 			//check if overlapped comp up or down
 			
+			//we know that the TriggerComponents we search for, are UBoxComponents and we do not need any other
+			//ARRRRRHHHH GetOverlappingComponents not GetComponents !
+
+			GetOverlappingComponents(CapsuleOverlappedComponents);
+			RemoveOtherThanBoxItemsFromArray(CapsuleOverlappedComponents);
+			//CapsuleOverlappedComponents.RemoveAll();
+			//CapsuleOverlappedActors[0]->GetOverlappingComponents(CapsuleOverlappedComponents);
+			
+			
+			//ERYULedgePosition2D LedgePosition = ERYULedgePosition2D::NONE;
+			//ERYULedgeSideEntered LedgeSide = ERYULedgeSideEntered::NONE;
+
+			ERYULedgePosition2D LedgePosition = GetLedgePosition();
+			ERYULedgeSideEntered LedgeSide = GetLedgeSide(0);
+
+
+			/* fast check what kind of trigger*/
+			for (int j = 0; j < CapsuleOverlappedComponents.Num(); j++)
+			{
+				UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents() are: %s"), *CapsuleOverlappedComponents[j]->GetName());
+			}
+			//UBoxComponent* OverlapClimbComp = GetOverlappedClimbingComponent();
+
+			UE_LOG(LogTemp,Log,TEXT("CheckOverlappingComponents(): Yes it´s %s with Ledge at "),*CapsuleOverlappedActors[0]->GetName());
+
+			if (LedgePosition == ERYULedgePosition2D::PosiDown)
+			{
+				RYUClimbingMode = ERYUClimbingMode::CANCLIMBDOWNLEDGE;
+			}
+
+			if (LedgePosition == ERYULedgePosition2D::PosiUp)
+			{
+				RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPLEDGE;
+			}
+			
+			
 		}
 
 		if (countTrigger == 2)
 		{
-			//check if overlapped comp up or/and down
+			//Check at Input: we know we can Move Up OR Down
+			//check if overlapped comp up or/and down 
 			//check if overlapped comp right or left
+
+			RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
+			
 		}
 	}
 
 }
 
-ERYULedgeSideEntered ARYU2D_CharacterBase::GetLedgeSide()
+ERYULedgeSideEntered ARYU2D_CharacterBase::GetLedgeSide(int posi)
 {
+	//needs to be checked when getting input, the we need to decide if we flip the char or not
+	ERYULedgeSideEntered LedgeSideEntered;
+	//By design we Tag the Side in Array: ComponentTags[1]
+	if (CapsuleOverlappedComponents[posi]->ComponentTags[1].IsEqual(LeftLedgePosiTagName))
+	{
+		LedgeSideEntered = ERYULedgeSideEntered::LeftSide;
+	}
+	else if (CapsuleOverlappedComponents[posi]->ComponentTags[1].IsEqual(RightLedgePosiTagName))
+		{
+			LedgeSideEntered = ERYULedgeSideEntered::RightSide;
+		}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("GetLedgeSide(): Please check if ComponentTagName[1] of Trigger %s from %s is: 'Right' or 'Left'.")
+			, *CapsuleOverlappedComponents[posi]->GetName(), *CapsuleOverlappedComponents[posi]->GetOwner()->GetName());
+		LedgeSideEntered = ERYULedgeSideEntered::NONE;
 
+	}
+	return LedgeSideEntered ;
 }
 
 
-ERYULedgePosition ARYU2D_CharacterBase::GetLedgePosition()
+/*
+param posi - Position in the OverlappedComponentArray to receive the correct TriggerBox
+*/
+ERYULedgePosition2D ARYU2D_CharacterBase::GetLedgePosition()
 {
-
+	
+	ERYULedgePosition2D LedgePosi;
+	
+	// if character can Climb Up AND Down the Ledges are at Top and Bottom from the char
+	if (RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPANDDOWN)
+	{
+		LedgePosi = ERYULedgePosition2D::PosiUpDown;
+		UE_LOG(LogTemp, Log, TEXT("GetLedgePosition(): PositionUpAndDown"));
+	}
+	else
+	{
+		//By design we Tag the Side in Array: ComponentTags[0]
+		// if there is only ony ledge to climb we need to find the correct trigger ! (CapsuleOverlappedComponents[posi]) 
+		if (CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbUpTagName)
+		{
+			LedgePosi = ERYULedgePosition2D::PosiUp;
+			UE_LOG(LogTemp, Log, TEXT("GetLedgePosition(): PositionUp"));
+		}
+		else if (CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbDownTagName)
+		{
+			LedgePosi = ERYULedgePosition2D::PosiDown;
+			UE_LOG(LogTemp, Log, TEXT("GetLedgePosition(): PositionDown"));
+		}
+		else
+		{
+			UE_LOG(LogTemp, Log, TEXT("GetLedgeSide(): Please check if ComponentTagName[0] of Trigger %s from %s is: 'CanClimbUp' or 'CanClimbDown'.")
+				, *CapsuleOverlappedComponents[0]->GetName(), *CapsuleOverlappedComponents[0]->GetOwner()->GetName());
+			LedgePosi = ERYULedgePosition2D::NONE;
+		}
+	}
+	return LedgePosi;
 }
 
 
@@ -347,6 +440,17 @@ void ARYU2D_CharacterBase::FlipCharacter()
 	CheckOverlappingActors();
 }
 
+
+void ARYU2D_CharacterBase::RemoveOtherThanBoxItemsFromArray(TArray<UPrimitiveComponent*>& ItemArray) const
+{
+	for (int i = 0; i < ItemArray.Num(); i++)
+	{
+		if (!ItemArray[i]->IsA(UBoxComponent::StaticClass()))
+		{
+			ItemArray.RemoveAt(i);
+		}
+	}
+}
 
 void ARYU2D_CharacterBase::SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide)
 {
