@@ -116,7 +116,7 @@ UBoxComponent* ARYU2D_CharacterBase::GetOverlappedClimbingComponent(FName UpOrDo
 
 	UE_LOG(LogTemp, Log, TEXT("GetOverlappedClimbComp(): %s , %s"),*UpOrDown.ToString(),*LeftOrRight.ToString());
 
-	UBoxComponent* OverlappedClimbingComp = nullptr;
+//	UBoxComponent* OverlappedClimbingComp = nullptr;
 	FName ClimbCheck;
 
 	if (RYUClimbingMode == ERYUClimbingMode::CANCLIMBDOWNLEDGE)
@@ -130,24 +130,34 @@ UBoxComponent* ARYU2D_CharacterBase::GetOverlappedClimbingComponent(FName UpOrDo
 
 	UE_LOG(LogTemp, Log, TEXT("GetOverlappedClimbComp(): ClimbCheck: %s"), *ClimbCheck.ToString());
 
-	for (int i = 0; i < CapsuleOverlappedComponents.Num(); i++)
-	{
-		UBoxComponent* OvCC = Cast<UBoxComponent>(CapsuleOverlappedComponents[i]);
-		if (OvCC)
-		{
-			//it´s a Boxtrigger for sure
-			//we assume and due gamedesign we pretend that we ONLY can overlapp ONE component from ONE actor but TWO actors at a time
-			if ((OvCC->ComponentTags[0] == UpOrDown) && (ClimbCheck == UpOrDown) &&
-				(OvCC->ComponentTags[1] == LeftOrRight))
-			{
-				OverlappedClimbingComp = OvCC;
-				break;
-			}
+// 	for (int i = 0; i < CapsuleOverlappedComponents.Num(); i++)
+// 	{
+// 		UBoxComponent* OvCC = Cast<UBoxComponent>(CapsuleOverlappedComponents[i]);
+// 		if (OvCC)
+// 		{
+// 			//it´s a Boxtrigger for sure
+// 			//we assume and due gamedesign we pretend that we ONLY can overlapp ONE component from ONE actor but TWO actors at a time
+// 			if ((OvCC->ComponentTags[0] == UpOrDown) && (ClimbCheck == UpOrDown) &&
+// 				(OvCC->ComponentTags[1] == LeftOrRight))
+// 			{
+// 				OverlappedClimbingComp = OvCC;
+// 				break;
+// 			}
+// 
+// 		}
+// 	}
+// Lambda / Algorithmencheck unten ersetzt obige loop , machtgenau das gleiche ;) ; LERN DIE ALGORITHMEN ALDER SONST HANDKANTE ! (orig. MaxZitat XD )
 
-		}
-	}
+	auto** Foo = CapsuleOverlappedComponents.FindByPredicate([&UpOrDown, &ClimbCheck, &LeftOrRight](auto* x) {
+		auto* OvCC = Cast<UBoxComponent>(x);
+		return OvCC && (OvCC->ComponentTags[0] == UpOrDown)
+			&& (ClimbCheck == UpOrDown) // gtfo
+			&& (OvCC->ComponentTags[1] == LeftOrRight);
+	});
 
-	return OverlappedClimbingComp;
+	return Foo ? Cast<UBoxComponent>(*Foo) : nullptr;
+
+//	return OverlappedClimbingComp;
 }
 
 
@@ -248,10 +258,11 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 		if (countTrigger == 1)
 		{
 			//save all Overlapping Components in a arry, before that we make sure that the array is empty
-			CapsuleOverlappedComponents.Empty();
-			GetOverlappingComponents(CapsuleOverlappedComponents);
-			//we know that the TriggerComponents we search for, are UBoxComponents and we do not need any other
-			RemoveOtherThanBoxItemsFromArray(CapsuleOverlappedComponents);
+			//CapsuleOverlappedComponents.Empty(); wird in 
+			
+			
+						//we know that the TriggerComponents we search for, are UBoxComponents and we do not need any other
+			GetOverlappingBoxComponents();
 			
 			//CapsuleOverlappedActors[0]->GetOverlappingComponents(CapsuleOverlappedComponents);
 			
@@ -456,19 +467,23 @@ void ARYU2D_CharacterBase::FlipCharacter()
 }
 
 
-void ARYU2D_CharacterBase::RemoveOtherThanBoxItemsFromArray(TArray<UPrimitiveComponent*>& ItemArray) const
+void ARYU2D_CharacterBase::GetOverlappingBoxComponents()
 {
-
+	GetOverlappingComponents(CapsuleOverlappedComponents);
 	//please use a Lambda dude ...
-	//CapsuleOverlappedComponents.RemoveAll(); ....
-	//you can use this, but iterate from end to start not from start to end
-	for (int i = ItemArray.Num()-1; i >= 0 ; i--)
-	{
-		if (!ItemArray[i]->IsA(UBoxComponent::StaticClass()))
-		{
-			ItemArray.RemoveAt(i);
-		}
+	CapsuleOverlappedComponents.RemoveAll([](auto* elem){
+		return !elem->IsA<UBoxComponent>();
 	}
+	);
+
+	//you can use this, but iterate from end to start not from start to end
+	// 	for (int i = ItemArray.Num()-1; i >= 0 ; i--)
+	// 	{
+	// 		if (!ItemArray[i]->IsA(UBoxComponent::StaticClass()))
+	// 		{
+	// 			ItemArray.RemoveAt(i);
+	// 		}
+	// 	}
 }
 
 void ARYU2D_CharacterBase::SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide)

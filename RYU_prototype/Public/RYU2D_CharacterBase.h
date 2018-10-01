@@ -86,7 +86,7 @@ public:
 	ERYULedgePosition2D ARYU2D_CharacterBase::GetLedgePosition();
 
 	
-	void RemoveOtherThanBoxItemsFromArray(TArray<UPrimitiveComponent*>& ItemArray) const;
+	void GetOverlappingBoxComponents() ;
 
 protected:
 
