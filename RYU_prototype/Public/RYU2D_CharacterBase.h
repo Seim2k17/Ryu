@@ -145,6 +145,7 @@ protected:
 	//* Climbing Tags for Objects
 	FName CanClimbUpTagName;
 	FName CanClimbDownTagName;
+	FName CanClimbUpDownName;
 	FName CurrentClimbTagName;
 
 	//** Position Tags for Ledges

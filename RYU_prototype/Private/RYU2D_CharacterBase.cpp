@@ -45,6 +45,7 @@ ARYU2D_CharacterBase::ARYU2D_CharacterBase(const class FObjectInitializer& Objec
 	//Constant
 	CanClimbUpTagName = "CanClimbUp";
 	CanClimbDownTagName = "CanClimbDown";
+	CanClimbUpDownName = "CanClimbUpAndDown";
 
 	LeftLedgePosiTagName = "Left";
 	RightLedgePosiTagName = "Right";
@@ -211,6 +212,8 @@ void ARYU2D_CharacterBase::CheckOverlappingActors()
 	{
 		PlayerMovement = EPlayerMovement::STAND;
 		RYUClimbingMode = ERYUClimbingMode::NONE;
+		CurrentLedgePosiTagName = "";
+		CurrentClimbTagName = "";
 	}
 }
 
@@ -244,15 +247,12 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 				
 		if (countTrigger == 1)
 		{
-			//check if overlapped comp right or left
-			//check if overlapped comp up or down
-			
-			//we know that the TriggerComponents we search for, are UBoxComponents and we do not need any other
-			//ARRRRRHHHH GetOverlappingComponents not GetComponents !
-
+			//save all Overlapping Components in a arry, before that we make sure that the array is empty
+			CapsuleOverlappedComponents.Empty();
 			GetOverlappingComponents(CapsuleOverlappedComponents);
+			//we know that the TriggerComponents we search for, are UBoxComponents and we do not need any other
 			RemoveOtherThanBoxItemsFromArray(CapsuleOverlappedComponents);
-			//CapsuleOverlappedComponents.RemoveAll();
+			
 			//CapsuleOverlappedActors[0]->GetOverlappingComponents(CapsuleOverlappedComponents);
 			
 			
@@ -262,6 +262,7 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 			ERYULedgePosition2D LedgePosition = GetLedgePosition();
 			ERYULedgeSideEntered LedgeSide = GetLedgeSide(0);
 
+			
 
 			/* fast check what kind of trigger*/
 			for (int j = 0; j < CapsuleOverlappedComponents.Num(); j++)
@@ -270,7 +271,7 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 			}
 			//UBoxComponent* OverlapClimbComp = GetOverlappedClimbingComponent();
 
-			UE_LOG(LogTemp,Log,TEXT("CheckOverlappingComponents(): Yes it´s %s with Ledge at "),*CapsuleOverlappedActors[0]->GetName());
+			UE_LOG(LogTemp,Log,TEXT("CheckOverlappingComponents(): Yes it´s %s with the Trigger at ... "),*CapsuleOverlappedActors[0]->GetName());
 
 			if (LedgePosition == ERYULedgePosition2D::PosiDown)
 			{
@@ -281,7 +282,16 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 			{
 				RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPLEDGE;
 			}
+
+			if (LedgeSide == ERYULedgeSideEntered::LeftSide)
+			{
+				UE_LOG(LogTemp,Log, TEXT("... the left Side of the Actor.."));
+			}
 			
+			if (LedgeSide == ERYULedgeSideEntered::RightSide)
+			{
+				UE_LOG(LogTemp,Log, TEXT("... the right Side of the Actor."));
+			}
 			
 		}
 
@@ -306,10 +316,12 @@ ERYULedgeSideEntered ARYU2D_CharacterBase::GetLedgeSide(int posi)
 	if (CapsuleOverlappedComponents[posi]->ComponentTags[1].IsEqual(LeftLedgePosiTagName))
 	{
 		LedgeSideEntered = ERYULedgeSideEntered::LeftSide;
+		CurrentLedgePosiTagName = LeftLedgePosiTagName;
 	}
 	else if (CapsuleOverlappedComponents[posi]->ComponentTags[1].IsEqual(RightLedgePosiTagName))
 		{
 			LedgeSideEntered = ERYULedgeSideEntered::RightSide;
+			CurrentLedgePosiTagName = RightLedgePosiTagName;
 		}
 	else
 	{
@@ -334,6 +346,7 @@ ERYULedgePosition2D ARYU2D_CharacterBase::GetLedgePosition()
 	if (RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPANDDOWN)
 	{
 		LedgePosi = ERYULedgePosition2D::PosiUpDown;
+		CurrentClimbTagName = CanClimbUpDownName;
 		UE_LOG(LogTemp, Log, TEXT("GetLedgePosition(): PositionUpAndDown"));
 	}
 	else
@@ -343,11 +356,13 @@ ERYULedgePosition2D ARYU2D_CharacterBase::GetLedgePosition()
 		if (CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbUpTagName)
 		{
 			LedgePosi = ERYULedgePosition2D::PosiUp;
+			CurrentClimbTagName = CanClimbUpTagName;
 			UE_LOG(LogTemp, Log, TEXT("GetLedgePosition(): PositionUp"));
 		}
 		else if (CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbDownTagName)
 		{
 			LedgePosi = ERYULedgePosition2D::PosiDown;
+			CurrentClimbTagName = CanClimbDownTagName;
 			UE_LOG(LogTemp, Log, TEXT("GetLedgePosition(): PositionDown"));
 		}
 		else
@@ -443,7 +458,11 @@ void ARYU2D_CharacterBase::FlipCharacter()
 
 void ARYU2D_CharacterBase::RemoveOtherThanBoxItemsFromArray(TArray<UPrimitiveComponent*>& ItemArray) const
 {
-	for (int i = 0; i < ItemArray.Num(); i++)
+
+	//please use a Lambda dude ...
+	//CapsuleOverlappedComponents.RemoveAll(); ....
+	//you can use this, but iterate from end to start not from start to end
+	for (int i = ItemArray.Num()-1; i >= 0 ; i--)
 	{
 		if (!ItemArray[i]->IsA(UBoxComponent::StaticClass()))
 		{

@@ -708,7 +708,6 @@ void ARYU2D_MainCharacterZD::TurnFlipBookFinished()
 {
 
 	FlipCharacter();
-
 	
 }
 
