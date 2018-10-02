@@ -82,6 +82,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "ClimbTrigger")
 	bool CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger);
 
+	UFUNCTION(BlueprintCallable)
+	UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);
+
+	UFUNCTION(BlueprintCallable)
+	UBoxComponent* GetLowerOverlappedClimbingComponent(FName LowerTrigger);
 		
 protected:
 

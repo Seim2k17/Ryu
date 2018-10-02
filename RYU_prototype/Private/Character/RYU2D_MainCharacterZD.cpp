@@ -358,6 +358,8 @@ void ARYU2D_MainCharacterZD::UpdateCharacter()
 
 void ARYU2D_MainCharacterZD::CheckMoveUpState()
 {
+	//TODOD !!! and search correct climbingactior when in UpAndDownCLimbstate
+	/*encapsulate stuff in functions */
 	if (MoveUpInput > 0)
 	{
 		//UE_LOG(LogTemp, Log, TEXT("CheckMoveUpState():"));
@@ -366,15 +368,11 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 		case ERYUClimbingMode::NONE:
 			PlayerMovement = EPlayerMovement::JUMPUP;
 			//** Initialize the Start End Endpoints 
-			//MovementComp->SetMovementMode(MOVE_Flying);
-
-			//MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::HANGONLEDGE));
-
+			//Use a Timeline for Positioning the Up-Jumps
 			Curve2DComponent->ClimbUpStartTimelineLocation = GetActorLocation();
 			Curve2DComponent->ClimbUpEndTimelineLocation = FVector(Curve2DComponent->ClimbUpStartTimelineLocation.X, Curve2DComponent->ClimbUpStartTimelineLocation.Y,
 				Curve2DComponent->ClimbUpStartTimelineLocation.Z + Curve2DComponent->ClimbUpOffsetZ);
-
-			
+						
 			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::JUMPTOLEDGE));
 			SetCurrentTimelineParamsFloat(nullptr, Curve2DComponent->JumpUpFloatCurve, false, true);
 			PlayTimeline();
@@ -393,11 +391,10 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 				{
 					FlipCharacter();
 				}
+				
 				PlayerMovement = EPlayerMovement::CLIMBING;
 				//sets the Movement of the player and approp. Specs
 				SetClimbingPositions(ClimbTriggerBox);
-				FVector PosChar = FVector(ClimbStandDownPosition.X, ClimbStandDownPosition.Y, ClimbStandDownPosition.Z + 50);
-				SetActorLocation(PosChar);
 				MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::JUMPTOLEDGE));
 			}
 			else
@@ -408,8 +405,31 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 		}
 			
 		case ERYUClimbingMode::CANCLIMBUPANDDOWN:
-			PlayerMovement = EPlayerMovement::CLIMBING;
+		{
+			UBoxComponent* ClimbTriggerBox = GetOverlappedClimbingComponent(CanClimbUpTagName, CurrentLedgePosiTagName);
+			if (ClimbTriggerBox != nullptr)
+			{
+				//@ToDo: search correct Actor, check if char needs to be flipped
+				if ((PlayerMovement != EPlayerMovement::CLIMBING)
+					&& CheckFlipOverlappedActor(ClimbTriggerBox))
+				{
+					FlipCharacter();
+				}
+
+				PlayerMovement = EPlayerMovement::CLIMBING;
+				//sets the Movement of the player and approp. Specs
+				SetClimbingPositions(ClimbTriggerBox);
+				MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::JUMPTOLEDGE));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Log, TEXT("No ClimbingTrigger found."));
+			}
 			break;
+		}
+
+			//PlayerMovement = EPlayerMovement::CLIMBING;
+			//break;
 		case ERYUClimbingMode::CANENTERLADDER:
 			//@ToDo
 			break;
@@ -444,9 +464,6 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 				RYUClimbingMode = ERYUClimbingMode::CLIMBDOWNLEDGE;
 				PlayerMovement = EPlayerMovement::CLIMBING;
 				SetClimbingPositions(ClimbTriggerBox);
-				FVector PosChar = FVector(ClimbStandDownPosition.X, ClimbStandDownPosition.Y, ClimbStandDownPosition.Z + 50);
-				SetActorLocation(PosChar);
-
 				MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBDOWNLEDGE));
 			}
 			else
@@ -471,9 +488,6 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 				RYUClimbingMode = ERYUClimbingMode::CLIMBDOWNLEDGE;
 				PlayerMovement = EPlayerMovement::CLIMBING;
 				SetClimbingPositions(ClimbTriggerBox);
-				FVector PosChar = FVector(ClimbStandDownPosition.X, ClimbStandDownPosition.Y, ClimbStandDownPosition.Z + 50);
-				SetActorLocation(PosChar);
-
 				MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBDOWNLEDGE));
 			}
 			else
@@ -491,6 +505,111 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 	}
 
 }
+
+UBoxComponent* ARYU2D_MainCharacterZD::GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight)
+{
+
+	UE_LOG(LogTemp, Log, TEXT("GetOverlappedClimbComp(): %s , %s"), *UpOrDown.ToString(), *LeftOrRight.ToString());
+
+	//	UBoxComponent* OverlappedClimbingComp = nullptr;
+	FName ClimbCheck;
+
+	if (RYUClimbingMode == ERYUClimbingMode::CANCLIMBDOWNLEDGE)
+	{
+		ClimbCheck = CanClimbDownTagName;
+	}
+	if (RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPLEDGE)
+	{
+		ClimbCheck = CanClimbUpTagName;
+	}
+	if (RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPANDDOWN)
+	{
+		UE_LOG(LogTemp, Log, TEXT("GetOverlappedClimbComp(): 2 Actors to climb, which one i will take ?"));
+		if (MoveUpInput > 0)
+		{
+			ClimbCheck = CanClimbUpTagName;
+		}
+		if (MoveUpInput < 0)
+		{
+			ClimbCheck = CanClimbDownTagName;
+		}
+			
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("GetOverlappedClimbComp(): ClimbCheck: %s"), *ClimbCheck.ToString());
+
+	// 	for (int i = 0; i < CapsuleOverlappedComponents.Num(); i++)
+	// 	{
+	// 		UBoxComponent* OvCC = Cast<UBoxComponent>(CapsuleOverlappedComponents[i]);
+	// 		if (OvCC)
+	// 		{
+	// 			//it´s a Boxtrigger for sure
+	// 			//we assume and due gamedesign we pretend that we ONLY can overlapp ONE component from ONE actor but TWO actors at a time
+	// 			if ((OvCC->ComponentTags[0] == UpOrDown) && (ClimbCheck == UpOrDown) &&
+	// 				(OvCC->ComponentTags[1] == LeftOrRight))
+	// 			{
+	// 				OverlappedClimbingComp = OvCC;
+	// 				break;
+	// 			}
+	// 
+	// 		}
+	// 	}
+	// Lambda / Algorithmencheck unten ersetzt obige loop , machtgenau das gleiche ;) ; LERN DIE ALGORITHMEN ALDER SONST HANDKANTE ! (orig. MaxZitat XD )
+
+	//Max:
+	auto** Foo = CapsuleOverlappedComponents.FindByPredicate([&UpOrDown, &ClimbCheck, &LeftOrRight](auto* x) {
+		auto* OvCC = Cast<UBoxComponent>(x);
+		return OvCC && (OvCC->ComponentTags[0] == UpOrDown)
+			&& (ClimbCheck == UpOrDown) // gtfo (da immer true sein muss sonst cancel --> make it outer
+			&& (OvCC->ComponentTags[1] == LeftOrRight);
+	});
+
+	return Foo ? Cast<UBoxComponent>(*Foo) : nullptr;
+
+	//	return OverlappedClimbingComp;
+}
+
+UBoxComponent* ARYU2D_MainCharacterZD::GetLowerOverlappedClimbingComponent(FName LowerTrigger)
+{
+	UE_LOG(LogTemp, Log, TEXT("GetLowerOverlappedClimbingComponent(): %s"), *LowerTrigger.ToString());
+	UBoxComponent* LowerBox = Cast<UBoxComponent>(CapsuleOverlappedComponents[0]);
+
+
+	//*first we need to make sure again that there are
+	if (CapsuleOverlappedComponents.Num() == 2)
+	{
+		FVector Posi1 = CapsuleOverlappedComponents[0]->GetOwner()->GetActorLocation();
+		FVector Posi2 = CapsuleOverlappedComponents[1]->GetOwner()->GetActorLocation();
+		//we dirty assume that we only stay inside 2 Triggers maximu
+		if (Posi1.Z < Posi2.Z)
+		{
+			if (Cast<UBoxComponent>(CapsuleOverlappedComponents[0]))
+			{
+				LowerBox = Cast<UBoxComponent>(CapsuleOverlappedComponents[0]);
+				UE_LOG(LogTemp, Log, TEXT("GetLowerOverlappedClimbingComponent(): lower Component is %s"), *CapsuleOverlappedActors[0]->GetName());
+			}
+
+		}
+		else
+		{
+
+			if (Cast<UBoxComponent>(CapsuleOverlappedComponents[1]))
+			{
+				LowerBox = Cast<UBoxComponent>(CapsuleOverlappedComponents[1]);
+				UE_LOG(LogTemp, Log, TEXT("GetLowerOverlappedClimbingComponent(): lower Component is %s"), *CapsuleOverlappedActors[1]->GetName());
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("GetLowerOverlappedClimbingComponent(): there are more than two Components to trigger. Please make fix it to number of exactly two."));
+		OutputCapsuleOverlappedComponents();
+	}
+
+
+	return LowerBox;
+}
+
 
 void ARYU2D_MainCharacterZD::HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
@@ -731,9 +850,8 @@ void ARYU2D_MainCharacterZD::ClimbLedgeFlipBookFinished()
 			break;
 		case ERYUClimbingMode::CLIMBUPLEDGE:
 		{
-			ResetClimbingState();
 			SetActorLocation(ClimbStandUpPosition);
-			//PlayerMovement = EPlayerMovement::STAND;
+			ResetClimbingState();
 			break;
 		}
 		case ERYUClimbingMode::LETGOLEDGE:

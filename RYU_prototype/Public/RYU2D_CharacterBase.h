@@ -62,12 +62,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Climbing")
 	ERYULedgeSideEntered GetLedgeSideEntered();
 
-	UFUNCTION(BlueprintCallable)
-	UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);
-	
-	UFUNCTION(BlueprintCallable)
-	UBoxComponent* GetLowerOverlappedClimbingComponent(FName LowerTrigger);
-
 	UFUNCTION()
 	void OnHandleCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
@@ -101,6 +95,8 @@ protected:
 	void CheckOverlappingComponents();
 
 	void SetClimbingPositions(UBoxComponent* ClimbTrigger);
+
+	void OutputCapsuleOverlappedComponents();
 
 /************************************************************************/
 /* MEMBER                                                               */
