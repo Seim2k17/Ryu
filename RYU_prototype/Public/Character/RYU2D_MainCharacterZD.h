@@ -85,9 +85,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);
 
-	UFUNCTION(BlueprintCallable)
-	UBoxComponent* GetLowerOverlappedClimbingComponent(FName LowerTrigger);
-		
+	
 protected:
 
 	void BeginPlay() override;
@@ -162,6 +160,11 @@ protected:
 	UFUNCTION()
 	void SneakReleased();
 
+	void SetClimbingPostitionsAndMovementMode(EPlayerMovement PlayerMove, UBoxComponent* ClimbingTrigger);
+
+	void SetClimbingPositions(UBoxComponent* ClimbTrigger);
+
+	
 private:
 
 	void InitializeCharacterValues();

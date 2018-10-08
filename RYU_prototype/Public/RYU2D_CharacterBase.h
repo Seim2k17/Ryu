@@ -82,6 +82,9 @@ public:
 	
 	void GetOverlappingBoxComponents() ;
 
+	UFUNCTION(BlueprintCallable, Category = "Climbing")
+	void ToggleEnterLedgeSide();
+
 protected:
 
 	virtual void BeginPlay() override;
@@ -93,8 +96,6 @@ protected:
 	void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
 
 	void CheckOverlappingComponents();
-
-	void SetClimbingPositions(UBoxComponent* ClimbTrigger);
 
 	void OutputCapsuleOverlappedComponents();
 

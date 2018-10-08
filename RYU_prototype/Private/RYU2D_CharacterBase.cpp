@@ -234,6 +234,7 @@ void ARYU2D_CharacterBase::CheckOverlappingComponents()
 			//check if overlapped comp right or left
 
 			RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
+			ERYULedgePosition2D LedgePosition = GetLedgePosition();
 			
 		}
 	}
@@ -308,70 +309,6 @@ ERYULedgePosition2D ARYU2D_CharacterBase::GetLedgePosition()
 }
 
 
-void ARYU2D_CharacterBase::SetClimbingPositions(UBoxComponent* ClimbTrigger)
-{
-
-	ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(ClimbTrigger->GetOwner());
-
-	if (ARY)
-	{
-		//if UpAND DOwn the position needs to be set in Climb !
-		if (CurrentLedgePosiTagName == LeftLedgePosiTagName)
-		{
-			//@Relict?
-			SetLedgeHangPosition(ARY->LeftHangPosition->GetComponentLocation(), LeftLedgePosiTagName);
-			//NewPositioning
-			//if character stands inside a trigger or climbs down a trigger
-			if ((RYUClimbingMode == ERYUClimbingMode::CLIMBDOWNLEDGE)
-				|| (RYUClimbingMode == ERYUClimbingMode::CANCLIMBDOWNLEDGE))
-			{
-				ClimbStandDownPosition = ARY->DownRightStandPosition->GetComponentLocation();
-				ClimbStandUpPosition = ARY->UpLeftStandPosition->GetComponentLocation();
-			}
-			//if character stands inside a trigger or climbs up a trigger
-			if ((RYUClimbingMode == ERYUClimbingMode::CLIMBUPLEDGE)
-				|| (RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPLEDGE))
-			{
-				ClimbStandDownPosition = ARY->DownLeftStandPosition->GetComponentLocation();
-				ClimbStandUpPosition = ARY->UpRightStandPosition->GetComponentLocation();
-			}
-
-		}
-
-		if (CurrentLedgePosiTagName == RightLedgePosiTagName)
-		{
-			//@Relict?
-			SetLedgeHangPosition(ARY->RightHangPosition->GetComponentLocation(), RightLedgePosiTagName);
-			//NewPositioning
-
-			//if character stands inside a trigger or climbs down a trigger
-			if ((RYUClimbingMode == ERYUClimbingMode::CLIMBDOWNLEDGE)
-				|| (RYUClimbingMode == ERYUClimbingMode::CANCLIMBDOWNLEDGE))
-			{
-				ClimbStandDownPosition = ARY->DownLeftStandPosition->GetComponentLocation();
-				ClimbStandUpPosition = ARY->UpRightStandPosition->GetComponentLocation();
-			}
-			//if character stands inside a trigger or climbs up a trigger
-			if ((RYUClimbingMode == ERYUClimbingMode::CLIMBUPLEDGE)
-				|| (RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPLEDGE))
-			{
-				ClimbStandDownPosition = ARY->DownRightStandPosition->GetComponentLocation();
-				ClimbStandUpPosition = ARY->UpLeftStandPosition->GetComponentLocation();
-			}
-		}
-
-
-		UE_LOG(LogTemp, Log, TEXT("SetClimbingPositions(): ClimbStandDownPosi is %s"), *ClimbStandDownPosition.ToString());
-		UE_LOG(LogTemp, Log, TEXT("SetClimbingPositions(): ClimbStandUp is %s"), *ClimbStandUpPosition.ToString());
-		
-		FVector PosChar = FVector(ClimbStandDownPosition.X, ClimbStandDownPosition.Y, ClimbStandDownPosition.Z + 50);
-		SetActorLocation(PosChar);
-
-	}
-	
-}
-
-
 void ARYU2D_CharacterBase::OutputCapsuleOverlappedComponents()
 {
 	for (int i = 0; i < CapsuleOverlappedComponents.Num(); i++)
@@ -425,6 +362,19 @@ void ARYU2D_CharacterBase::GetOverlappingBoxComponents()
 	// 			ItemArray.RemoveAt(i);
 	// 		}
 	// 	}
+}
+
+void ARYU2D_CharacterBase::ToggleEnterLedgeSide()
+{
+	UE_LOG(LogTemp, Log, TEXT("ToggleEnterLedgeSide(): %s"), *CurrentLedgePosiTagName.ToString());
+	if (CurrentLedgePosiTagName == LeftLedgePosiTagName)
+	{
+		CurrentLedgePosiTagName = RightLedgePosiTagName;
+	}
+	else
+	{
+		CurrentLedgePosiTagName = LeftLedgePosiTagName;
+	}
 }
 
 void ARYU2D_CharacterBase::SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide)
