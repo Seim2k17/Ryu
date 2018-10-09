@@ -313,7 +313,9 @@ void ARYU2D_CharacterBase::OutputCapsuleOverlappedComponents()
 {
 	for (int i = 0; i < CapsuleOverlappedComponents.Num(); i++)
 	{
-		UE_LOG(LogTemp, Log, TEXT("OutputCapsuleOverlapArray[%s]: %s"),*FString::FromInt(i),*CapsuleOverlappedComponents[i]->GetName());
+		UPrimitiveComponent* el = CapsuleOverlappedComponents[i];
+		UE_LOG(LogTemp, Log, TEXT("OutputCapsuleOverlapArray[%s]: %s Posi: %s Owner: %s"),*FString::FromInt(i),*el->GetName(), *el->GetOwner()->GetActorLocation().ToString(),*el->GetOwner()->GetName());
+		
 	}
 }
 

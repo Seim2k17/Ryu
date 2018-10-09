@@ -85,6 +85,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);
 
+	UBoxComponent* GetOverlappedClimbingComponent(ERYULedgePosition2D LedgePosi);
+
 	
 protected:
 
