@@ -32,7 +32,7 @@ void ARYU2D_CharacterPrince::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	//@ToDo: take closer look when CustomMovement will be impl.
+	//TODO: take closer look when CustomMovement will be impl.
 	MovementComp = Cast<URYU2D_MovementComponent>(GetCharacterMovement());
 }
 
@@ -168,7 +168,7 @@ void ARYU2D_CharacterPrince::UpdateCharacter()
 
 	if (PlayerMovement == EPlayerMovement::CLIMBING)
 	{
-		/*@ToDo */
+		/*TODO */
 		if (CurrentTimeline != NULL)
 		{
 			CurrentTimeline->TickComponent(fDeltaSeconds, ELevelTick::LEVELTICK_TimeOnly, NULL);
@@ -250,7 +250,7 @@ void ARYU2D_CharacterPrince::UpdateAnimation()
 			return;
 		}
 		return;
-		//@ToDo
+		//TODO
 	case ERYU2DAnimationState::FALLINGOUT:
 		if (!bStartedNoLoopAnimation && true)
 		{
@@ -417,11 +417,11 @@ void ARYU2D_CharacterPrince::MoveRight(float Val)
 
 	switch (PlayerMovement)
 	{
-		//@ToDo: easeIn
+		//TODO: easeIn
 	case EPlayerMovement::BEGINRUN:
 		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Val * 0.5f);
 		break;
-		//@ToDo: easeOut
+		//TODO: easeOut
 	case EPlayerMovement::ENDRUN:
 		float MoveValue = bLookRight ? 0.06f : -0.06f;
 		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveValue);
@@ -443,16 +443,16 @@ void ARYU2D_CharacterPrince::MoveRight(float Val)
 				CharAnimation2DState = ERYU2DAnimationState::BEGINRUN;
 				break;
 			case EPlayerMovement::JUMPUP:
-				//@ToDo
+				//TODO
 				break;
 			case EPlayerMovement::FALLING:
-				//@ToDo
+				//TODO
 				break;
 			case EPlayerMovement::CLIMBING:
-				//@ToDo
+				//TODO
 				break;
 			case EPlayerMovement::SNEAK:
-				//@ToDo
+				//TODO
 				break;
 			default:
 				break;
@@ -496,7 +496,7 @@ void ARYU2D_CharacterPrince::MoveUp(float Value)
 		UE_LOG(LogTemp, Log, TEXT("MoveUp(): Climb up Prince is gone"));
 		switch (PlayerMovement)
 		{
-			//@ToDo: check for all special cases !
+			//TODO: check for all special cases !
 		case EPlayerMovement::STAND:
 			RYUClimbingMode = ERYUClimbingMode::NONE;
 			
@@ -526,7 +526,7 @@ void ARYU2D_CharacterPrince::MoveUp(float Value)
 				break;
 			}
 		}
-		//@ToDo important: LADDER UpANdDown
+		//TODO important: LADDER UpANdDown
 		default:
 			break;
 		}
@@ -577,12 +577,12 @@ void ARYU2D_CharacterPrince::Climb(float Val)
 
 void ARYU2D_CharacterPrince::JumpUpOrDown(float Val, FVector StartJumpPosition)
 {
-	//@ToDo RESORT THINGS !!!
+	//TODO RESORT THINGS !!!
 	if (Val > 0)
 	{
 		PlayerMovement = EPlayerMovement::JUMPUP;
 		CharAnimation2DState = ERYU2DAnimationState::JUMPUP;
-		//@ToDo: only set ClimbingMode when there is a ledge to climb!
+		//TODO: only set ClimbingMode when there is a ledge to climb!
 		
 
 		//** Initialize the Start End Endpoints 
@@ -597,7 +597,7 @@ void ARYU2D_CharacterPrince::JumpUpOrDown(float Val, FVector StartJumpPosition)
 	}
 	else
 	{
-		//@ToDo: Character climbs down OR get into Crouchmode !
+		//TODO: Character climbs down OR get into Crouchmode !
 		PlayerMovement = EPlayerMovement::CLIMBING;
 	}
 }
@@ -619,7 +619,7 @@ void ARYU2D_CharacterPrince::CanClimbUp(float Val, FVector StartClimbUpPosition)
 				bHangPositionSet = true;
 
 				PlayerMovement = EPlayerMovement::CLIMBING;
-				//@ToDo later climbUpToHangposition Ani
+				//TODO later climbUpToHangposition Ani
 				RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
 				//CustMovementComp->SetMovementMode(MOVE_Flying);
 				//GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ASPickupActor::Respawn, CoolDownDuration);
@@ -648,7 +648,7 @@ void ARYU2D_CharacterPrince::CanClimbUp(float Val, FVector StartClimbUpPosition)
 
 				SetActorLocation(_HangLocation);
 				UE_LOG(LogTemp, Warning, TEXT("HangLedgePosition : %s"), *_HangLocation.ToString());
-				//@ToDo: later replace with JumpUpHangAni
+				//TODO: later replace with JumpUpHangAni
 				//PlayAnimMontage(ClimbAssetComp->ClimbHangMontage, 1.0f);
 
 				
@@ -724,7 +724,7 @@ void ARYU2D_CharacterPrince::TimelineCallback(float val)
 	switch (PlayerMovement)
 	{
 	case EPlayerMovement::CLIMBING:
-		//@ToDo: look for ClimbUp vs. Down etc // see mix from 3D LedgeClimbing but wo Rootmotion ...
+		//TODO: look for ClimbUp vs. Down etc // see mix from 3D LedgeClimbing but wo Rootmotion ...
 		StartTLLocation = Animation2DComponent->ClimbUpStartTimelineLocation;
 		EndTLLocation = Animation2DComponent->ClimbUpEndTimelineLocation;
 		break;

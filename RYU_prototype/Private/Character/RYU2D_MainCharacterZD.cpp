@@ -32,7 +32,7 @@ void ARYU2D_MainCharacterZD::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	//@ToDo: take closer look when CustomMovement will be impl.
+	//TODO: take closer look when CustomMovement will be impl.
 	MovementComp = Cast<URYU2D_MovementComponent>(GetCharacterMovement());
 }
 
@@ -178,7 +178,7 @@ void ARYU2D_MainCharacterZD::StopJumping()
 void ARYU2D_MainCharacterZD::MoveRight(float Val)
 {
 	
-	//for slow Movement , @ToDo: Clamp for ControllerInput (AxisValus...)
+	//for slow Movement , TODO: Clamp for ControllerInput (AxisValus...)
 	if (bSneakIsPressed)
 	{
 		SneakMultiplierValue = SneakMultiplier;
@@ -196,7 +196,7 @@ void ARYU2D_MainCharacterZD::MoveRight(float Val)
 		(PlayerMovement != EPlayerMovement::STARTTURN) &&
 		(PlayerMovement != EPlayerMovement::ENDTURN))
 		*/
-	//@ToDO
+	//TODO
 	//** needs rework when turning whole running
 
 	if (PlayerMovement == EPlayerMovement::STARTTURNRUN)
@@ -248,7 +248,7 @@ void ARYU2D_MainCharacterZD::UpdateCharacter()
 	{
 		if (bSneakIsPressed) PlayerMovement = EPlayerMovement::SNEAK;
 
-		//@ToDo curV.Z > 0 (was auch immer das heisst)
+		//TODO curV.Z > 0 (was auch immer das heisst)
 		
 		//Character can Turn around --> it playes the turnAnimation
 		if ((bLookRight && MoveRightInput < 0) || (!bLookRight && MoveRightInput > 0))
@@ -386,7 +386,7 @@ void ARYU2D_MainCharacterZD::SetClimbingPostitionsAndMovementMode(EPlayerMovemen
 		case EPlayerMovement::CLIMBING:
 		{
 			UE_LOG(LogTemp, Log, TEXT("MoveUpState(Up): ClimbTriggerBox is %s : from Owner: %s "), *ClimbingTrigger->GetName(), *ClimbingTrigger->GetOwner()->GetName());
-			//@ToDo: search correct Actor, check if char needs to be flipped
+			//TODO: search correct Actor, check if char needs to be flipped
 			if ((PlayerMovement != EPlayerMovement::CLIMBING)
 				&& CheckFlipOverlappedActor(ClimbingTrigger))
 			{
@@ -519,7 +519,7 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 
 		
 			case ERYUClimbingMode::CANENTERLADDER:
-				//@ToDo
+				//TODO
 				break;
 
 			case ERYUClimbingMode::CLIMBUPLEDGE:
@@ -537,7 +537,7 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 		switch (RYUClimbingMode)
 		{
 			case ERYUClimbingMode::NONE:
-				//@ToDo: Crouch / Hock
+				//TODO: Crouch / Hock
 				break;
 
 			case ERYUClimbingMode::CANCLIMBDOWNLEDGE: 
@@ -633,12 +633,12 @@ UBoxComponent* ARYU2D_MainCharacterZD::GetOverlappedClimbingComponent(FName UpOr
 
 void ARYU2D_MainCharacterZD::HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	//@ToDo: needed ?
+	//TODO: needed ?
 }
 
 void ARYU2D_MainCharacterZD::HandleSphereColliderEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	//@ToDo: needed ?
+	//TODO: needed ?
 }
 
 void ARYU2D_MainCharacterZD::TimelineCallbackFloat(float val)
@@ -656,7 +656,7 @@ void ARYU2D_MainCharacterZD::TimelineCallbackFloat(float val)
 	switch (PlayerMovement)
 	{
 	case EPlayerMovement::JUMPUP:
-		//@ToDo: look for ClimbUp vs. Down etc // see mix from 3D LedgeClimbing but wo Rootmotion ...
+		//TODO: look for ClimbUp vs. Down etc // see mix from 3D LedgeClimbing but wo Rootmotion ...
 		
 		break;
 	default:
@@ -682,7 +682,7 @@ void ARYU2D_MainCharacterZD::TimelineCallbackVector(FVector Vec)
 	switch (PlayerMovement)
 	{
 	case EPlayerMovement::JUMPUP:
-		//@ToDo: look for ClimbUp vs. Down etc // see mix from 3D LedgeClimbing but wo Rootmotion ...
+		//TODO: look for ClimbUp vs. Down etc // see mix from 3D LedgeClimbing but wo Rootmotion ...
 
 		break;
 	default:
@@ -900,7 +900,7 @@ void ARYU2D_MainCharacterZD::ResetClimbingState()
 
 bool ARYU2D_MainCharacterZD::CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger)
 {
-	//@ToDo: search correct actor
+	//TODO: search correct actor
 	if (ClimbingTrigger)
 	{
 		UE_LOG(LogTemp, Log, TEXT("CheckFlipOverlappedActor(): execute."));

@@ -113,7 +113,7 @@ void ARYUClimbingActor::InitializeValues()
 	IsLeftUpTrigger->ComponentTags.Add(LeftPositionTag);
 
 	ClimbingTriggerDirection->SetArrowColor(FLinearColor::Yellow);
-	//@ToDo: later show with GameDebugVariable 
+	//TODO: later show with GameDebugVariable 
 	ClimbingTriggerDirection->SetHiddenInGame(false);
 }
 

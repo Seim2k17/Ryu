@@ -379,7 +379,7 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 	//we suppose Jumping occurred / or falling from a ledge
 	if (GetCharacterMovement()->IsMovingOnGround() == false)
 	{
-		//@ToDo: recheck/pimp the coyoteshitjump
+		//TODO: recheck/pimp the coyoteshitjump
 		//then add CustomizedMovementData also in this Component (?), then we can remove the MultipleJump Conditions and directly ask st like:
 		//
 		// 		if (jumpInput) {
@@ -451,7 +451,7 @@ void ARYUCharacterIchi::AfterJumpButtonPressed()
 
 			UE_LOG(LogTemp, Log, TEXT("bJumpJustStarted == false"));
 			float directionV = (GetCapsuleComponent()->GetForwardVector().Y > 0) ? 1.0f : -1.0f;
-			//Wenn Char schnell gelaufen ist oder aus grosser Höhe gefallen, @ToDo BigHeigth
+			//Wenn Char schnell gelaufen ist oder aus grosser Höhe gefallen, TODO BigHeigth
 			if ((FMath::Abs(StartJumpVelocity.Y) > CustMovementComp->AfterJumpTreshold.Y) || FallCheck)
 			{
 				//Add little Velocity after hitting the ground
@@ -539,7 +539,7 @@ void ARYUCharacterIchi::DeactivateCoyotoeJumpPossible()
 void ARYUCharacterIchi::MoveRight(float Val)
 {
 
-	//@ToDo: Move Setting MovementCode in TICK !!!! else there occure bad things when overlapping with LedgeTraces etc. and inkonsequences
+	//TODO: Move Setting MovementCode in TICK !!!! else there occure bad things when overlapping with LedgeTraces etc. and inkonsequences
 
 	// add movement in that direction
 	
@@ -650,7 +650,7 @@ void ARYUCharacterIchi::CanClimbUp(float Val, FVector StartClimbUpPosition)
 				bHangPositionSet = true;
 
 				RYUMovement = ERYUMovementMode::CLIMB;
-				//@ToDo later climbUpToHangposition Ani
+				//TODO later climbUpToHangposition Ani
 				RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
 				//CustMovementComp->SetMovementMode(MOVE_Flying);
 				//GetWorldTimerManager().SetTimer(TimerHandle_RespawnTimer, this, &ASPickupActor::Respawn, CoolDownDuration);
@@ -679,7 +679,7 @@ void ARYUCharacterIchi::CanClimbUp(float Val, FVector StartClimbUpPosition)
 
 				SetActorLocation(_HangLocation);
 				UE_LOG(LogTemp, Warning, TEXT("HangLedgePosition : %s"), *_HangLocation.ToString());
-				//@ToDo: later replace with JumpUpHangAni
+				//TODO: later replace with JumpUpHangAni
 				PlayAnimMontage(ClimbAssetComp->ClimbHangMontage, 1.0f);
 
 				GetWorldTimerManager().SetTimer(AllowClimbUp_TimerHandle, this, &ARYUCharacterIchi::SetAllowClimbUpTrue, AllowClimbUpTime, false, AllowClimbUpTime);
@@ -730,7 +730,7 @@ void ARYUCharacterIchi::CanClimbDown(float Val)
 
 
 
-					//@ToDo: Play MontageSection ClimbDown in Reverse
+					//TODO: Play MontageSection ClimbDown in Reverse
 					if (ClimbAssetComp->ClimbDownMontage)
 					{
 						UE_LOG(LogTemp, Log, TEXT("StartPlaying: %s"), *ClimbAssetComp->ClimbDownMontage->GetName());
@@ -841,7 +841,7 @@ void ARYUCharacterIchi::CanClimbUpAndDown(float Val, FVector StartClimbPosition)
 
 void ARYUCharacterIchi::CheckClimbingLedge()
 {
-	//@ToDo: resp. which ledge is it: Wall (= incl.Height) or Height (without a wall infront of the char) -> use appr. Animation for climbing
+	//TODO: resp. which ledge is it: Wall (= incl.Height) or Height (without a wall infront of the char) -> use appr. Animation for climbing
 	//UE_LOG(LogTemp, Log, TEXT("Can Climb ledge from derived Class"));
 	//here we can set/make stuff when we are in Position to climb a ledge (RYUMovement = ERYUMovementMode::CANGRABLEDGE), called in Super::Tick()
 }
@@ -991,7 +991,7 @@ void ARYUCharacterIchi::HangOnLedgeAndClimb(float Val)
 		ColParams.bReturnPhysicalMaterial = false;
 		//ColParams.TraceTag = TraceTagFalling;
 
-		//@ToDo Raycast nach unten if gross genug dann play anim ClimbFall else set char to _StartClimbUpPosition / later special animations ....
+		//TODO Raycast nach unten if gross genug dann play anim ClimbFall else set char to _StartClimbUpPosition / later special animations ....
 		bool HitGround = GetWorld()->LineTraceSingleByChannel(HitResultGround, LineTraceStart,LineTraceEnd, ECC_Visibility, ColParams);
 
 		UE_LOG(LogTemp, Log, TEXT("LineTrace: (Start): %s (End): %s  "), *LineTraceStart.ToString(), *LineTraceEnd.ToString());

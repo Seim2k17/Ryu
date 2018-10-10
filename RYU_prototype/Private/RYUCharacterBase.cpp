@@ -260,7 +260,7 @@ void ARYUCharacterBase::TraceHeightAndWallOfLedge()
 	*/
 	/************************************************************************/
 	//A: if there is a possible ledge Hit in Height 
-	//@ToDo: If there are more than one ledges layered -> takes the above --> FAIL (=can´t climb)
+	//TODO: If there are more than one ledges layered -> takes the above --> FAIL (=can´t climb)
 	bool HitLedgeHeight = GetWorld()->SweepSingleByChannel(HitresultHeight, SweepStartHeight, SweepEndHeight, SweepRotHeight,
 	ECollisionChannel::ECC_EngineTraceChannel2, FCollisionShape::MakeSphere(2), ColParams);
 

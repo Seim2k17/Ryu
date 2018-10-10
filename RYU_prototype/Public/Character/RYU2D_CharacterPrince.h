@@ -7,7 +7,7 @@
 #include "Components/TimelineComponent.h"
 #include "RYU2D_CharacterPrince.generated.h"
 
-//@ToDo: look later when movement impl.
+//TODO: look later when movement impl.
 class URYU2D_MovementComponent;
 class URYU2D_AnimationComponent;
 class UPaperFlipbook;

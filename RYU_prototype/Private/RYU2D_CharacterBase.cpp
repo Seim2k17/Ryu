@@ -155,7 +155,7 @@ void ARYU2D_CharacterBase::CheckOverlappingActors()
 void ARYU2D_CharacterBase::CheckOverlappingComponents()
 {
 	//I think we rewrite this part ! -> think first then code
-	//@ToDo:
+	//TODO:
 
 	//BY DESIGN: max. overlapped climbing Triggers == 2
 	//check if overlapped comp right or left
