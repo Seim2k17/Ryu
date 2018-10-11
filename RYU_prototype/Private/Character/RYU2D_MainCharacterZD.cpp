@@ -412,31 +412,37 @@ void ARYU2D_MainCharacterZD::SetClimbingPostitionsAndMovementMode(EPlayerMovemen
 }
 
 
+//TODO: can be summarized, take a closer look ....
 void ARYU2D_MainCharacterZD::SetClimbingPositions(UBoxComponent* ClimbTrigger)
 {
 	ARYUClimbingActor* ARY = Cast<ARYUClimbingActor>(ClimbTrigger->GetOwner());
 
 	if (ARY)
 	{
-		//if UpAND DOwn the position needs to be set in Climb !
+		//TODO: better this LedPosiTag should be renamed to CurrentLedgePosiTrigger ! kindof confusing
 		if (CurrentLedgePosiTagName == LeftLedgePosiTagName)
 		{
 			//@Relict?
 			SetLedgeHangPosition(ARY->LeftHangPosition->GetComponentLocation(), LeftLedgePosiTagName);
 			//NewPositioning
 			//if character stands inside a trigger or climbs down a trigger
+			//if UpAND DOwn the position needs to be set in Climb !
+			//special case: canClimbUpAndDown
 			if ((RYUClimbingMode == ERYUClimbingMode::CLIMBDOWNLEDGE)
 				|| (RYUClimbingMode == ERYUClimbingMode::CANCLIMBDOWNLEDGE)
-				|| ((RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPANDDOWN) && (MoveUpInput > 0)))
+				|| ((RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPANDDOWN) && (MoveUpInput < 0)))
 			{
 				UE_LOG(LogTemp, Log, TEXT("SetClimbingPositions(): ClimbDown || CanClimbDown"));
 				ClimbStandDownPosition = ARY->DownRightStandPosition->GetComponentLocation();
 				ClimbStandUpPosition = ARY->UpLeftStandPosition->GetComponentLocation();
 			}
-			//if character stands inside a trigger or climbs up a trigger
+			
+			//if character stands inside a trigger or climbs up a trigger 
+			//if UpAND DOwn the position needs to be set in Climb !
+			//special case: canClimbUpAndDown
 			if ((RYUClimbingMode == ERYUClimbingMode::CLIMBUPLEDGE)
 				|| (RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPLEDGE)
-				|| ((RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPANDDOWN) && (MoveUpInput < 0)))
+				|| ((RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPANDDOWN) && (MoveUpInput > 0)))
 			{
 				UE_LOG(LogTemp, Log, TEXT("SetClimbingPositions(): ClimbUp || CanClimbUp"));
 				ClimbStandDownPosition = ARY->DownLeftStandPosition->GetComponentLocation();
@@ -445,6 +451,7 @@ void ARYU2D_MainCharacterZD::SetClimbingPositions(UBoxComponent* ClimbTrigger)
 
 		}
 
+		//TODO: better this LedPosiTag should be renamed to CurrentLedgePosiTrigger ! kindof confusing
 		if (CurrentLedgePosiTagName == RightLedgePosiTagName)
 		{
 			//@Relict?
@@ -452,6 +459,8 @@ void ARYU2D_MainCharacterZD::SetClimbingPositions(UBoxComponent* ClimbTrigger)
 			//NewPositioning
 
 			//if character stands inside a trigger or climbs down a trigger
+			//if UpAND DOwn the position needs to be set in Climb !
+			//special case: canClimbUpAndDown
 			if ((RYUClimbingMode == ERYUClimbingMode::CLIMBDOWNLEDGE)
 				|| (RYUClimbingMode == ERYUClimbingMode::CANCLIMBDOWNLEDGE)
 				|| ((RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPANDDOWN) && (MoveUpInput < 0)))
@@ -461,6 +470,8 @@ void ARYU2D_MainCharacterZD::SetClimbingPositions(UBoxComponent* ClimbTrigger)
 				ClimbStandUpPosition = ARY->UpRightStandPosition->GetComponentLocation();
 			}
 			//if character stands inside a trigger or climbs up a trigger
+			//if UpAND DOwn the position needs to be set in Climb !
+			//special case: canClimbUpAndDown
 			if ((RYUClimbingMode == ERYUClimbingMode::CLIMBUPLEDGE)
 				|| (RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPLEDGE)
 				|| ((RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPANDDOWN) && (MoveUpInput > 0)))
@@ -514,13 +525,21 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 			case ERYUClimbingMode::CANCLIMBUPANDDOWN:
 			{
 				UBoxComponent* ClimbTrigger = GetOverlappedClimbingComponent(ERYULedgePosition2D::PosiUp);
-				ARYUClimbingActor* ClAc = Cast<ARYUClimbingActor>(ClimbTrigger->GetOwner());
-				if (ClAc)
+				if (ClimbTrigger != nullptr)
 				{
-					CurrentLedgePosiTagName = ClimbTrigger->ComponentTags[1];
-					UE_LOG(LogTemp, Log, TEXT("MoveUpState(): Owner of Trigger is %s"), *ClimbTrigger->GetOwner()->GetName());
-					SetClimbingPostitionsAndMovementMode(EPlayerMovement::CLIMBING, ClimbTrigger);
+					ARYUClimbingActor* ClAc = Cast<ARYUClimbingActor>(ClimbTrigger->GetOwner());
+					if (ClAc)
+					{
+						CurrentLedgePosiTagName = ClimbTrigger->ComponentTags[1];
+						UE_LOG(LogTemp, Log, TEXT("MoveUpState(): Owner of Trigger is %s"), *ClimbTrigger->GetOwner()->GetName());
+						SetClimbingPostitionsAndMovementMode(EPlayerMovement::CLIMBING, ClimbTrigger);
+					}
 				}
+				else
+				{
+					UE_LOG(LogTemp, Log, TEXT("No ClimbingTrigger found."));
+				}
+				
 				break;
 			}
 
@@ -567,17 +586,21 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 				UBoxComponent* ClimbTrigger = GetOverlappedClimbingComponent(ERYULedgePosition2D::PosiDown);
 				if (ClimbTrigger != nullptr)
 				{
-					UE_LOG(LogTemp, Log, TEXT("MoveUpState(): Owner of Trigger is %s"),*ClimbTrigger->GetOwner()->GetName());
 					ARYUClimbingActor* ClAc = Cast<ARYUClimbingActor>(ClimbTrigger->GetOwner());
 					if (ClAc)
 					{
+						UE_LOG(LogTemp, Log, TEXT("MoveUpState(): Owner of Trigger is %s"), *ClimbTrigger->GetOwner()->GetName());
 						CurrentLedgePosiTagName = ClimbTrigger->ComponentTags[1];
-						//SetActorLocation(ClAc->DownLeftStandPosition->GetComponentLocation());
+// 						SetActorLocation(ClAc->DownLeftStandPosition->GetComponentLocation());
+// 						if (CheckFlipOverlappedActor(ClimbTrigger))
+// 						{
+// 							FlipCharacter();
+// 						}
+// 						MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::CLIMBDOWNLEDGE));
 						SetClimbingPostitionsAndMovementMode(EPlayerMovement::CLIMBING, ClimbTrigger);
 						RYUClimbingMode = ERYUClimbingMode::CLIMBDOWNLEDGE;
 						
 					}
-					
 				}
 				else
 				{
