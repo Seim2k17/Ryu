@@ -162,6 +162,8 @@ void ARYU2D_MainCharacterZD::Jump()
 	bPressedJump = true;
 
 	bJumpJustStarted = true;
+
+	PlayerMovement = EPlayerMovement::JUMPSTART;
 }
 
 void ARYU2D_MainCharacterZD::StopJumping()
@@ -374,13 +376,28 @@ void ARYU2D_MainCharacterZD::SetClimbingPostitionsAndMovementMode(EPlayerMovemen
 			//Use a Timeline for Positioning the Up-Jumps
 			PlayerMovement = EPlayerMovement::JUMPUP;
 			//** Initialize the Start End Endpoints 
-			Curve2DComponent->ClimbUpStartTimelineLocation = GetActorLocation();
-			Curve2DComponent->ClimbUpEndTimelineLocation = FVector(Curve2DComponent->ClimbUpStartTimelineLocation.X, Curve2DComponent->ClimbUpStartTimelineLocation.Y,
-				Curve2DComponent->ClimbUpStartTimelineLocation.Z + Curve2DComponent->ClimbUpOffsetZ);
+			Curve2DComponent->StartTimelineLocation = GetActorLocation();
+			Curve2DComponent->EndTimelineLocation = FVector(Curve2DComponent->StartTimelineLocation.X, Curve2DComponent->StartTimelineLocation.Y,
+				Curve2DComponent->StartTimelineLocation.Z + Curve2DComponent->ClimbUpOffsetZ);
 			MovementComp->SetMovementMode(MOVE_Custom, static_cast<uint8>(ERYUClimbingMode::JUMPTOLEDGE));
 			SetCurrentTimelineParamsFloat(nullptr, Curve2DComponent->JumpUpFloatCurve, false, true);
 			PlayTimeline();
 			break;
+		}
+
+		case EPlayerMovement::JUMPSTART:
+		{
+			FVector CurrPlayerLocation = GetActorLocation();
+ 			float CurJumpForwardDistance = 0; 
+			// TODO: find Direction of arrowcomponent (see climbupledgestates)
+ 			//ArrowComponent->GetComponentLocation(). ? (CurJumpForwardDistance = MovementComp->JumpForwardDistance) : (CurJumpForwardDistance = MovementComp->JumpForwardDistance) *(-1);
+
+			Curve2DComponent->StartTimelineLocation = CurrPlayerLocation;
+			Curve2DComponent->EndTimelineLocation = FVector(
+				CurrPlayerLocation.X  , 
+				CurrPlayerLocation.Y, 
+				CurrPlayerLocation.Z
+			);
 		}
 
 		case EPlayerMovement::CLIMBING:
@@ -697,8 +714,8 @@ void ARYU2D_MainCharacterZD::TimelineCallbackFloat(float val)
 	FVector StartTLLocation;
 	FVector EndTLLocation;
 
-	StartTLLocation = Curve2DComponent->ClimbUpStartTimelineLocation;
-	EndTLLocation = Curve2DComponent->ClimbUpEndTimelineLocation;
+	StartTLLocation = Curve2DComponent->StartTimelineLocation;
+	EndTLLocation = Curve2DComponent->EndTimelineLocation;
 
 	//Switch PMove needable ? ? ? or are all timelines handled the same ?
 	switch (PlayerMovement)
@@ -723,8 +740,8 @@ void ARYU2D_MainCharacterZD::TimelineCallbackVector(FVector Vec)
 	FVector StartTLLocation;
 	FVector EndTLLocation;
 
-	StartTLLocation = Curve2DComponent->ClimbUpStartTimelineLocation;
-	EndTLLocation = Curve2DComponent->ClimbUpEndTimelineLocation;
+	StartTLLocation = Curve2DComponent->StartTimelineLocation;
+	EndTLLocation = Curve2DComponent->EndTimelineLocation;
 
 	//Switch PMove needable ? ? ? or are all timelines handled the same ?
 	switch (PlayerMovement)

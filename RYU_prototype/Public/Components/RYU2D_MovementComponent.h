@@ -119,6 +119,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Climbing")
 	FVector ClimbDownStartPosition;
 
+	// How far will the character jump?
+	UPROPERTY(EditAnywhere)
+	float JumpForwardDistance = 50.0f;
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")

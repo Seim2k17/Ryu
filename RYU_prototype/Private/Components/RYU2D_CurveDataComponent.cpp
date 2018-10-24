@@ -12,8 +12,7 @@ URYU2D_CurveDataComponent::URYU2D_CurveDataComponent()
 
 	// ...
 
-	ClimbUpOffsetX = 20.0f;
-	ClimbUpOffsetZ = 10.0f;
+
 }
 
 

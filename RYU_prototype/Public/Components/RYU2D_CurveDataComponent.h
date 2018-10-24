@@ -28,22 +28,16 @@ public:
 	UCurveFloat* JumpUpFloatCurve;
 
 	UPROPERTY(EditAnywhere, Category = "Timeline")
-	UCurveFloat* ClimbUpFloatCurveX;
-
-	UPROPERTY(EditAnywhere, Category = "Timeline")
-		UCurveFloat* ClimbUpFloatCurveZ;
-
-	UPROPERTY(EditAnywhere, Category = "Timeline")
-	UCurveFloat* JumpUpAndHangFloatCurve;
+	UCurveVector* JumpForwardVectorCurve;
 
 	UPROPERTY(EditAnywhere, Category = "Timeline")
 	UCurveVector* ClimbUpVectorCurve;
 
 	UPROPERTY(VisibleAnywhere, Category = "Timeline")
-	FVector ClimbUpStartTimelineLocation;
+	FVector StartTimelineLocation;
 
 	UPROPERTY(VisibleAnywhere, Category = "Timeline")
-	FVector ClimbUpEndTimelineLocation;
+	FVector EndTimelineLocation;
 
 	UPROPERTY(EditAnywhere, Category = "Timeline")
 	float ClimbUpOffsetX;
