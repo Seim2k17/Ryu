@@ -2,17 +2,14 @@
 
 #pragma once
 
-#include "Components/TimelineComponent.h"
-#include "CoreMinimal.h"
 #include "RYU2D_CharacterBase.h"
+#include <CoreMinimal.h>
+#include <Components/TimelineComponent.h>
 #include "RYU2D_MainCharacterZD.generated.h"
 
 class URYU2D_MovementComponent;
 class URYU2D_CurveDataComponent;
 
-/**
- * 
- */
 UCLASS()
 class RYU_PROTOTYPE_API ARYU2D_MainCharacterZD : public ARYU2D_CharacterBase
 {
@@ -28,14 +25,13 @@ public:
     //UPROPERTY(Category = Character, VAnywhere, BlueprintReadOnly)
     URYU2D_MovementComponent* MovementComp;
 
-    virtual void PostInitializeComponents() override;
+    void PostInitializeComponents() override;
 
     void Jump() override;
 
     void StopJumping() override;
 
-    // Called every frame
-    virtual void Tick(float DeltaTime) override;
+    void Tick(float DeltaTime) override;
 
     void DrawDebugInfosOnScreen();
 
@@ -82,6 +78,9 @@ public:
     UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);
 
     UBoxComponent* GetOverlappedClimbingComponent(ERYULedgePosition2D LedgePosi);
+
+    UFUNCTION(BlueprintCallable, Category = "Jumping")
+    void StartLaunchCharacter();
 
 protected:
     void BeginPlay() override;

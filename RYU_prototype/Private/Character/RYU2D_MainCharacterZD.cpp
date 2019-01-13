@@ -157,18 +157,14 @@ void ARYU2D_MainCharacterZD::SetupPlayerInputComponent(class UInputComponent* Pl
 
 void ARYU2D_MainCharacterZD::Jump()
 {
-    bPressedJump = true;
-    bJumpJustStarted = true;
+    //     bPressedJump = true;
+    //     bJumpJustStarted = true;
 
     switch (PlayerMovement)
     {
         case EPlayerMovement::STAND:
         {
-            // need pimp
-            LaunchCharacter(JumpImpulse, false, false);
-
             PlayerMovement = EPlayerMovement::JUMPSTART;
-
             break;
         }
     }
@@ -711,6 +707,13 @@ UBoxComponent* ARYU2D_MainCharacterZD::GetOverlappedClimbingComponent(FName UpOr
     }
 
     return Foo ? Cast<UBoxComponent>(*Foo) : nullptr;
+}
+
+void ARYU2D_MainCharacterZD::StartLaunchCharacter()
+{
+    // need pimp
+    UE_LOG(LogTemp, Warning, TEXT("Launching Char when Jumping with %s"), *JumpImpulse.ToString());
+    LaunchCharacter(JumpImpulse, false, false);
 }
 
 void ARYU2D_MainCharacterZD::HandleSphereColliderBeginOverlap(
