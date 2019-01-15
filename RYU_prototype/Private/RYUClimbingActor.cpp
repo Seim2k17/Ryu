@@ -218,16 +218,16 @@ void ARYUClimbingActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 void ARYUClimbingActor::SetVisibilityTrigger()
 {
 	IsLeftDownTrigger->SetVisibility(bLeftDownTriggerIsActive);
-	IsLeftDownTrigger->bGenerateOverlapEvents = bLeftDownTriggerIsActive;
+	IsLeftDownTrigger->SetGenerateOverlapEvents(bLeftDownTriggerIsActive);
 
 	IsLeftUpTrigger->SetVisibility(bLeftUpTriggerIsActive);
-	IsLeftUpTrigger->bGenerateOverlapEvents = bLeftUpTriggerIsActive;
+	IsLeftUpTrigger->SetGenerateOverlapEvents(bLeftUpTriggerIsActive);
 
 	IsRightDownTrigger->SetVisibility(bRightDownTriggerIsActive);
-	IsRightDownTrigger->bGenerateOverlapEvents = bRightDownTriggerIsActive;
+	IsRightDownTrigger->SetGenerateOverlapEvents(bRightDownTriggerIsActive);
 
 	IsRightUpTrigger->SetVisibility(bRightUpTriggerIsActive);
-	IsRightUpTrigger->bGenerateOverlapEvents = bRightUpTriggerIsActive;
+	IsRightUpTrigger->SetGenerateOverlapEvents(bRightUpTriggerIsActive);
 }
 
 // Called every frame
