@@ -927,12 +927,30 @@ void ARYUCharacterIchi::CanGrabLedges(float Val)
 					ERYULedgePosition3D LedgePosi;
 
 					/** Add here more cases... */
-					if (OverlapTags[0] == "Above_080") LedgePosi = ERYULedgePosition3D::Above_080cm;
-					if (OverlapTags[0] == "Above_100") LedgePosi = ERYULedgePosition3D::Above_100cm;;
-					if (OverlapTags[0] == "Above_150") LedgePosi = ERYULedgePosition3D::Above_150cm;
-					if (OverlapTags[0] == "Above_200") LedgePosi = ERYULedgePosition3D::Above_200cm;
-					if (OverlapTags[0] == "climbing") LedgePosi = ERYULedgePosition3D::Above_450cm;
-					if (OverlapTags[0] == "hurdle") LedgePosi = ERYULedgePosition3D::Hurdle_080cm;
+					if (OverlapTags[0] == "Above_080")
+					{
+						LedgePosi = ERYULedgePosition3D::Above_080cm;
+					}
+					else if (OverlapTags[0] == "Above_100")
+					{
+						LedgePosi = ERYULedgePosition3D::Above_100cm;
+					}
+					else if (OverlapTags[0] == "Above_150")
+					{
+						LedgePosi = ERYULedgePosition3D::Above_150cm;
+					}
+					else if (OverlapTags[0] == "Above_200")
+					{
+						LedgePosi = ERYULedgePosition3D::Above_200cm;
+					}
+					else if (OverlapTags[0] == "climbing")
+					{
+						LedgePosi = ERYULedgePosition3D::Above_450cm;
+					}
+					else //(OverlapTags[0] == "hurdle") 
+					{
+						LedgePosi = ERYULedgePosition3D::Hurdle_080cm;
+					}
 
 
 					//** and of course add reactions (animations) in the BP_Character_ichi

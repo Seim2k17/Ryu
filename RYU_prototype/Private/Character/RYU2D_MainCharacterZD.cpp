@@ -12,7 +12,9 @@
 #include <Components/CapsuleComponent.h>
 #include <Components/SphereComponent.h>
 #include <Curves/CurveVector.h>
+#include <GameFramework/Character.h>
 #include <GameFramework/SpringArmComponent.h>
+#include <PaperZD/Public/PaperZDAnimBP.h>
 
 ARYU2D_MainCharacterZD::ARYU2D_MainCharacterZD(const class FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<URYU2D_MovementComponent>(
@@ -35,9 +37,11 @@ void ARYU2D_MainCharacterZD::PostInitializeComponents()
     MovementComp = Cast<URYU2D_MovementComponent>(GetCharacterMovement());
 }
 
+#if WITH_EDITOR
 void ARYU2D_MainCharacterZD::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 }
+#endif
 
 void ARYU2D_MainCharacterZD::InitializeCharacterValues()
 {
@@ -113,6 +117,13 @@ void ARYU2D_MainCharacterZD::InitializeCharacterValues()
 
 void ARYU2D_MainCharacterZD::BeginPlay()
 {
+    AnimationBlueprint = NewAnimationBlueprint;
+    if (AnimationBlueprint)
+    {
+        AnimInstanceClass = AnimationBlueprint->GeneratedClass;
+        GetOrCreateAnimInstance(true);
+    }
+
     Super::BeginPlay();
 
     //do we still need it
@@ -123,7 +134,8 @@ void ARYU2D_MainCharacterZD::BeginPlay()
     SphereTracer->OnComponentEndOverlap.AddDynamic(
         this, &ARYU2D_MainCharacterZD::HandleSphereColliderEndOverlap);
 
-    GetArrowComponent()->SetHiddenInGame(false);
+	// TODO why no compile ?
+    // GetArrowComponent()->SetHiddenInGame(false);
 }
 
 void ARYU2D_MainCharacterZD::Tick(float DeltaTime)
@@ -1001,7 +1013,9 @@ bool ARYU2D_MainCharacterZD::CheckFlipOverlappedActor(UBoxComponent* ClimbingTri
             UArrowComponent* TriggerArrow = ARYCA->ClimbingTriggerDirection;
 
             //float DudePitch = this->GetArrowComponent()->GetComponentRotation().Pitch;
-            float DudePitch = this->GetArrowComponent()->GetComponentRotation().Yaw;
+            
+			// TODO ReCheck ! why no Compile `?
+			float DudePitch = this->GetArrowComponent()->GetComponentRotation().Yaw;
             DudePitch = FMath::CeilToFloat(FMath::Abs(DudePitch));
             //FMath::CeilToFloat(DudePitch);
             UE_LOG(LogTemp, Log,

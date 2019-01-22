@@ -36,10 +36,12 @@ void ARYU2D_CharacterPrince::PostInitializeComponents()
 	MovementComp = Cast<URYU2D_MovementComponent>(GetCharacterMovement());
 }
 
+#if WITH_EDITOR
 void ARYU2D_CharacterPrince::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 
 }
+#endif
 
 
 

@@ -179,6 +179,11 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
     float SneakMultiplier;
 
+    // from PaperZDCharacter
+	/* Animation blueprint to use for this character. NULL on packaged projects */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PaperZD")
+    UPaperZDAnimBP* NewAnimationBlueprint;
+
 protected:
     bool bPlayTurnAni;
 
