@@ -123,7 +123,7 @@ void ARYU2D_MainCharacterZD::BeginPlay()
         AnimInstanceClass = AnimationBlueprint->GeneratedClass;
         GetOrCreateAnimInstance(true);
     }
-
+	//
     Super::BeginPlay();
 
     //do we still need it
@@ -1003,6 +1003,7 @@ void ARYU2D_MainCharacterZD::ResetClimbingState()
 bool ARYU2D_MainCharacterZD::CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger)
 {
     //TODO: search correct actor
+
     if (ClimbingTrigger)
     {
         UE_LOG(LogTemp, Log, TEXT("CheckFlipOverlappedActor(): execute."));
@@ -1015,15 +1016,16 @@ bool ARYU2D_MainCharacterZD::CheckFlipOverlappedActor(UBoxComponent* ClimbingTri
             //float DudePitch = this->GetArrowComponent()->GetComponentRotation().Pitch;
             
 			// TODO ReCheck ! why no Compile `?
-			float DudePitch = this->GetArrowComponent()->GetComponentRotation().Yaw;
-            DudePitch = FMath::CeilToFloat(FMath::Abs(DudePitch));
-            //FMath::CeilToFloat(DudePitch);
-            UE_LOG(LogTemp, Log,
-                   TEXT("CheckFlipOverlappedActor(): PitchTriggerActorArrow: %s PitchClimbingDude: "
-                        "%s, Ceiled(Abs,PitchDude): %s"),
-                   *TriggerArrow->GetComponentRotation().ToString(),
-                   *this->GetArrowComponent()->GetComponentRotation().ToString(),
-                   *FString::SanitizeFloat(DudePitch));
+			float DudePitch = 180.0f; // just test because getarrow does not compile
+// 			float DudePitch = this->GetArrowComponent()->GetComponentRotation().Yaw;
+//             DudePitch = FMath::CeilToFloat(FMath::Abs(DudePitch));
+//             //FMath::CeilToFloat(DudePitch);
+//             UE_LOG(LogTemp, Log,
+//                    TEXT("CheckFlipOverlappedActor(): PitchTriggerActorArrow: %s PitchClimbingDude: "
+//                         "%s, Ceiled(Abs,PitchDude): %s"),
+//                    *TriggerArrow->GetComponentRotation().ToString(),
+//                    *this->GetArrowComponent()->GetComponentRotation().ToString(),
+//                    *FString::SanitizeFloat(DudePitch));
             if (TriggerArrow && (TriggerArrow->GetComponentRotation().Yaw == DudePitch))
             {
                 UE_LOG(LogTemp, Log,

@@ -12,7 +12,7 @@ public class RYU_prototype : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
-        bFasterWithoutUnity = true;
+        //bFasterWithoutUnity = true;
 
         // Uncomment if you are using Slate UI
         // PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

@@ -9,6 +9,7 @@
 
 class URYU2D_MovementComponent;
 class URYU2D_CurveDataComponent;
+class UPaperZDAnimBP;
 
 UCLASS()
 class RYU_PROTOTYPE_API ARYU2D_MainCharacterZD : public ARYU2D_CharacterBase
