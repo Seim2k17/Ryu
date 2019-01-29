@@ -2,15 +2,14 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
-#include "GameFramework/Character.h"
-#include "RYUENUM_PlayerActive.h"
-#include "Character/RYUENUM_MovementMode.h"
 #include "Character/RYU2DENUM_ClimbingMode.h"
-#include "RYUENUM_LedgeSideEntered.h"
+#include "Character/RYUENUM_MovementMode.h"
+#include "GameFramework/Character.h"
+#include "CoreMinimal.h"
 #include "RYUClimbingActor.h"
+#include "RYUENUM_LedgeSideEntered.h"
+#include "RYUENUM_PlayerActive.h"
 #include "RYUCharacterBase.generated.h"
-
 
 class UUserWidget;
 class USphereComponent;
@@ -21,148 +20,158 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FChangeActivePlayer);
 UCLASS(config = Game)
 class RYU_PROTOTYPE_API ARYUCharacterBase : public ACharacter
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
-	ARYUCharacterBase();
+    // Sets default values for this character's properties
+    ARYUCharacterBase();
 
-	ARYUCharacterBase(const class FObjectInitializer& ObjectInitializer);
+    ARYUCharacterBase(const class FObjectInitializer& ObjectInitializer);
 
-	
-	/** METHODS*/
+    /** METHODS*/
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
 
-	/** Returns SideViewCameraComponent subobject **/
-	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+    /** Returns SideViewCameraComponent subobject **/
+    FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const
+    {
+        return SideViewCameraComponent;
+    }
+    /** Returns CameraBoom subobject **/
+    FORCEINLINE class USpringArmComponent* GetCameraBoom() const
+    {
+        return CameraBoom;
+    }
 
-	void Jump() override;
+    void Jump() override;
 
-	void StopJumping() override;
+    void StopJumping() override;
 
-	UFUNCTION()
-	void OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-			bool bFromSweep, const FHitResult & SweepResult);
+    UFUNCTION()
+    void OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+                                          AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                                          int32 OtherBodyIndex, bool bFromSweep,
+                                          const FHitResult& SweepResult);
 
-	UFUNCTION()
-	void OnSphereTracerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+    UFUNCTION()
+    void OnSphereTracerHandleEndOverlap(UPrimitiveComponent* OverlappedComponent,
+                                        AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                                        int32 OtherBodyIndex);
 
-	/** MEMBERS */
+    /** MEMBERS */
 
-	UPROPERTY(EditAnywhere, Category = "Character Status")
-	float Energy;
-	
-	/** Side view camera */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* SideViewCameraComponent;
+    UPROPERTY(EditAnywhere, Category = "Character Status")
+    float Energy;
 
-	/** Camera boom positioning the camera beside the character */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
-	
-	/** State of the Character Movement*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
-	ERYUMovementMode RYUMovement;
+    /** Side view camera */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera,
+              meta = (AllowPrivateAccess = "true"))
+    class UCameraComponent* SideViewCameraComponent;
 
-	/** State of the Character Movement*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
-		ERYUClimbingMode RYUClimbingMode;
+    /** Camera boom positioning the camera beside the character */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera,
+              meta = (AllowPrivateAccess = "true"))
+    class USpringArmComponent* CameraBoom;
 
-	UPROPERTY(VisibleAnywhere, Category = "Sockets")
-		FName CharacterHipSocketName;
+    /** State of the Character Movement*/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
+    ERYUMovementMode RYUMovement;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "LedgeTrace")
-		bool bLedgeHeightInRange;
+    /** State of the Character Movement*/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
+    ERYUClimbingMode RYUClimbingMode;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
-		float TreshholdYWalkRun;
+    UPROPERTY(VisibleAnywhere, Category = "Sockets")
+    FName CharacterHipSocketName;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-		USphereComponent* SphereTracer;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "LedgeTrace")
+    bool bLedgeHeightInRange;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	USphereComponent* TracerSphere;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
+    float TreshholdYWalkRun;
 
-	UFUNCTION(BlueprintCallable, Category = "Climbing")
-	void SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide);
+    UPROPERTY(VisibleAnywhere, Category = "Components")
+    USphereComponent* SphereTracer;
 
-	UFUNCTION(BlueprintCallable, Category = "Climbing")
-	FVector GetLedgeHangPosition();
+    UPROPERTY(VisibleAnywhere, Category = "Components")
+    USphereComponent* TracerSphere;
 
-	UFUNCTION(BlueprintCallable, Category = "Climbing")
-	ERYULedgeSideEntered GetLedgeSideEntered();
+    UFUNCTION(BlueprintCallable, Category = "Climbing")
+    void SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide);
 
-	UFUNCTION(BlueprintCallable)
-		UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);
+    UFUNCTION(BlueprintCallable, Category = "Climbing")
+    FVector GetLedgeHangPosition();
 
-	UFUNCTION()
-		void OnHandleCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, 
-			int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+    UFUNCTION(BlueprintCallable, Category = "Climbing")
+    ERYULedgeSideEntered GetLedgeSideEntered();
 
-	UFUNCTION()
-		void OnHandleCapsuleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+    UFUNCTION(BlueprintCallable)
+    UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);
+
+    UFUNCTION()
+    void OnHandleCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+                                     bool bFromSweep, const FHitResult& SweepResult);
+
+    UFUNCTION()
+    void OnHandleCapsuleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                   UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 protected:
+    /** METHODS */
 
-	/** METHODS */
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    /** Called for side to side input */
+    void MoveRight(float Val);
 
-	/** Called for side to side input */
-	void MoveRight(float Val);
+    /** Handle touch inputs. */
+    void TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location);
 
-	/** Handle touch inputs. */
-	void TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location);
+    /** Handle touch stop event. */
+    void TouchStopped(const ETouchIndex::Type FingerIndex, const FVector Location);
 
-	/** Handle touch stop event. */
-	void TouchStopped(const ETouchIndex::Type FingerIndex, const FVector Location);
+    void CheckLedgeTracer();
 
-	void CheckLedgeTracer();
+    void TraceHeightAndWallOfLedge();
 
-	void TraceHeightAndWallOfLedge();
+    virtual void CheckClimbingLedge();
 
-	virtual void CheckClimbingLedge();
+    //DoOnce Repl.
 
-	//DoOnce Repl.
+    bool bLedgeTracePossible;
 
-	bool bLedgeTracePossible;
+    bool bSphereTracerOverlap;
 
-	bool bSphereTracerOverlap;
+    bool bJumpJustStarted;
 
-	bool bJumpJustStarted;
+    FVector LedgeTracerHeight;
+    FVector LedgeTracerWall;
 
-	FVector LedgeTracerHeight;
-	FVector LedgeTracerWall;
+    AActor* SphereOverlappedActor;
+    UPrimitiveComponent* SphereOverlappedComponent;
 
-	AActor* SphereOverlappedActor;
-	UPrimitiveComponent* SphereOverlappedComponent;
+    TArray<UPrimitiveComponent*> CapsuleOverlappedComponents;
 
-	TArray<UPrimitiveComponent*> CapsuleOverlappedComponents;
+    FName CanClimbUpTagName;
+    FName CanClimbDownTagName;
 
-	FName CanClimbUpTagName;
-	FName CanClimbDownTagName;
+    FName LeftPositionTagName;
+    FName RightPositionTagName;
 
-	FName LeftPositionTagName;
-	FName RightPositionTagName;
-
-	void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
+    void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
 
 private:
+    FVector LedgeTracerWallNormal;
+    FVector HipSocketLocation;
+    bool bLedgeTraceInRangeChanged;
+    bool bLedgeTraceNotInRangeChanged;
 
+    FName TraceTag = "ClimbingDownTraceTag";
 
-	FVector LedgeTracerWallNormal;
-	FVector HipSocketLocation;
-	bool bLedgeTraceInRangeChanged;
-	bool bLedgeTraceNotInRangeChanged;
+    FVector LedgeHangPosition;
 
-	FName TraceTag ="ClimbingDownTraceTag";
-
-	FVector LedgeHangPosition;
-
-	ERYULedgeSideEntered ESideEntered;
+    ERYULedgeSideEntered ESideEntered;
 };

@@ -40,6 +40,7 @@ void ARYU2D_MainCharacterZD::PostInitializeComponents()
 #if WITH_EDITOR
 void ARYU2D_MainCharacterZD::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
+    Super::PostEditChangeProperty(PropertyChangedEvent);
 }
 #endif
 
@@ -117,13 +118,6 @@ void ARYU2D_MainCharacterZD::InitializeCharacterValues()
 
 void ARYU2D_MainCharacterZD::BeginPlay()
 {
-    AnimationBlueprint = NewAnimationBlueprint;
-    if (AnimationBlueprint)
-    {
-        AnimInstanceClass = AnimationBlueprint->GeneratedClass;
-        GetOrCreateAnimInstance(true);
-    }
-	//
     Super::BeginPlay();
 
     //do we still need it
@@ -134,7 +128,7 @@ void ARYU2D_MainCharacterZD::BeginPlay()
     SphereTracer->OnComponentEndOverlap.AddDynamic(
         this, &ARYU2D_MainCharacterZD::HandleSphereColliderEndOverlap);
 
-	// TODO why no compile ?
+    // TODO why no compile ?
     // GetArrowComponent()->SetHiddenInGame(false);
 }
 
@@ -1014,18 +1008,17 @@ bool ARYU2D_MainCharacterZD::CheckFlipOverlappedActor(UBoxComponent* ClimbingTri
             UArrowComponent* TriggerArrow = ARYCA->ClimbingTriggerDirection;
 
             //float DudePitch = this->GetArrowComponent()->GetComponentRotation().Pitch;
-            
-			// TODO ReCheck ! why no Compile `?
-			float DudePitch = 180.0f; // just test because getarrow does not compile
-// 			float DudePitch = this->GetArrowComponent()->GetComponentRotation().Yaw;
-//             DudePitch = FMath::CeilToFloat(FMath::Abs(DudePitch));
-//             //FMath::CeilToFloat(DudePitch);
-//             UE_LOG(LogTemp, Log,
-//                    TEXT("CheckFlipOverlappedActor(): PitchTriggerActorArrow: %s PitchClimbingDude: "
-//                         "%s, Ceiled(Abs,PitchDude): %s"),
-//                    *TriggerArrow->GetComponentRotation().ToString(),
-//                    *this->GetArrowComponent()->GetComponentRotation().ToString(),
-//                    *FString::SanitizeFloat(DudePitch));
+
+            // TODO ReCheck ! why no Compile `?
+            // float DudePitch = 180.0f; // just test because getarrow does not compile
+            float DudePitch = GetActorForwardVector().Rotation().Yaw;
+            DudePitch = FMath::CeilToFloat(FMath::Abs(DudePitch));
+            //FMath::CeilToFloat(DudePitch);
+            UE_LOG(LogTemp, Log,
+                   TEXT("CheckFlipOverlappedActor(): PitchTriggerActorArrow: %s PitchClimbingDude: "
+                        "%f, Ceiled(Abs,PitchDude): %s"),
+                   *TriggerArrow->GetComponentRotation().ToString(),
+                   GetActorForwardVector().Rotation().Yaw, *FString::SanitizeFloat(DudePitch));
             if (TriggerArrow && (TriggerArrow->GetComponentRotation().Yaw == DudePitch))
             {
                 UE_LOG(LogTemp, Log,
