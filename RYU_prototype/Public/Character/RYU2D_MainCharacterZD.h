@@ -30,6 +30,9 @@ public:
 
     void Jump() override;
 
+	UFUNCTION(BlueprintCallable, Category = "Jumping")
+	void JumpForward();
+
     void StopJumping() override;
 
     void Tick(float DeltaTime) override;

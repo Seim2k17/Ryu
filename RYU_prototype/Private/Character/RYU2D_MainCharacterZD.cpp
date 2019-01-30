@@ -163,8 +163,10 @@ void ARYU2D_MainCharacterZD::SetupPlayerInputComponent(class UInputComponent* Pl
 
 void ARYU2D_MainCharacterZD::Jump()
 {
-    //     bPressedJump = true;
-    //     bJumpJustStarted = true;
+//          bPressedJump = true;
+//          bJumpJustStarted = true;
+
+		 
 
     switch (PlayerMovement)
     {
@@ -174,6 +176,12 @@ void ARYU2D_MainCharacterZD::Jump()
             break;
         }
     }
+}
+
+void ARYU2D_MainCharacterZD::JumpForward()
+{
+
+	LaunchCharacter(JumpImpulse, false, true);
 }
 
 void ARYU2D_MainCharacterZD::StopJumping()
@@ -243,7 +251,19 @@ void ARYU2D_MainCharacterZD::UpdateCharacter()
     currA = GetCharacterMovement()->GetCurrentAcceleration();
     currV = this->GetVelocity();
 
-    //** ABP-TRANSITION-RULES *******//
+	bool bIsinAir = GetCharacterMovement()->IsFalling();
+
+	FString bla = "";
+	bIsinAir ?  bla = "Char is in Air: true" : "false";
+	
+	UE_LOG(LogTemp, Log, TEXT("%s"), *bla);
+
+	if (PlayerMovement == EPlayerMovement::JUMPLOOP && !bIsinAir)
+	{
+		PlayerMovement = EPlayerMovement::JUMPEND;
+	}
+
+	//** ABP-TRANSITION-RULES *******//
     //** TransitionRules for the ABP, moved it completely to c++ due clarity and complexicity reason
     if (currV.Z < -500)
     {
