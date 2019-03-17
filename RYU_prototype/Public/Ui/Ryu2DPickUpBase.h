@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "MyTestActor.generated.h"
+#include "Ryu2DPickUpBase.generated.h"
 
 UCLASS()
-class RYU_PROTOTYPE_API AMyTestActor : public AActor
+class RYU_PROTOTYPE_API ARyu2DPickUpBase : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AMyTestActor();
+	ARyu2DPickUpBase();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,6 +23,4 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	
-	
 };

@@ -14,7 +14,9 @@
 #include <Curves/CurveVector.h>
 #include <GameFramework/Character.h>
 #include <GameFramework/SpringArmComponent.h>
+#include <PaperZD/Public/AnimSequences/Players/PaperZDAnimPlayer.h>
 #include <PaperZD/Public/PaperZDAnimBP.h>
+#include <PaperZD/Public/PaperZDAnimInstance.h>
 
 ARYU2D_MainCharacterZD::ARYU2D_MainCharacterZD(const class FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<URYU2D_MovementComponent>(
@@ -127,9 +129,6 @@ void ARYU2D_MainCharacterZD::BeginPlay()
         this, &ARYU2D_MainCharacterZD::HandleSphereColliderBeginOverlap);
     SphereTracer->OnComponentEndOverlap.AddDynamic(
         this, &ARYU2D_MainCharacterZD::HandleSphereColliderEndOverlap);
-
-    // TODO why no compile ?
-    // GetArrowComponent()->SetHiddenInGame(false);
 }
 
 void ARYU2D_MainCharacterZD::Tick(float DeltaTime)
@@ -163,14 +162,14 @@ void ARYU2D_MainCharacterZD::SetupPlayerInputComponent(class UInputComponent* Pl
 
 void ARYU2D_MainCharacterZD::Jump()
 {
-//          bPressedJump = true;
-//          bJumpJustStarted = true;
-
-		 
+    //          bPressedJump = true;
+    //          bJumpJustStarted = true;
 
     switch (PlayerMovement)
     {
         case EPlayerMovement::STAND:
+        case EPlayerMovement::CANGRABLEDGE:
+
         {
             PlayerMovement = EPlayerMovement::JUMPSTART;
             break;
@@ -180,8 +179,15 @@ void ARYU2D_MainCharacterZD::Jump()
 
 void ARYU2D_MainCharacterZD::JumpForward()
 {
+    FVector FinalJumpImpulse = JumpImpulse * GetActorForwardVector();
+    UE_LOG(LogTemp, Log, TEXT("JumpForward: JumpImpulse = %s"), *FinalJumpImpulse.ToString());
+    LaunchCharacter(FinalJumpImpulse, false, true);
+}
 
-	LaunchCharacter(JumpImpulse, false, true);
+void ARYU2D_MainCharacterZD::JumpUp()
+{
+    FVector FinalJumpImpulse = JumpUpImpulse * GetActorUpVector();
+    LaunchCharacter(FinalJumpImpulse, false, true);
 }
 
 void ARYU2D_MainCharacterZD::StopJumping()
@@ -251,19 +257,19 @@ void ARYU2D_MainCharacterZD::UpdateCharacter()
     currA = GetCharacterMovement()->GetCurrentAcceleration();
     currV = this->GetVelocity();
 
-	bool bIsinAir = GetCharacterMovement()->IsFalling();
+    bool bIsinAir = GetCharacterMovement()->IsFalling();
 
-	FString bla = "";
-	bIsinAir ?  bla = "Char is in Air: true" : "false";
-	
-	UE_LOG(LogTemp, Log, TEXT("%s"), *bla);
+    FString bla = "";
+    bIsinAir ? bla = "Char is in Air: true" : "false";
 
-	if (PlayerMovement == EPlayerMovement::JUMPLOOP && !bIsinAir)
-	{
-		PlayerMovement = EPlayerMovement::JUMPEND;
-	}
+    UE_LOG(LogTemp, Log, TEXT("%s"), *bla);
 
-	//** ABP-TRANSITION-RULES *******//
+    if (PlayerMovement == EPlayerMovement::JUMPLOOP && !bIsinAir)
+    {
+        PlayerMovement = EPlayerMovement::JUMPEND;
+    }
+
+    //** ABP-TRANSITION-RULES *******//
     //** TransitionRules for the ABP, moved it completely to c++ due clarity and complexicity reason
     if (currV.Z < -500)
     {
@@ -275,7 +281,9 @@ void ARYU2D_MainCharacterZD::UpdateCharacter()
     else
     {
         if (bSneakIsPressed)
+        {
             PlayerMovement = EPlayerMovement::SNEAK;
+        }
 
         //TODO curV.Z > 0 (was auch immer das heisst)
 
@@ -560,9 +568,8 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 
             case ERYUClimbingMode::CANCLIMBUPLEDGE:
             {
-                UBoxComponent* ClimbTriggerBox =
-                    GetOverlappedClimbingComponent(CanClimbUpTagName, CurrentLedgePosiTagName);
-                if (ClimbTriggerBox != nullptr)
+                if (UBoxComponent* ClimbTriggerBox =
+                        GetOverlappedClimbingComponent(CanClimbUpTagName, CurrentLedgePosiTagName))
                 {
                     SetClimbingPostitionsAndMovementMode(EPlayerMovement::CLIMBING,
                                                          ClimbTriggerBox);
@@ -576,12 +583,11 @@ void ARYU2D_MainCharacterZD::CheckMoveUpState()
 
             case ERYUClimbingMode::CANCLIMBUPANDDOWN:
             {
-                UBoxComponent* ClimbTrigger =
-                    GetOverlappedClimbingComponent(ERYULedgePosition2D::PosiUp);
-                if (ClimbTrigger != nullptr)
+                if (UBoxComponent* ClimbTrigger =
+                        GetOverlappedClimbingComponent(ERYULedgePosition2D::PosiUp))
                 {
-                    ARYUClimbingActor* ClAc = Cast<ARYUClimbingActor>(ClimbTrigger->GetOwner());
-                    if (ClAc)
+                    if (ARYUClimbingActor* ClimbingActor =
+                            Cast<ARYUClimbingActor>(ClimbTrigger->GetOwner()))
                     {
                         CurrentLedgePosiTagName = ClimbTrigger->ComponentTags[1];
                         UE_LOG(LogTemp, Log, TEXT("MoveUpState(): Owner of Trigger is %s"),
@@ -1014,6 +1020,94 @@ void ARYU2D_MainCharacterZD::ResetClimbingState()
     CheckOverlappingActors();
 }
 
+void ARYU2D_MainCharacterZD::AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence)
+{
+    UE_LOG(LogTemp, Warning, TEXT("Finally AnimEnded called from code."));
+
+    /* Just for testing purpose until the StateMachine is fully implemented ! -> for removing finally the Notifier in ABP*/
+    switch (PlayerMovement)
+    {
+        case EPlayerMovement::STAND:
+            break;
+        case EPlayerMovement::WALK:
+            break;
+        case EPlayerMovement::STARTTURN:
+            TurnFlipBookFinished();
+            break;
+        case EPlayerMovement::STARTTURNRUN:
+            TurnRunFlipBookFinished();
+            break;
+        case EPlayerMovement::ENDTURN:
+            break;
+        case EPlayerMovement::BEGINRUN:
+            PlayerMovement = EPlayerMovement::RUN;
+            break;
+        case EPlayerMovement::RUN:
+            break;
+        case EPlayerMovement::ENDRUN:
+            CheckOverlappingActors();
+            break;
+        case EPlayerMovement::JUMPSTART:
+        {
+            PlayerMovement = EPlayerMovement::JUMPLOOP;
+            JumpForward();
+        }
+        break;
+        case EPlayerMovement::JUMPLOOP:
+            break;
+        case EPlayerMovement::JUMPEND:
+			CheckOverlappingActors();
+            break;
+        case EPlayerMovement::JUMPUP:
+            break;
+        case EPlayerMovement::STARTFALLING:
+            break;
+        case EPlayerMovement::FALLING:
+            break;
+        case EPlayerMovement::CLIMBING:
+            switch (RYUClimbingMode)
+            {
+                case ERYUClimbingMode::NONE:
+                    break;
+                case ERYUClimbingMode::CANCLIMBUPLEDGE:
+                case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
+                case ERYUClimbingMode::CANCLIMBUPANDDOWN:
+                case ERYUClimbingMode::CLIMBDOWNLEDGE:
+                    SetClimbingMode(ERYUClimbingMode::HANGONLEDGE);
+                    break;
+                case ERYUClimbingMode::JUMPTOLEDGE:
+                    break;
+                case ERYUClimbingMode::CLIMBUPLEDGE:
+                case ERYUClimbingMode::LETGOLEDGE:
+                    ClimbLedgeFlipBookFinished();
+                    break;
+                case ERYUClimbingMode::FALLDOWNLEDGE:
+                    break;
+                case ERYUClimbingMode::HANGONLEDGE:
+                    break;
+                case ERYUClimbingMode::CANENTERLADDER:
+                    break;
+                case ERYUClimbingMode::CLIMBLADDERUP:
+                    break;
+                case ERYUClimbingMode::CLIMBLADDERDOWN:
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case EPlayerMovement::CANGRABLEDGE:
+            break;
+        case EPlayerMovement::SNEAK:
+            break;
+        case EPlayerMovement::STANDUP:
+            break;
+        case EPlayerMovement::COMBAT:
+            break;
+        default:
+            break;
+    }
+}
+
 bool ARYU2D_MainCharacterZD::CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger)
 {
     //TODO: search correct actor
@@ -1057,8 +1151,11 @@ float ARYU2D_MainCharacterZD::GetMoveRightInput()
 
 void ARYU2D_MainCharacterZD::SneakPressed()
 {
-    SneakMultiplierValue = SneakMultiplier;
-    bSneakIsPressed = true;
+    if (PlayerMovement != EPlayerMovement::CLIMBING)
+    {
+        SneakMultiplierValue = SneakMultiplier;
+        bSneakIsPressed = true;
+    }
 }
 
 void ARYU2D_MainCharacterZD::SneakReleased()
@@ -1188,6 +1285,16 @@ void ARYU2D_MainCharacterZD::DrawDebugInfosOnScreen()
 
 void ARYU2D_MainCharacterZD::DebugSomething()
 {
+}
+
+void ARYU2D_MainCharacterZD::ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player)
+{
+    Super::ConfigurePlayer_Implementation(Player);
+
+    UPaperZDAnimInstance* AnimInstance = GetOrCreateAnimInstance();
+
+    Player->OnPlaybackSequenceComplete.AddDynamic(this,
+                                                  &ARYU2D_MainCharacterZD::AnimationSequenceEnded);
 }
 
 void ARYU2D_MainCharacterZD::ChangeMovementMode()

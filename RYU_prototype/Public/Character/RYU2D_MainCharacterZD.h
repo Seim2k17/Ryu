@@ -10,6 +10,8 @@
 class URYU2D_MovementComponent;
 class URYU2D_CurveDataComponent;
 class UPaperZDAnimBP;
+class UPaperZDAnimPlayer;
+class UPaperZDAnimSequence;
 
 UCLASS()
 class RYU_PROTOTYPE_API ARYU2D_MainCharacterZD : public ARYU2D_CharacterBase
@@ -30,8 +32,11 @@ public:
 
     void Jump() override;
 
-	UFUNCTION(BlueprintCallable, Category = "Jumping")
-	void JumpForward();
+    UFUNCTION(BlueprintCallable, Category = "Jumping")
+    void JumpForward();
+
+    UFUNCTION(BlueprintCallable, Category = "Jumping")
+    void JumpUp();
 
     void StopJumping() override;
 
@@ -40,6 +45,9 @@ public:
     void DrawDebugInfosOnScreen();
 
     void DebugSomething();
+
+	// register paperZD Stuff override !
+    void ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player) override;
 
     UFUNCTION(BlueprintCallable, Category = "Debug")
     void ChangeMovementMode();
@@ -144,7 +152,7 @@ protected:
 
     /** END-TIMELINE-SECTION */
 
-    /* Climbing Methods*/
+    /* Climbing Methods - We make this a component later of course !*/
 
     void HangOnLedgeAndClimb(float Val);
 
@@ -175,6 +183,10 @@ private:
 
     void ResetClimbingState();
 
+    // our own functionality gets called at the end of an animation, due its a delegate function we need to mark it as UFUNCTION() with InAnimSequence parmList
+    UFUNCTION()
+    void AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence);
+
     /************************************************************************/
     /* MEMBER                                                               */
     /************************************************************************/
@@ -200,6 +212,9 @@ protected:
 
     UPROPERTY(EditAnywhere, Category = "Jumping")
     FVector JumpImpulse = FVector::ZeroVector;
+
+    UPROPERTY(EditAnywhere, Category = "Jumping")
+    FVector JumpUpImpulse = FVector::ZeroVector;
 
 private:
     float fDeltaSeconds;
