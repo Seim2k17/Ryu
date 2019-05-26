@@ -23,15 +23,25 @@ class RYU_PROTOTYPE_API ARYU2D_MainCharacterZD : public ARYU2D_CharacterBase
     /************************************************************************/
 
 public:
-    ARYU2D_MainCharacterZD(const class FObjectInitializer& ObjectInitializer);
+    ARYU2D_MainCharacterZD(const class FObjectInitializer& ObjectInitializer); //*copied
 
     //UPROPERTY(Category = Character, VAnywhere, BlueprintReadOnly)
     URYU2D_MovementComponent* MovementComp;
 
-    void PostInitializeComponents() override;
+    void PostInitializeComponents() override; //*copied
 
-    void Jump() override;
+    void Jump() override; //*copied
 
+    void Tick(float DeltaTime) override; //*copied
+
+    // register paperZD Stuff override !
+    void ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player) override; //*copied
+
+#if WITH_EDITOR
+    void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override; //*copied
+#endif
+
+    //*TO COMPONENTS START
     UFUNCTION(BlueprintCallable, Category = "Jumping")
     void JumpForward();
 
@@ -40,24 +50,15 @@ public:
 
     void StopJumping() override;
 
-    void Tick(float DeltaTime) override;
-
     void DrawDebugInfosOnScreen();
 
     void DebugSomething();
-
-	// register paperZD Stuff override !
-    void ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player) override;
 
     UFUNCTION(BlueprintCallable, Category = "Debug")
     void ChangeMovementMode();
 
     UFUNCTION(BlueprintCallable, Category = "Debug")
     void ChangeClimbingMode();
-
-#if WITH_EDITOR
-    void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-#endif
 
     //Public due Customized CharMovementComponent
     void Climb();
@@ -94,30 +95,18 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Jumping")
     void StartLaunchCharacter();
 
+    //*TO COMPONENTS END
+
 protected:
-    void BeginPlay() override;
+    void BeginPlay() override; //*copied
 
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; //* copied
 
-    /** Called for side to side input */
-    UFUNCTION(BlueprintCallable, Category = "Movement")
-    void MoveRight(float Val);
 
-    /** Called for Climbing input */
-    void MoveUp(float Value);
+	//*TO COMPONENTS START
 
-    UFUNCTION()
-    void HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent,
-                                          AActor* OtherActor, UPrimitiveComponent* OtherComp,
-                                          int32 OtherBodyIndex, bool bFromSweep,
-                                          const FHitResult& SweepResult);
+  /** Start-TIMELINE-SECTION */
 
-    UFUNCTION()
-    void HandleSphereColliderEndOverlap(UPrimitiveComponent* OverlappedComponent,
-                                        AActor* OtherActor, UPrimitiveComponent* OtherComp,
-                                        int32 OtherBodyIndex);
-
-    /** Start-TIMELINE-SECTION */
     //Updatefunction for the Timeline
     UFUNCTION()
     void TimelineCallbackFloat(float val);
@@ -138,8 +127,8 @@ protected:
                                         bool IgnoreTimeDilation);
 
     /*onTimelineCallback contains the signature of the function that is
-	going to execute every time we tick our timeline.
-	Think of onTimelineCallback as a delegate!*/
+  going to execute every time we tick our timeline.
+  Think of onTimelineCallback as a delegate!*/
     /** Declare our delegate function to be binded with TimelineCallback */
     FOnTimelineFloat onTimelineCallbackFloat{};
 
@@ -150,6 +139,16 @@ protected:
     /** Declare our delegateFunction to be binded to TimelineFinishedCallback()*/
     FOnTimelineEvent onTimelineFinishedCallback{};
 
+    //** TimeLine Stuff */
+    UPROPERTY()
+    TEnumAsByte<ETimelineDirection::Type> TimelineDirection;
+
+    UPROPERTY()
+    UTimelineComponent* CurrentTimeline;
+
+    UPROPERTY(VisibleAnywhere, Category = "Components")
+    URYU2D_CurveDataComponent* Curve2DComponent;
+
     /** END-TIMELINE-SECTION */
 
     /* Climbing Methods - We make this a component later of course !*/
@@ -158,34 +157,56 @@ protected:
 
     void CanGrabLedges(float Val);
 
-    void JumpUpOrDown(float Val, FVector StartJumpPosition);
-
-    void UpdateCharacter();
-
-    UFUNCTION(BlueprintPure, Category = "Movement")
-    float GetMoveRightInput();
-
-    UFUNCTION()
-    void SneakPressed();
-
-    UFUNCTION()
-    void SneakReleased();
-
     void SetClimbingPostitionsAndMovementMode(EPlayerMovement PlayerMove,
                                               UBoxComponent* ClimbingTrigger);
 
     void SetClimbingPositions(UBoxComponent* ClimbTrigger);
 
-private:
-    void InitializeCharacterValues();
-
+    // climbingmodemethod
     void CheckMoveUpState();
 
     void ResetClimbingState();
 
+	 //*TO COMPONENTS END
+    /** Called for side to side input */
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    void MoveRight(float Val);
+
+    /** Called for Climbing input */
+    void MoveUp(float Value);
+
+	UFUNCTION()
+    void HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+                                          AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                                          int32 OtherBodyIndex, bool bFromSweep,
+                                          const FHitResult& SweepResult);
+
+    UFUNCTION()
+    void HandleSphereColliderEndOverlap(UPrimitiveComponent* OverlappedComponent,
+                                        AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                                        int32 OtherBodyIndex);
+
+    void JumpUpOrDown(float Val, FVector StartJumpPosition);  //* copied
+
+    void UpdateCharacter();  //* copied
+
+    UFUNCTION(BlueprintPure, Category = "Movement")
+    float GetMoveRightInput(); //* copied
+
+    UFUNCTION()
+    void SneakPressed(); //* copied
+
+    UFUNCTION()
+    void SneakReleased();//* copied
+
+
+
+private:
+    void InitializeCharacterValues(); //* copied
+
     // our own functionality gets called at the end of an animation, due its a delegate function we need to mark it as UFUNCTION() with InAnimSequence parmList
     UFUNCTION()
-    void AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence);
+    void AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence);  //* copied
 
     /************************************************************************/
     /* MEMBER                                                               */
@@ -200,15 +221,9 @@ protected:
 
     bool bStartedNoLoopAnimation;
 
-    //** TimeLine Stuff */
-    UPROPERTY()
-    TEnumAsByte<ETimelineDirection::Type> TimelineDirection;
 
-    UPROPERTY()
-    UTimelineComponent* CurrentTimeline;
 
-    UPROPERTY(VisibleAnywhere, Category = "Components")
-    URYU2D_CurveDataComponent* Curve2DComponent;
+
 
     UPROPERTY(EditAnywhere, Category = "Jumping")
     FVector JumpImpulse = FVector::ZeroVector;
