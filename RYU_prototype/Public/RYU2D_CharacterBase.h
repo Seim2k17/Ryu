@@ -86,9 +86,11 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void FlipCharacter();
 
-    ERYULedgeSideEntered ARYU2D_CharacterBase::GetLedgeSide(int posi);
+    //ERYULedgeSideEntered ARYU2D_CharacterBase::GetLedgeSide(int posi);
+	ERYULedgeSideEntered GetLedgeSide(int posi);
 
-    ERYULedgePosition2D ARYU2D_CharacterBase::GetLedgePosition();
+    //ERYULedgePosition2D ARYU2D_CharacterBase::GetLedgePosition();
+	ERYULedgePosition2D GetLedgePosition();
 
     void GetOverlappingBoxComponents();
 

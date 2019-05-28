@@ -44,9 +44,11 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Climbing")
     ERYULedgeSideEntered GetLedgeSideEntered();
 
-    ERYULedgeSideEntered ARYU2D_CharacterBase::GetLedgeSide(int posi);
+//    ERYULedgeSideEntered ARyuBaseCharacter::GetLedgeSide(int posi);
+	    ERYULedgeSideEntered GetLedgeSide(int posi);
 
-    ERYULedgePosition2D ARYU2D_CharacterBase::GetLedgePosition();
+    //ERYULedgePosition2D ARyuBaseCharacter::GetLedgePosition();
+		ERYULedgePosition2D GetLedgePosition();
 
     void GetOverlappingBoxComponents();
 

@@ -1,5 +1,8 @@
 // Copyright 2019 80k Games, All Rights Reserved.
 
+/***
+ReCopy to RyuMainCharacter.h/.cpp
+
 #pragma once
 
 #include "RYU2D_CharacterBase.h"
@@ -15,6 +18,7 @@ class RYU_PROTOTYPE_API ARYU2D_MainCharacter : public ARYU2D_CharacterBase
     GENERATED_BODY()
 
 public:
+	
     ARYU2D_MainCharacter(const class FObjectInitializer& ObjectInitializer);
 
     // register paperZD Stuff override !
@@ -62,9 +66,7 @@ private:
 
     void InitializeCharacterValues();
 
-    /**
-	* MEMBER VARIABLES
-	*/
+    
 
 public:
     // most need to be moved in components
@@ -89,3 +91,4 @@ private:
 
     bool bSneakIsPressed;
 };
+*/
