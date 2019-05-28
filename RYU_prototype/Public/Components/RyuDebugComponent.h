@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "RyuDebugComponent.generated.h"
 
+class ARyuMainCharacter;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class RYU_PROTOTYPE_API URyuDebugComponent : public UActorComponent
@@ -16,13 +17,25 @@ public:
 	// Sets default values for this component's properties
 	URyuDebugComponent();
 
+	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	void PostEditChangePropertyFromOwner();
+
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	
+	void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+private:
+
+	// we can activate/deactivate Debugging
+	void InitDebugValues();
+
+	// Move To a BaseClass ?
+	ARyuMainCharacter* GetMainCharOwner();
+	
+
+	UPROPERTY(EditAnywhere, Category = "Preferences")
+	bool bActivated = false;
 		
 };

@@ -203,6 +203,10 @@ protected:
     UPrimitiveComponent* SphereOverlappedComponent;
 
 private:
+
+	// UtilitySection
+
+
     bool bSphereTracerOverlap;
 
     /** Hm why this again ? */
