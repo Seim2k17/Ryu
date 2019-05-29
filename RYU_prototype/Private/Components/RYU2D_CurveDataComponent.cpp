@@ -1,5 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+/** DEPRECATED moved all data to RyuTimelineComponent*/
+
+
 #include "RYU2D_CurveDataComponent.h"
 
 

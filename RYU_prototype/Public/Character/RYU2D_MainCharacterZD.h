@@ -146,7 +146,8 @@ protected:
     UPROPERTY()
     UTimelineComponent* CurrentTimeline;
 
-    UPROPERTY(VisibleAnywhere, Category = "Components")
+	/*done*/
+    UPROPERTY(VisibleAnywhere, Category = "Components") 
     URYU2D_CurveDataComponent* Curve2DComponent;
 
     /** END-TIMELINE-SECTION */

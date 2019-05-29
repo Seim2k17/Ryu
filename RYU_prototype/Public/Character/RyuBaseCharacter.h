@@ -125,6 +125,8 @@ public:
                                         AActor* OtherActor, UPrimitiveComponent* OtherComp,
                                         int32 OtherBodyIndex);
 
+	void PostInitializeComponents() override;
+
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     void SetClimbingMode(ERYUClimbingMode ClimbingModeToSet);
 

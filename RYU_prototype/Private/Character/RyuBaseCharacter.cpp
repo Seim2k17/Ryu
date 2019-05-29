@@ -1,22 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "RYUBaseCharacter.h"
-#include "Camera/CameraComponent.h"
-#include "Components/BoxComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "Components/RYU2D_MovementComponent.h"
-#include "Components/SphereComponent.h"
-#include "GameFramework/SpringArmComponent.h"
-#include "Math/Vector.h"
+#include "RyuBaseCharacter.h"
+#include "Components/RyuMovementComponent.h"
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
+#include <Camera/CameraComponent.h>
+#include <Components/BoxComponent.h>
+#include <Components/CapsuleComponent.h>
+#include <Components/SphereComponent.h>
+#include <GameFramework/SpringArmComponent.h>
+#include <Math/Vector.h>
 
 ARyuBaseCharacter::ARyuBaseCharacter()
 {
 }
 
 ARyuBaseCharacter::ARyuBaseCharacter(const class FObjectInitializer& ObjectInitializer)
-    : Super(ObjectInitializer.SetDefaultSubobjectClass<URYU2D_MovementComponent>(
+    : Super(ObjectInitializer.SetDefaultSubobjectClass<URyuMovementComponent>(
         ACharacter::CharacterMovementComponentName))
 {
     // Create a camera boom attached to the root (capsule)
@@ -52,6 +52,13 @@ ARyuBaseCharacter::ARyuBaseCharacter(const class FObjectInitializer& ObjectIniti
     bJumpJustStarted = false;
 
     TreshholdYWalkRun = 220.0f;
+}
+
+void ARyuBaseCharacter::PostInitializeComponents()
+{
+    Super::PostInitializeComponents();
+
+    RyuMovementComponent = Cast<URyuMovementComponent>(GetCharacterMovement());
 }
 
 void ARyuBaseCharacter::OnSphereTracerHandleBeginOverlap(UPrimitiveComponent* OverlappedComponent,

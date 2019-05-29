@@ -1,10 +1,10 @@
 // Copyright 2019 80k Games, All Rights Reserved.
 
 #include "RyuMainCharacter.h"
-#include "Components/RYU2D_CurveDataComponent.h"
-#include "Components/RYU2D_MovementComponent.h"
+#include "Components/RyuTimelineComponent.h"
+#include "Components/RyuMovementComponent.h"
 #include "Components/RyuDebugComponent.h"
-#include "RYU2D_MovementComponent.h"
+
 #include "RYUClimbingActor.h"
 #include <PaperFlipbookComponent.h>
 #include <Camera/CameraComponent.h>
@@ -19,13 +19,16 @@
 #include <PaperZD/Public/PaperZDAnimBP.h>
 #include <PaperZD/Public/PaperZDAnimInstance.h>
 
+
 ARyuMainCharacter::ARyuMainCharacter(const class FObjectInitializer& ObjectInitializer)
-    : Super(ObjectInitializer.SetDefaultSubobjectClass<URYU2D_MovementComponent>(
+    : Super(ObjectInitializer.SetDefaultSubobjectClass<URyuMovementComponent>(
         ACharacter::CharacterMovementComponentName))
 {
     PrimaryActorTick.bCanEverTick = true;
 
-    Curve2DComponent = CreateDefaultSubobject<URYU2D_CurveDataComponent>(TEXT("FloatCurves"));
+	// Holds Data and Links to Curves which follows a Timeline
+	RyuTimelineComponent = CreateDefaultSubobject<URyuTimelineComponent>(TEXT("RyuTimeLineComponent"));
+    
 
     InitializeCharacterValues();
 }
@@ -35,7 +38,7 @@ void ARyuMainCharacter::PostInitializeComponents()
     Super::PostInitializeComponents();
 
     //TODO: take closer look when CustomMovement will be impl.
-    MovementComp = Cast<URYU2D_MovementComponent>(GetCharacterMovement());
+ 
 }
 
 #if WITH_EDITOR

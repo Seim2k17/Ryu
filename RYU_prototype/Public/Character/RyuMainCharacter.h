@@ -7,6 +7,8 @@
 #include <Components/TimelineComponent.h>
 #include "RyuMainCharacter.generated.h"
 
+class URyuTimelineComponent;
+class URyuDebugComponent;
 /**
  * WIP - V2 MainCharacter
 1. Sort Methods and pack them to components
@@ -57,6 +59,9 @@ protected:
     void SneakReleased();
 
     void UpdateCharacter();
+
+	URyuTimelineComponent* RyuTimelineComponent;
+	URyuMovementComponent* RyuMovementComponent;
 
 private:
     // our own functionality gets called at the end of an animation, due its a delegate function we need to mark it as UFUNCTION() with InAnimSequence parmList
