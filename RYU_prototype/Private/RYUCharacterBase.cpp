@@ -16,6 +16,7 @@
 #include "RYUClimbingActor.h"
 #include "Components/BoxComponent.h"
 
+/* DEPRECATED, 3D Prototype*/
 
 // Sets default values
 ARYUCharacterBase::ARYUCharacterBase()

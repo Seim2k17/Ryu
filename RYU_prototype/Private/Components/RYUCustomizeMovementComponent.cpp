@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include "RYUClimbingActor.h"
 
+//* DEPRECATED, old 3D Prototype
 
 // Sets default values for this component's properties, derived from CharacterMovementComponent
 URYUCustomizeMovementComponent::URYUCustomizeMovementComponent(const class FObjectInitializer& ObjectInitializer)
