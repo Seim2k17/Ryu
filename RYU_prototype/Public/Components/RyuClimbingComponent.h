@@ -32,6 +32,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Climbing")
     void SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide);
 
+    UFUNCTION(BlueprintCallable, Category = "Climbing")
+    void ToggleEnterLedgeSide();
+
     /** Maybe we even can solve this better, but after the prototype or when dirty bugs occur*/
     //* Climbing Tags for Objects
     FName CanClimbUpTagName;
@@ -57,7 +60,7 @@ public:
 protected:
     void BeginPlay() override;
 
-	void InitializeValues();
+    void InitializeValues();
 
 public:
     void TickComponent(float DeltaTime, ELevelTick TickType,

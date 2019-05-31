@@ -61,7 +61,7 @@ protected:
     void UpdateCharacter();
 
 	URyuTimelineComponent* RyuTimelineComponent;
-	URyuMovementComponent* RyuMovementComponent;
+	
 
 private:
     // our own functionality gets called at the end of an animation, due its a delegate function we need to mark it as UFUNCTION() with InAnimSequence parmList

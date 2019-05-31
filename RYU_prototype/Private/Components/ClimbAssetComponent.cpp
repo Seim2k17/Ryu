@@ -2,6 +2,7 @@
 
 #include "ClimbAssetComponent.h"
 
+/*DEPRECATED - old 3D Prototype*/
 
 // Sets default values for this component's properties
 UClimbAssetComponent::UClimbAssetComponent()

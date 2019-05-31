@@ -37,8 +37,6 @@ ARyuBaseCharacter::ARyuBaseCharacter(const class FObjectInitializer& ObjectIniti
 
     PlayerMovement = EPlayerMovement::STAND;
 
-    
-
     bSphereTracerOverlap = false;
 
     bJumpJustStarted = false;
@@ -137,10 +135,16 @@ void ARyuBaseCharacter::OnHandleCapsuleEndOverlap(UPrimitiveComponent* Overlappe
 
 void ARyuBaseCharacter::CheckOverlappingActors()
 {
+    // TODO genauer abchecken nach was geprueft wird: a) climbingActors b) pushactors c) blabla ...
+
     UE_LOG(LogTemp, Log, TEXT("CheckOverlappingActors(): "));
 
-    GetOverlappingActors(CapsuleOverlappedActors, ClimbableActorClass);
+    if (auto* ClimbingComp = FindComponentByClass<URyuClimbingComponent>())
+    {
+        GetOverlappingActors(CapsuleOverlappedActors, ClimbableActorClass);
+    }
 
+	// TODO : Move To Debug Comp
     for (int i = 0; i < CapsuleOverlappedActors.Num(); i++)
     {
         UE_LOG(LogTemp, Log, TEXT("[%s] : %s"), *FString::FromInt(i),
@@ -247,8 +251,6 @@ void ARyuBaseCharacter::CheckOverlappingComponents()
     }
 }
 
-
-
 void ARyuBaseCharacter::OutputCapsuleOverlappedComponents()
 {
     for (int i = 0; i < CapsuleOverlappedComponents.Num(); i++)
@@ -306,10 +308,6 @@ void ARyuBaseCharacter::FlipCharacter()
     //coa vs reset ?
     CheckOverlappingActors();
 }
-
-
-
-
 
 void ARyuBaseCharacter::BeginPlay()
 {

@@ -13,6 +13,8 @@
 #include "RyuBaseCharacter.generated.h"
 
 class USphereComponent;
+class URyuClimbingComponent;
+class URyuMovementComponent;
 
 /**
 * This class is the default character for Paper2DIntro, and it is responsible for all
@@ -45,6 +47,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void FlipCharacter();
 
+	// TODO Rethink after Implementing StateMachine */
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     ERYUClimbingMode GetClimbingMode();
 
@@ -95,8 +98,7 @@ public:
 
     void StopJumping() override;
 
-    UFUNCTION(BlueprintCallable, Category = "Climbing")
-    void ToggleEnterLedgeSide();
+  
 
 protected:
     virtual void BeginPlay() override;
@@ -163,6 +165,9 @@ protected:
     AActor* SphereOverlappedActor;
 
     UPrimitiveComponent* SphereOverlappedComponent;
+
+	URyuClimbingComponent* RyuClimbingComponent;
+	URyuMovementComponent* RyuMovementComponent;
 
 private:
 
