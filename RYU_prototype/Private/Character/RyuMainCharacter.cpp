@@ -87,6 +87,7 @@ void ARyuMainCharacter::InitializeCharacterValues()
 	SphereCollider->SetRelativeLocation(FVector(25.0f, 0.0f, 0.0f));
 	*/
 
+	/* Hmm set Values only at initializing*/
     CameraBoom->TargetArmLength = 500.0f;
     CameraBoom->SocketOffset = FVector(0.0f, 0.0f, 75.0f);
     CameraBoom->bAbsoluteRotation = true;
@@ -110,13 +111,11 @@ void ARyuMainCharacter::InitializeCharacterValues()
     // behavior on the edge of a ledge versus inclines by setting this to true or false
     GetCharacterMovement()->bUseFlatBaseForFloorChecks = true;
 
+	// TODO: replace with CSTM
     PlayerMovement = EPlayerMovement::STAND;
     CharAnimation2DState = ERYU2DAnimationState::IDLE;
 
-    CurrentTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("Timeline"));
-    onTimelineCallbackFloat.BindUFunction(this, FName("TimelineCallbackFloat"));
-    onTimelineCallbackVector.BindUFunction(this, FName("TimelineCallbackVector"));
-    onTimelineFinishedCallback.BindUFunction(this, FName("TimelineFinishedCallback"));
+    
 
     bSneakIsPressed = false;
 
@@ -146,10 +145,7 @@ void ARyuMainCharacter::Tick(float DeltaTime)
     //Temp save for Timelinestuff
     fDeltaSeconds = DeltaTime;
 
-    if (bDebugOutputActive)
-    {
-        DrawDebugInfosOnScreen();
-    }
+    
 
     //** due its better for complexicity AND clarity we do most of the ABP_Transition_Logic here in c++
     UpdateCharacter();
