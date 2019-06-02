@@ -47,7 +47,7 @@ void ARyuMainCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
     Super::PostEditChangeProperty(PropertyChangedEvent);
 
 	// refresh DebugState
-	if (auto* DebugComp = GetComponentByClass<URyuDebugComponent>())
+	if (auto* DebugComp = FindComponentByClass<URyuDebugComponent>())
 	{
 		DebugComp->PostEditChangePropertyFromOwner();
 	}
@@ -66,6 +66,7 @@ void ARyuMainCharacter::InitializeCharacterValues()
     bReplicates = true;
 
     bPlayTurnAni = false;
+	LookDirection = ERyuLookDirection::Right;
     bLookRight = true;
 
     bStartedNoLoopAnimation = false;
@@ -237,7 +238,7 @@ void ARyuMainCharacter::MoveRight(float Val)
         || (PlayerMovement == EPlayerMovement::WALK))
 
     {
-        if ((bLookRight && Val > 0) || (!bLookRight && Val < 0))
+        if ((LookDirection == ERyuLookDirection::Right && Val > 0) || (LookDirection == ERyuLookDirection::Left && Val < 0))
         {
             if (PlayerMovement == EPlayerMovement::CANGRABLEDGE)
                 PlayerMovement = EPlayerMovement::BEGINRUN;
@@ -290,7 +291,7 @@ void ARyuMainCharacter::UpdateCharacter()
         //TODO curV.Z > 0 (was auch immer das heisst)
 
         //Character can Turn around --> it playes the turnAnimation
-        if ((bLookRight && MoveRightInput < 0) || (!bLookRight && MoveRightInput > 0))
+        if ((LookDirection == ERyuLookDirection::Right && MoveRightInput < 0) || (LookDirection == ERyuLookDirection::Left && MoveRightInput > 0))
         {
             if (PlayerMovement == EPlayerMovement::RUN)
             {
@@ -312,7 +313,7 @@ void ARyuMainCharacter::UpdateCharacter()
         switch (PlayerMovement)
         {
             case EPlayerMovement::STAND: {
-                if ((bLookRight && (currV.X > 0)) || (!bLookRight && (currV.X < 0)))
+                if ((LookDirection == ERyuLookDirection::Right && (currV.X > 0)) || (LookDirection == ERyuLookDirection::Left && (currV.X < 0)))
                 {
                     PlayerMovement = EPlayerMovement::BEGINRUN;
                     break;
@@ -939,20 +940,23 @@ FVector ARyuMainCharacter::GetCurrentAcceleration()
     return currA;
 }
 
-bool ARyuMainCharacter::GetIsLookingRight()
+ERyuLookDirection ARyuMainCharacter::GetLookDirection()
 {
-    return bLookRight;
+    //return bLookRight;
+	return LookDirection;
 }
 
 void ARyuMainCharacter::SetLookRight()
 {
     if (currV.X > 0)
     {
-        bLookRight = true;
+		LookDirection == ERyuLookDirection::Right;
+        //bLookRight = true;
     }
     else if (currV.X < 0)
     {
-        bLookRight = false;
+		LookDirection == ERyuLookDirection::Left;
+        //bLookRight = false;
     }
 }
 

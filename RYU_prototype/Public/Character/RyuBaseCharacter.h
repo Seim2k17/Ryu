@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Character/RYU2DENUM_AnimationState.h"
+#include "Enums/ERyuLookDirection.h"
 #include "RYU2DENUM_ClimbingMode.h"
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
@@ -30,14 +31,12 @@ class RYU_PROTOTYPE_API ARyuBaseCharacter : public APaperZDCharacter
 {
     GENERATED_BODY()
 
-   
 public:
     ARyuBaseCharacter();
 
     ARyuBaseCharacter(const class FObjectInitializer& ObjectInitializer);
 
     /** TO Climbing-Component-Start*/
-    
 
     /** TO Climbing-Component-End*/
 
@@ -47,7 +46,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void FlipCharacter();
 
-	// TODO Rethink after Implementing StateMachine */
+    // TODO Rethink after Implementing StateMachine */
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     ERYUClimbingMode GetClimbingMode();
 
@@ -88,7 +87,7 @@ public:
                                         AActor* OtherActor, UPrimitiveComponent* OtherComp,
                                         int32 OtherBodyIndex);
 
-	void PostInitializeComponents() override;
+    void PostInitializeComponents() override;
 
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     void SetClimbingMode(ERYUClimbingMode ClimbingModeToSet);
@@ -97,8 +96,6 @@ public:
     void SetPlayerMovement(EPlayerMovement PlayerStateToSet);
 
     void StopJumping() override;
-
-  
 
 protected:
     virtual void BeginPlay() override;
@@ -112,10 +109,6 @@ protected:
     void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
 
     void OutputCapsuleOverlappedComponents();
-
-    /************************************************************************/
-    /* MEMBER                                                               */
-    /************************************************************************/
 
 public:
     /** Camera boom positioning the camera beside the character */
@@ -134,10 +127,6 @@ public:
     /** State of the Character Movement*/
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement")
     EPlayerMovement PlayerMovement;
-
-    /** State of the Character Climbing State */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement")
-    ERYUClimbingMode RYUClimbingMode;
 
     /** Side view camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera,
@@ -166,13 +155,13 @@ protected:
 
     UPrimitiveComponent* SphereOverlappedComponent;
 
-	URyuClimbingComponent* RyuClimbingComponent;
-	URyuMovementComponent* RyuMovementComponent;
+    URyuClimbingComponent* RyuClimbingComponent;
+    URyuMovementComponent* RyuMovementComponent;
+
+    ERyuLookDirection LookDirection;
 
 private:
-
-	// UtilitySection
-
+    // UtilitySection
 
     bool bSphereTracerOverlap;
 

@@ -2,8 +2,10 @@
 
 #pragma once
 
-#include "Components/ActorComponent.h"
-#include "CoreMinimal.h"
+#include "Character/RYU2DENUM_ClimbingMode.h"
+#include "Character/RYUENUM_LedgePosition.h"
+#include <CoreMinimal.h>
+#include <Components/ActorComponent.h>
 #include "RyuClimbingComponent.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -14,6 +16,11 @@ class RYU_PROTOTYPE_API URyuClimbingComponent : public UActorComponent
 public:
     // Sets default values for this component's properties
     URyuClimbingComponent();
+
+	ERYUClimbingMode GetClimbingState();
+
+	// TODO this call will later completely only be called from Character StateMachine
+	void SetClimbingState(ERYUClimbingMode ClimbState);
 
     UFUNCTION(BlueprintCallable, Category = "Climbing")
     FVector GetLedgeHangPosition();
@@ -31,6 +38,8 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Climbing")
     void SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide);
+
+    void ResetClimbingState();
 
     UFUNCTION(BlueprintCallable, Category = "Climbing")
     void ToggleEnterLedgeSide();
@@ -57,6 +66,11 @@ public:
 
     bool bLedgeHeightInRange;
 
+    /** State of the Character Climbing State */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement")
+    // rename to: ERyuClimbingState RyuClimbingState and move to private;
+    ERYUClimbingMode RYUClimbingMode;
+
 protected:
     void BeginPlay() override;
 
@@ -65,4 +79,6 @@ protected:
 public:
     void TickComponent(float DeltaTime, ELevelTick TickType,
                        FActorComponentTickFunction* ThisTickFunction) override;
+
+private:
 };

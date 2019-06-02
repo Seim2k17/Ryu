@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RyuBaseCharacter.h"
+#include "Components/RyuClimbingComponent.h"
 #include "Components/RyuMovementComponent.h"
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
@@ -98,11 +99,14 @@ void ARyuBaseCharacter::OnSphereTracerCheckOverlap(AActor* OtherActor,
         SphereOverlappedComponent = OtherComp;
 
         bSphereTracerOverlap = true;
-        if ((RYUClimbingMode != ERYUClimbingMode::CANCLIMBDOWNLEDGE)
-            && (RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPANDDOWN)
-            && (RYUClimbingMode != ERYUClimbingMode::CANCLIMBUPLEDGE)
-            && (RYUClimbingMode != ERYUClimbingMode::CLIMBDOWNLEDGE)
-            && (RYUClimbingMode != ERYUClimbingMode::CLIMBUPLEDGE)
+
+        ERYUClimbingMode ClimbState = RyuClimbingComponent->GetClimbingState();
+
+        if ((ClimbState != ERYUClimbingMode::CANCLIMBDOWNLEDGE)
+            && (ClimbState != ERYUClimbingMode::CANCLIMBUPANDDOWN)
+            && (ClimbState != ERYUClimbingMode::CANCLIMBUPLEDGE)
+            && (ClimbState != ERYUClimbingMode::CLIMBDOWNLEDGE)
+            && (ClimbState != ERYUClimbingMode::CLIMBUPLEDGE)
             && (PlayerMovement != EPlayerMovement::CLIMBING))
 
         {
@@ -144,7 +148,7 @@ void ARyuBaseCharacter::CheckOverlappingActors()
         GetOverlappingActors(CapsuleOverlappedActors, ClimbableActorClass);
     }
 
-	// TODO : Move To Debug Comp
+    // TODO : Move To Debug Comp
     for (int i = 0; i < CapsuleOverlappedActors.Num(); i++)
     {
         UE_LOG(LogTemp, Log, TEXT("[%s] : %s"), *FString::FromInt(i),
@@ -157,10 +161,7 @@ void ARyuBaseCharacter::CheckOverlappingActors()
     }
     else
     {
-        PlayerMovement = EPlayerMovement::STAND;
-        RYUClimbingMode = ERYUClimbingMode::NONE;
-        CurrentLedgePosiTagName = "";
-        CurrentClimbTagName = "";
+        RyuClimbingComponent->ResetClimbingState();
     }
 }
 
@@ -194,21 +195,23 @@ void ARyuBaseCharacter::CheckOverlappingComponents()
     {
         PlayerMovement = EPlayerMovement::CANGRABLEDGE;
 
+        ERYULedgePosition2D LedgePosition = RyuClimbingComponent->GetLedgePosition();
+        ERYULedgeSideEntered LedgeSide = RyuClimbingComponent->GetLedgeSide(0);
+
+        ERYUClimbingMode ClimbState = RyuClimbingComponent->GetClimbingState();
+
         if (countTrigger == 1)
         {
             //save all Overlapping Components in a arry, before that we make sure that the array is empty
             //CapsuleOverlappedComponents.Empty(); wird in
 
             //we know that the TriggerComponents we search for, are UBoxComponents and we do not need any other
-            GetOverlappingBoxComponents();
+            RyuClimbingComponent->GetOverlappingBoxComponents();
 
             //CapsuleOverlappedActors[0]->GetOverlappingComponents(CapsuleOverlappedComponents);
 
             //ERYULedgePosition2D LedgePosition = ERYULedgePosition2D::NONE;
             //ERYULedgeSideEntered LedgeSide = ERYULedgeSideEntered::NONE;
-
-            ERYULedgePosition2D LedgePosition = GetLedgePosition();
-            ERYULedgeSideEntered LedgeSide = GetLedgeSide(0);
 
             /* fast check what kind of trigger*/
             OutputCapsuleOverlappedComponents();
@@ -220,12 +223,12 @@ void ARyuBaseCharacter::CheckOverlappingComponents()
 
             if (LedgePosition == ERYULedgePosition2D::PosiDown)
             {
-                RYUClimbingMode = ERYUClimbingMode::CANCLIMBDOWNLEDGE;
+                RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::CANCLIMBDOWNLEDGE);
             }
 
             if (LedgePosition == ERYULedgePosition2D::PosiUp)
             {
-                RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPLEDGE;
+                RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::CANCLIMBUPLEDGE);
             }
 
             if (LedgeSide == ERYULedgeSideEntered::LeftSide)
@@ -245,8 +248,8 @@ void ARyuBaseCharacter::CheckOverlappingComponents()
             //check if overlapped comp up or/and down
             //check if overlapped comp right or left
 
-            RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPANDDOWN;
-            ERYULedgePosition2D LedgePosition = GetLedgePosition();
+            // TODO later call to Character StateMachine !
+            RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::CANCLIMBUPANDDOWN);
         }
     }
 }
@@ -274,12 +277,18 @@ EPlayerMovement ARyuBaseCharacter::GetPlayerMovement()
 
 void ARyuBaseCharacter::SetClimbingMode(ERYUClimbingMode ClimbingModeToSet)
 {
-    RYUClimbingMode = ClimbingModeToSet;
+    if (auto* ClimbComp = FindComponentByClass<URyuClimbingComponent>())
+    {
+        ClimbComp->SetClimbingState(ClimbingModeToSet);
+    }
 }
 
 ERYUClimbingMode ARyuBaseCharacter::GetClimbingMode()
 {
-    return RYUClimbingMode;
+    if (auto* ClimbComp = FindComponentByClass<URyuClimbingComponent>())
+    {
+        return ClimbComp->GetClimbingState();
+    }
 }
 
 void ARyuBaseCharacter::FlipCharacter()
@@ -289,7 +298,7 @@ void ARyuBaseCharacter::FlipCharacter()
     if (Controller != nullptr)
     {
         //if (TravelDirection < 0.0f)
-        if (bLookRight)
+        if (LookDirection)
         {
             Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
             CameraBoom->RelativeRotation = FRotator(0.0f, 90.0f, 0.0f);
@@ -302,7 +311,7 @@ void ARyuBaseCharacter::FlipCharacter()
         }
     }
 
-    bLookRight = !bLookRight;
+    LookDirection = !LookDirection;
     UE_LOG(LogTemp, Log, TEXT("FlipCharacter(): lookRight = %s"),
            bLookRight ? TEXT("true") : TEXT("false"));
     //coa vs reset ?

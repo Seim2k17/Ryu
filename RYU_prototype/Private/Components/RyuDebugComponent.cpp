@@ -52,6 +52,7 @@ void URyuDebugComponent::DrawDebugInfosOnScreen()
         GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red,
                                          FString::Printf(TEXT("a(x): %s"), *currA.ToString()),
                                          false);
+		// now enum
         GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Green,
                                          FString::Printf(TEXT("Looking Right: %s"),
                                                          bLookRight ? TEXT("true") : TEXT("false"),

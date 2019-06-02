@@ -14,6 +14,16 @@ URyuClimbingComponent::URyuClimbingComponent()
 }
 
 
+ERYUClimbingMode URyuClimbingComponent::GetClimbingState()
+{
+	return RYUClimbingMode;
+}
+
+void URyuClimbingComponent::SetClimbingState(ERYUClimbingMode ClimbState)
+{
+	RYUClimbingMode = ClimbState;
+}
+
 // Called when the game starts
 void URyuClimbingComponent::BeginPlay()
 {
@@ -163,6 +173,14 @@ void URyuClimbingComponent::SetLedgeHangPosition(FVector LedgeTargetPoint, FName
 	}
 }
 
+
+void URyuClimbingComponent::ResetClimbingState()
+{
+	PlayerMovement = EPlayerMovement::STAND;
+	RYUClimbingMode = ERYUClimbingMode::NONE;
+	CurrentLedgePosiTagName = "";
+	CurrentClimbTagName = "";
+}
 
 void URyuClimbingComponent::InitializeValues()
 {
