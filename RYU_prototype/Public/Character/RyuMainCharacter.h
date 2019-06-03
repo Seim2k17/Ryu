@@ -25,9 +25,13 @@ public:
     // register paperZD Stuff override !
     void ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player) override;
 
+	void Climb();
+
     void Jump() override;
 
     void PostInitializeComponents() override;
+
+    void StopJumping() override;
 
     void Tick(float DeltaTime) override;
 

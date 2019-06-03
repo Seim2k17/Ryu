@@ -46,6 +46,10 @@ public:
 
     float GetSneakMultiplier();
 
+    void JumpForward();
+
+    void JumpUp();
+
 protected:
     // Called when the game starts
     virtual void BeginPlay() override;
@@ -75,6 +79,7 @@ protected:
     /* MEMBER                                                               */
     /************************************************************************/
 
+    // TODO MovementData separate from InputData / take care to NOT mix them
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
     float AddFallingMultiplierNumber;
@@ -90,6 +95,12 @@ public:
     /** Jump Force added when pressing Jump while Running*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
     FVector JumpForceRun;
+
+    UPROPERTY(EditAnywhere, Category = "Jumping")
+    FVector JumpImpulse = FVector::ZeroVector;
+
+    UPROPERTY(EditAnywhere, Category = "Jumping")
+    FVector JumpUpImpulse = FVector::ZeroVector;
 
     /**Treshhold to activate VelocityAfterJumping, Y: vertical Velocity, Z: Falling Treshold */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
@@ -120,11 +131,6 @@ public:
     // How far will the character jump?
     UPROPERTY(EditAnywhere)
     float JumpForwardDistance = 50.0f;
-
-    // TODO MovementData separate from InputData / take care to NOT mix them
-
-    FVector currA;
-    FVector currV;
 
     UPROPERTY(EditAnywhere, Category = "Sneak")
     float SneakMultiplier = 0.5f;

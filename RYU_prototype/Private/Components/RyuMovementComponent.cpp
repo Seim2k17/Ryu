@@ -49,14 +49,31 @@ void URyuMovementComponent::InitializeComponent()
 {
     Super::InitializeComponent();
 
+    bSneakIsPressed = false;
 
-	bSneakIsPressed = false;
+    //*if not set
+    //SneakMultiplier = 1.0f;
 
-	//*if not set
-	//SneakMultiplier = 1.0f;
+    SneakMultiplierValue = SneakMultiplier;
+}
 
-	SneakMultiplierValue = SneakMultiplier;
+void URyuMovementComponent::JumpForward()
+{
+    if (auto* Owner = Cast<ARyuBaseCharacter>(GetOwner()))
+    {
+        FVector FinalJumpImpulse = JumpImpulse * Owner->GetActorForwardVector();
+        UE_LOG(LogTemp, Log, TEXT("JumpForward: JumpImpulse = %s"), *FinalJumpImpulse.ToString());
+        Owner->LaunchCharacter(FinalJumpImpulse, false, true);
+    }
+}
 
+void URyuMovementComponent::JumpUp()
+{
+    if (auto* Owner = Cast<ARyuBaseCharacter>(GetOwner()))
+    {
+        FVector FinalJumpImpulse = JumpUpImpulse * Owner->GetActorUpVector();
+        Owner->LaunchCharacter(FinalJumpImpulse, false, true);
+    }
 }
 
 // TODO: BroadCastMovementMode with 2 Parameters ? -> PlayrMovement / ClimbingMode
@@ -353,7 +370,7 @@ void URyuMovementComponent::SetNoCollisionCharacterPrefs()
 
 float URyuMovementComponent::GetSneakMultiplier()
 {
-	return SneakMultiplier;
+    return SneakMultiplier;
 }
 
 void URyuMovementComponent::SetAllowClimbUpTrue()

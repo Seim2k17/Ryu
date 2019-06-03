@@ -8,6 +8,8 @@
 #include <Components/ActorComponent.h>
 #include "RyuClimbingComponent.generated.h"
 
+class UBoxComponent;
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class RYU_PROTOTYPE_API URyuClimbingComponent : public UActorComponent
 {
@@ -17,7 +19,20 @@ public:
     // Sets default values for this component's properties
     URyuClimbingComponent();
 
+    void CheckMoveUpState(float MoveUpInput);
+
+    void Climb(float MoveUpInput);
+
     ERYUClimbingMode GetClimbingState();
+
+	UBoxComponent* GetOverlappedClimbingComponent(ERYULedgePosition2D LedgePosi);
+
+	UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);
+
+    void SetClimbingPostitionsAndMovementMode(EPlayerMovement PlayerMove,
+                                              UBoxComponent* ClimbingTrigger);
+
+    void SetClimbingPositions(UBoxComponent* ClimbTrigger);
 
     // TODO this call will later completely only be called from Character StateMachine
     void SetClimbingState(ERYUClimbingMode ClimbState);

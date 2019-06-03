@@ -158,6 +158,7 @@ protected:
 
     UPrimitiveComponent* SphereOverlappedComponent;
 
+	// TODO does really every Character can Climb ? I don´t think so
     URyuClimbingComponent* RyuClimbingComponent;
     URyuMovementComponent* RyuMovementComponent;
 
