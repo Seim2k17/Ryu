@@ -1,6 +1,8 @@
 // Copyright 2019 80k Games, All Rights Reserved.
 
 #include "RyuClimbingComponent.h"
+#include "RYU2DENUM_Movement.h"
+#include "RyuBaseCharacter.h"
 #include <Components/BoxComponent.h>
 
 // Sets default values for this component's properties
@@ -376,6 +378,8 @@ void URyuClimbingComponent::SetClimbingPositions(UBoxComponent* ClimbTrigger)
         SetActorLocation(PosChar);
     }
 }
+
+
 
 // Called when the game starts
 void URyuClimbingComponent::BeginPlay()

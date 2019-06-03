@@ -367,51 +367,7 @@ void ARyuMainCharacter::Climb()
     RyuClimbingComponent->Climb(MoveUpInput);
 }
 
-void ARyuMainCharacter::StartLaunchCharacter()
-{
-    // need pimp
-    UE_LOG(LogTemp, Warning, TEXT("Launching Char when Jumping with %s"), *JumpImpulse.ToString());
-    LaunchCharacter(JumpImpulse, false, false);
-}
-
-void ARyuMainCharacter::HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent,
-                                                         AActor* OtherActor,
-                                                         UPrimitiveComponent* OtherComp,
-                                                         int32 OtherBodyIndex, bool bFromSweep,
-                                                         const FHitResult& SweepResult)
-{
-    //TODO: needed ?
-}
-
-void ARyuMainCharacter::HandleSphereColliderEndOverlap(UPrimitiveComponent* OverlappedComponent,
-                                                       AActor* OtherActor,
-                                                       UPrimitiveComponent* OtherComp,
-                                                       int32 OtherBodyIndex)
-{
-    //TODO: needed ?
-}
-
 /** Getter and Setter*/
-
-ERyuLookDirection ARyuMainCharacter::GetLookDirection()
-{
-    //return bLookRight;
-    return LookDirection;
-}
-
-void ARyuMainCharacter::SetLookRight()
-{
-    if (currV.X > 0)
-    {
-        LookDirection == ERyuLookDirection::Right;
-        //bLookRight = true;
-    }
-    else if (currV.X < 0)
-    {
-        LookDirection == ERyuLookDirection::Left;
-        //bLookRight = false;
-    }
-}
 
 void ARyuMainCharacter::TurnFlipBookFinished()
 {

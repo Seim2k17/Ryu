@@ -25,18 +25,6 @@ public:
 
     ERYUClimbingMode GetClimbingState();
 
-	UBoxComponent* GetOverlappedClimbingComponent(ERYULedgePosition2D LedgePosi);
-
-	UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);
-
-    void SetClimbingPostitionsAndMovementMode(EPlayerMovement PlayerMove,
-                                              UBoxComponent* ClimbingTrigger);
-
-    void SetClimbingPositions(UBoxComponent* ClimbTrigger);
-
-    // TODO this call will later completely only be called from Character StateMachine
-    void SetClimbingState(ERYUClimbingMode ClimbState);
-
     UFUNCTION(BlueprintCallable, Category = "Climbing")
     FVector GetLedgeHangPosition();
 
@@ -50,6 +38,18 @@ public:
     ERYULedgePosition2D GetLedgePosition();
 
     void GetOverlappingBoxComponents();
+
+    UBoxComponent* GetOverlappedClimbingComponent(ERYULedgePosition2D LedgePosi);
+
+    UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);
+
+    void SetClimbingPostitionsAndMovementMode(EPlayerMovement PlayerMove,
+                                              UBoxComponent* ClimbingTrigger);
+
+    void SetClimbingPositions(UBoxComponent* ClimbTrigger);
+
+    // TODO this call will later completely only be called from Character StateMachine
+    void SetClimbingState(ERYUClimbingMode ClimbState);
 
     UFUNCTION(BlueprintCallable, Category = "Climbing")
     void SetLedgeHangPosition(FVector LedgeTargetPoint, FName LedgeSide);

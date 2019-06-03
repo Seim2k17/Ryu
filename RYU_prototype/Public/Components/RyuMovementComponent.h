@@ -73,6 +73,9 @@ protected:
     UFUNCTION()
     void SetAllowClimbUpFalse();
 
+    UFUNCTION(BlueprintCallable, Category = "Jumping")
+    void StartLaunchCharacter();
+
     void ResetDoOnceClimbInput();
 
     /************************************************************************/

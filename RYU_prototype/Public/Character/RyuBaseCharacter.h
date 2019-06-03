@@ -50,6 +50,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     ERYUClimbingMode GetClimbingMode();
 
+    ERyuLookDirection GetLookDirection();
+
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     EPlayerMovement GetPlayerMovement();
 
@@ -137,10 +139,10 @@ public:
     UPROPERTY(VisibleAnywhere, Category = "Components")
     USphereComponent* SphereTracer;
 
-	// TODO fully replace with LookDirection
+    // TODO fully replace with LookDirection
     bool bLookRight;
 
-	bool bPlayTurnAni;
+    bool bPlayTurnAni;
 
 protected:
     UPROPERTY(BlueprintReadOnly, Category = "Movement")
@@ -158,7 +160,7 @@ protected:
 
     UPrimitiveComponent* SphereOverlappedComponent;
 
-	// TODO does really every Character can Climb ? I don´t think so
+    // TODO does really every Character can Climb ? I don´t think so
     URyuClimbingComponent* RyuClimbingComponent;
     URyuMovementComponent* RyuMovementComponent;
 

@@ -25,13 +25,22 @@ public:
     // register paperZD Stuff override !
     void ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player) override;
 
-	void Climb();
+    void Climb();
+
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    void ClimbLedgeFlipBookFinished();
 
     void Jump() override;
 
     void PostInitializeComponents() override;
 
     void StopJumping() override;
+
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    void TurnFlipBookFinished();
+
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    void TurnRunFlipBookFinished();
 
     void Tick(float DeltaTime) override;
 

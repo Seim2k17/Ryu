@@ -340,6 +340,17 @@ void URyuMovementComponent::SetNormalMaxJumpCount(int32 MaxJumps)
     NormalMaxJumpCount = MaxJumps;
 }
 
+void URyuMovementComponent::StartLaunchCharacter()
+{
+	// need pimp
+	if (auto* Char = Cast<ARyuBaseCharacter>(GetOwner()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Launching Char when Jumping with %s"),
+			*JumpImpulse.ToString());
+		Char->LaunchCharacter(JumpImpulse, false, false);
+	}
+}
+
 int32 URyuMovementComponent::GetNormalMaxJumpCount()
 {
     return 0;

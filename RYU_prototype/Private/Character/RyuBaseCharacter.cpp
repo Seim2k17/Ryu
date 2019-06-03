@@ -283,12 +283,34 @@ void ARyuBaseCharacter::SetClimbingMode(ERYUClimbingMode ClimbingModeToSet)
     }
 }
 
+void ARyuBaseCharacter::SetLookRight()
+{
+	FVector currV = this->GetVelocity();
+
+	if (currV.X > 0)
+	{
+		LookDirection = ERyuLookDirection::Right;
+		//bLookRight = true;
+	}
+	else if (currV.X < 0)
+	{
+		LookDirection = ERyuLookDirection::Left;
+		//bLookRight = false;
+	}
+}
+
 ERYUClimbingMode ARyuBaseCharacter::GetClimbingMode()
 {
     if (auto* ClimbComp = FindComponentByClass<URyuClimbingComponent>())
     {
         return ClimbComp->GetClimbingState();
     }
+}
+
+ERyuLookDirection ARyuBaseCharacter::GetLookDirection()
+{
+    //return bLookRight;
+    return LookDirection;
 }
 
 void ARyuBaseCharacter::FlipCharacter()
@@ -311,14 +333,14 @@ void ARyuBaseCharacter::FlipCharacter()
         }
     }
 
-	if (LookDirection == ERyuLookDirection::Right)
-	{
-		LookDirection = ERyuLookDirection::Left;
-	}
-	else
-	{
-		LookDirection = ERyuLookDirection::Right;
-	}
+    if (LookDirection == ERyuLookDirection::Right)
+    {
+        LookDirection = ERyuLookDirection::Left;
+    }
+    else
+    {
+        LookDirection = ERyuLookDirection::Right;
+    }
     // LookDirection = !LookDirection;
     //UE_LOG(LogTemp, Log, TEXT("FlipCharacter(): lookRight = %s"),
     //       bLookRight ? TEXT("true") : TEXT("false"));
