@@ -298,7 +298,7 @@ void ARyuBaseCharacter::FlipCharacter()
     if (Controller != nullptr)
     {
         //if (TravelDirection < 0.0f)
-        if (LookDirection)
+        if (LookDirection == ERyuLookDirection::Right)
         {
             Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
             CameraBoom->RelativeRotation = FRotator(0.0f, 90.0f, 0.0f);
@@ -311,9 +311,17 @@ void ARyuBaseCharacter::FlipCharacter()
         }
     }
 
-    LookDirection = !LookDirection;
-    UE_LOG(LogTemp, Log, TEXT("FlipCharacter(): lookRight = %s"),
-           bLookRight ? TEXT("true") : TEXT("false"));
+	if (LookDirection == ERyuLookDirection::Right)
+	{
+		LookDirection = ERyuLookDirection::Left;
+	}
+	else
+	{
+		LookDirection = ERyuLookDirection::Right;
+	}
+    // LookDirection = !LookDirection;
+    //UE_LOG(LogTemp, Log, TEXT("FlipCharacter(): lookRight = %s"),
+    //       bLookRight ? TEXT("true") : TEXT("false"));
     //coa vs reset ?
     CheckOverlappingActors();
 }

@@ -69,8 +69,6 @@ void ARyuMainCharacter::InitializeCharacterValues()
 	LookDirection = ERyuLookDirection::Right;
     bLookRight = true;
 
-    bStartedNoLoopAnimation = false;
-
     // Set the size of our collision capsule.
     GetCapsuleComponent()->SetCapsuleHalfHeight(50.0f);
     GetCapsuleComponent()->SetCapsuleRadius(20.0f);
@@ -118,12 +116,7 @@ void ARyuMainCharacter::InitializeCharacterValues()
 
     
 
-    bSneakIsPressed = false;
-
-    //*if not set
-    //SneakMultiplier = 1.0f;
-
-    SneakMultiplierValue = SneakMultiplier;
+    
 }
 
 void ARyuMainCharacter::BeginPlay()
@@ -180,6 +173,21 @@ void ARyuMainCharacter::Jump()
     }
 }
 
+void ARyuMainCharacter::HandleSphereColliderBeginOverlap(
+	UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	//TODO: needed ?
+}
+
+void ARyuMainCharacter::HandleSphereColliderEndOverlap(
+	UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex)
+{
+	//TODO: needed ?
+}
+
+
 void ARyuMainCharacter::JumpForward()
 {
     FVector FinalJumpImpulse = JumpImpulse * GetActorForwardVector();
@@ -206,16 +214,12 @@ void ARyuMainCharacter::StopJumping()
 void ARyuMainCharacter::MoveRight(float Val)
 {
     //for slow Movement , TODO: Clamp for ControllerInput (AxisValus...)
-    if (bSneakIsPressed)
-    {
-        SneakMultiplierValue = SneakMultiplier;
-    }
-    else
-    {
-        SneakMultiplierValue = 1.0f;
-    }
 
-    MoveRightInput = Val * SneakMultiplierValue;
+	float SneakValue = 1.0f;
+
+	bSneakIsPressed ? SneakValue = RyuMovementComponent->GetSneakMultiplier() : SneakValue = 1.0f;
+
+	MoveRightInput = Val * SneakValue;
 
     /*
 	if ((PlayerMovement != EPlayerMovement::BEGINRUN) &&

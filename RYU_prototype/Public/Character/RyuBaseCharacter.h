@@ -137,7 +137,10 @@ public:
     UPROPERTY(VisibleAnywhere, Category = "Components")
     USphereComponent* SphereTracer;
 
+	// TODO fully replace with LookDirection
     bool bLookRight;
+
+	bool bPlayTurnAni;
 
 protected:
     UPROPERTY(BlueprintReadOnly, Category = "Movement")

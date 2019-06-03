@@ -50,6 +50,17 @@ protected:
 
     void MoveUp(float Value);
 
+    UFUNCTION()
+    void HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+                                          AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                                          int32 OtherBodyIndex, bool bFromSweep,
+                                          const FHitResult& SweepResult);
+
+    UFUNCTION()
+    void HandleSphereColliderEndOverlap(UPrimitiveComponent* OverlappedComponent,
+                                        AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                                        int32 OtherBodyIndex);
+
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
     UFUNCTION()
@@ -60,8 +71,7 @@ protected:
 
     void UpdateCharacter();
 
-	URyuTimelineComponent* RyuTimelineComponent;
-	
+    URyuTimelineComponent* RyuTimelineComponent;
 
 private:
     // our own functionality gets called at the end of an animation, due its a delegate function we need to mark it as UFUNCTION() with InAnimSequence parmList
@@ -75,19 +85,9 @@ public:
 private:
     float fDeltaSeconds;
 
-    FVector currA;
-    FVector currV;
-
-     //*ClilmbUpVariables
-    bool bHangPositionSet;
-
-    FVector _StartClimbUpPosition;
-
     float MoveRightInput;
 
     float MoveUpInput;
-
-    float SneakMultiplierValue;
 
     bool bSneakIsPressed;
 };

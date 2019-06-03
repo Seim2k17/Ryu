@@ -17,10 +17,10 @@ public:
     // Sets default values for this component's properties
     URyuClimbingComponent();
 
-	ERYUClimbingMode GetClimbingState();
+    ERYUClimbingMode GetClimbingState();
 
-	// TODO this call will later completely only be called from Character StateMachine
-	void SetClimbingState(ERYUClimbingMode ClimbState);
+    // TODO this call will later completely only be called from Character StateMachine
+    void SetClimbingState(ERYUClimbingMode ClimbState);
 
     UFUNCTION(BlueprintCallable, Category = "Climbing")
     FVector GetLedgeHangPosition();
@@ -56,11 +56,16 @@ public:
     FName LeftLedgePosiTagName;
     FName RightLedgePosiTagName;
 
-    FVector LedgeHangPosition;
-
     FVector ClimbStandUpPosition;
 
     FVector ClimbStandDownPosition;
+
+    FVector LedgeHangPosition;
+
+    FVector _StartClimbUpPosition;
+
+    //*ClilmbUpVariables
+    bool bHangPositionSet;
 
     ERYULedgeSideEntered ESideEntered;
 

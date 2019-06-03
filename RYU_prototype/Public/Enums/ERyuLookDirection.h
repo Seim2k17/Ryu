@@ -5,4 +5,4 @@ enum class ERyuLookDirection : uint8
 {
 	Left,
 	Right
-}
+};
