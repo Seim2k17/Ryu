@@ -41,6 +41,9 @@ public:
     /** TO Climbing-Component-End*/
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
+    void ChangeMovementMode();
+
+    UFUNCTION(BlueprintCallable, Category = "Movement")
     void CheckOverlappingActors();
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
@@ -147,7 +150,7 @@ public:
 
     bool bPlayTurnAni;
 
-	ERyuLookDirection LookDirection;
+    ERyuLookDirection LookDirection;
 
 protected:
     UPROPERTY(BlueprintReadOnly, Category = "Movement")
@@ -168,8 +171,6 @@ protected:
     // TODO does really every Character can Climb ? I don´t think so
     URyuClimbingComponent* RyuClimbingComponent;
     URyuMovementComponent* RyuMovementComponent;
-
-    
 
 private:
     // UtilitySection

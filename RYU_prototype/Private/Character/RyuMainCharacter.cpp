@@ -427,7 +427,7 @@ void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAni
 {
     UE_LOG(LogTemp, Warning, TEXT("Finally AnimEnded called from code."));
 
-	ERYUClimbingMode RYUClimbingMode = RyuClimbingComponent->GetClimbingState();
+    ERYUClimbingMode RYUClimbingMode = RyuClimbingComponent->GetClimbingState();
 
     /* Just for testing purpose until the StateMachine is fully implemented ! -> for removing finally the Notifier in ABP*/
     switch (PlayerMovement)
@@ -514,7 +514,7 @@ void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAni
 
 bool ARyuMainCharacter::CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger)
 {
-    //TODO: search correct actor
+    //TODO: search correct actor, do we need the ArrowComponent ? guess it´s only for EditorPurposes
 
     if (ClimbingTrigger)
     {
@@ -557,7 +557,7 @@ void ARyuMainCharacter::SneakPressed()
 {
     if (PlayerMovement != EPlayerMovement::CLIMBING)
     {
-        SneakMultiplierValue = SneakMultiplier;
+        SneakMultiplierValue = RyuClimbingComponent->GetSneakMultiplier();
         bSneakIsPressed = true;
     }
 }
@@ -575,58 +575,4 @@ void ARyuMainCharacter::ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Playe
     UPaperZDAnimInstance* AnimInstance = GetOrCreateAnimInstance();
 
     Player->OnPlaybackSequenceComplete.AddDynamic(this, &ARyuMainCharacter::AnimationSequenceEnded);
-}
-
-void ARyuMainCharacter::ChangeMovementMode()
-{
-    switch (PlayerMovement)
-    {
-        case EPlayerMovement::STAND:
-            PlayerMovement = EPlayerMovement::CANGRABLEDGE;
-            break;
-        case EPlayerMovement::CANGRABLEDGE:
-            PlayerMovement = EPlayerMovement::JUMPUP;
-            break;
-        case EPlayerMovement::JUMPUP:
-            PlayerMovement = EPlayerMovement::CLIMBING;
-            break;
-        case EPlayerMovement::CLIMBING:
-            PlayerMovement = EPlayerMovement::STAND;
-            break;
-        case EPlayerMovement::SNEAK:
-            break;
-        case EPlayerMovement::STANDUP:
-            break;
-        case EPlayerMovement::COMBAT:
-            break;
-        default:
-            break;
-    }
-}
-
-void ARyuMainCharacter::ChangeClimbingMode()
-{
-    switch (RYUClimbingMode)
-    {
-        case ERYUClimbingMode::NONE:
-            RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPLEDGE;
-            break;
-        case ERYUClimbingMode::CANCLIMBUPLEDGE:
-            RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
-            break;
-        case ERYUClimbingMode::CANCLIMBUPANDDOWN:
-            RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
-            break;
-        case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
-            RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
-            break;
-        case ERYUClimbingMode::HANGONLEDGE:
-            RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
-            break;
-        case ERYUClimbingMode::CLIMBUPLEDGE:
-            RYUClimbingMode = ERYUClimbingMode::NONE;
-            break;
-        default:
-            break;
-    }
 }

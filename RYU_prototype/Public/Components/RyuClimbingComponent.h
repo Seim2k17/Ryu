@@ -20,6 +20,9 @@ public:
     // Sets default values for this component's properties
     URyuClimbingComponent();
 
+	UFUNCTION(BlueprintCallable, Category = "Climbing")
+    void ChangeClimbingMode();
+
     void CheckMoveUpState(float MoveUpInput);
 
     void Climb(float MoveUpInput);

@@ -137,6 +137,34 @@ void ARyuBaseCharacter::OnHandleCapsuleEndOverlap(UPrimitiveComponent* Overlappe
            *OtherComp->GetName());
 }
 
+// TODO CSTM relevant
+void ARyuBaseCharacter::ChangeMovementMode()
+{
+	switch (PlayerMovement)
+	{
+	case EPlayerMovement::STAND:
+		PlayerMovement = EPlayerMovement::CANGRABLEDGE;
+		break;
+	case EPlayerMovement::CANGRABLEDGE:
+		PlayerMovement = EPlayerMovement::JUMPUP;
+		break;
+	case EPlayerMovement::JUMPUP:
+		PlayerMovement = EPlayerMovement::CLIMBING;
+		break;
+	case EPlayerMovement::CLIMBING:
+		PlayerMovement = EPlayerMovement::STAND;
+		break;
+	case EPlayerMovement::SNEAK:
+		break;
+	case EPlayerMovement::STANDUP:
+		break;
+	case EPlayerMovement::COMBAT:
+		break;
+	default:
+		break;
+	}
+}
+
 void ARyuBaseCharacter::CheckOverlappingActors()
 {
     // TODO genauer abchecken nach was geprueft wird: a) climbingActors b) pushactors c) blabla ...

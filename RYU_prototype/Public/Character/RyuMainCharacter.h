@@ -22,6 +22,8 @@ class RYU_PROTOTYPE_API ARyuMainCharacter : public ARyuBaseCharacter
 public:
     ARyuMainCharacter(const class FObjectInitializer& ObjectInitializer);
 
+	bool CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger);
+
     // register paperZD Stuff override !
     void ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player) override;
 
@@ -105,4 +107,6 @@ private:
     float MoveUpInput;
 
     bool bSneakIsPressed;
+
+	float SneakMultiplierValue;
 };

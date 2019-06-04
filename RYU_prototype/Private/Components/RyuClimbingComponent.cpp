@@ -16,6 +16,33 @@ URyuClimbingComponent::URyuClimbingComponent()
     // ...
 }
 
+void URyuClimbingComponent::ChangeClimbingMode()
+{
+	switch (RYUClimbingMode)
+	{
+	case ERYUClimbingMode::NONE:
+		RYUClimbingMode = ERYUClimbingMode::CANCLIMBUPLEDGE;
+		break;
+	case ERYUClimbingMode::CANCLIMBUPLEDGE:
+		RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+		break;
+	case ERYUClimbingMode::CANCLIMBUPANDDOWN:
+		RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+		break;
+	case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
+		RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+		break;
+	case ERYUClimbingMode::HANGONLEDGE:
+		RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
+		break;
+	case ERYUClimbingMode::CLIMBUPLEDGE:
+		RYUClimbingMode = ERYUClimbingMode::NONE;
+		break;
+	default:
+		break;
+	}
+}
+
 void URyuClimbingComponent::CheckMoveUpState(float MoveUpInput)
 {
     //TODO !!! and search correct climbingactior when in UpAndDownCLimbstate
@@ -152,6 +179,7 @@ void URyuClimbingComponent::Climb(float MoveUpInput)
             {
                 /* Without a Timeline but we need to adjust the Pivotpoint in EVERY Frame this SUCKS! maybe i can automatisize it when making my own animatins in PS
 			(like we did in PS & Visionaire with a positioning exportfile?)*/
+				// TODO maybe solve this by Broadcasting an Event / CSTM relevant
                 MovementComp->SetMovementMode(MOVE_Custom,
                                               static_cast<uint8>(ERYUClimbingMode::CLIMBUPLEDGE));
                 RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
