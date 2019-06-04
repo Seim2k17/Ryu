@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Character/RYU2DENUM_ClimbingMode.h"
+#include "Character/RYU2DENUM_Movement.h"
 #include "Character/RYUENUM_LedgePosition.h"
 #include <CoreMinimal.h>
 #include <Components/ActorComponent.h>

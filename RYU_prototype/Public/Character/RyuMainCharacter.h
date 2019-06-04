@@ -34,6 +34,8 @@ public:
 
     void PostInitializeComponents() override;
 
+	void ResetCollisionAndGravity();
+
     void StopJumping() override;
 
     UFUNCTION(BlueprintCallable, Category = "Movement")

@@ -94,6 +94,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     void SetClimbingMode(ERYUClimbingMode ClimbingModeToSet);
 
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    void SetLookRight();
+
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     void SetPlayerMovement(EPlayerMovement PlayerStateToSet);
 
@@ -144,6 +147,8 @@ public:
 
     bool bPlayTurnAni;
 
+	ERyuLookDirection LookDirection;
+
 protected:
     UPROPERTY(BlueprintReadOnly, Category = "Movement")
     bool bJumpJustStarted;
@@ -164,7 +169,7 @@ protected:
     URyuClimbingComponent* RyuClimbingComponent;
     URyuMovementComponent* RyuMovementComponent;
 
-    ERyuLookDirection LookDirection;
+    
 
 private:
     // UtilitySection

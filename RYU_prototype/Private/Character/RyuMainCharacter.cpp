@@ -1,6 +1,7 @@
 // Copyright 2019 80k Games, All Rights Reserved.
 
 #include "RyuMainCharacter.h"
+#include "Components/RyuClimbingComponent.h"
 #include "Components/RyuDebugComponent.h"
 #include "Components/RyuMovementComponent.h"
 #include "Components/RyuTimelineComponent.h"
@@ -381,25 +382,29 @@ void ARyuMainCharacter::TurnRunFlipBookFinished()
     PlayerMovement = EPlayerMovement::RUN;
 }
 
+// TODO CSTM relevant
 void ARyuMainCharacter::ClimbLedgeFlipBookFinished()
 {
     UE_LOG(LogTemp, Log,
            TEXT("ClimbLedgeFlipBookFinished(): Call From Notify->ClimbUpFlippbookFinished"));
 
+    ERYUClimbingMode RYUClimbingMode = RyuClimbingComponent->GetClimbingState();
+
     switch (RYUClimbingMode)
     {
         case ERYUClimbingMode::CLIMBDOWNLEDGE: {
-            RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
+            RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::HANGONLEDGE);
+            //RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
         }
         break;
         case ERYUClimbingMode::CLIMBUPLEDGE: {
-            SetActorLocation(ClimbStandUpPosition);
-            ResetClimbingState();
+            SetActorLocation(RyuClimbingComponent->ClimbStandUpPosition);
+            ResetCollisionAndGravity();
             break;
         }
         case ERYUClimbingMode::LETGOLEDGE: {
             UE_LOG(LogTemp, Log, TEXT("ClimbLedgeFlipBookFinished(): LETGOEND"));
-            ResetClimbingState();
+            ResetCollisionAndGravity();
             break;
         }
 
@@ -408,7 +413,7 @@ void ARyuMainCharacter::ClimbLedgeFlipBookFinished()
     }
 }
 
-void ARyuMainCharacter::ResetClimbingState()
+void ARyuMainCharacter::ResetCollisionAndGravity()
 {
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     SphereTracer->SetEnableGravity(true);
@@ -417,9 +422,12 @@ void ARyuMainCharacter::ResetClimbingState()
     CheckOverlappingActors();
 }
 
+// TODO CSTM relevant
 void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence)
 {
     UE_LOG(LogTemp, Warning, TEXT("Finally AnimEnded called from code."));
+
+	ERYUClimbingMode RYUClimbingMode = RyuClimbingComponent->GetClimbingState();
 
     /* Just for testing purpose until the StateMachine is fully implemented ! -> for removing finally the Notifier in ABP*/
     switch (PlayerMovement)
@@ -446,7 +454,7 @@ void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAni
             break;
         case EPlayerMovement::JUMPSTART: {
             PlayerMovement = EPlayerMovement::JUMPLOOP;
-            JumpForward();
+            RyuMovementComponent->JumpForward();
         }
         break;
         case EPlayerMovement::JUMPLOOP:
@@ -469,7 +477,7 @@ void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAni
                 case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
                 case ERYUClimbingMode::CANCLIMBUPANDDOWN:
                 case ERYUClimbingMode::CLIMBDOWNLEDGE:
-                    SetClimbingMode(ERYUClimbingMode::HANGONLEDGE);
+                    RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::HANGONLEDGE);
                     break;
                 case ERYUClimbingMode::JUMPTOLEDGE:
                     break;

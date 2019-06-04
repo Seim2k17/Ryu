@@ -535,6 +535,8 @@ void URyuClimbingComponent::ResetClimbingState()
     CurrentClimbTagName = "";
 }
 
+
+
 void URyuClimbingComponent::InitializeValues()
 {
     ESideEntered = ERYULedgeSideEntered::NONE;

@@ -285,7 +285,7 @@ void ARyuBaseCharacter::SetClimbingMode(ERYUClimbingMode ClimbingModeToSet)
 
 void ARyuBaseCharacter::SetLookRight()
 {
-	FVector currV = this->GetVelocity();
+	FVector currV = GetVelocity();
 
 	if (currV.X > 0)
 	{
