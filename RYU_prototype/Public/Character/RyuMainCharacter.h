@@ -22,7 +22,7 @@ class RYU_PROTOTYPE_API ARyuMainCharacter : public ARyuBaseCharacter
 public:
     ARyuMainCharacter(const class FObjectInitializer& ObjectInitializer);
 
-	bool CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger);
+    bool CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger);
 
     // register paperZD Stuff override !
     void ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player) override;
@@ -36,7 +36,7 @@ public:
 
     void PostInitializeComponents() override;
 
-	void ResetCollisionAndGravity();
+    void ResetCollisionAndGravity();
 
     void StopJumping() override;
 
@@ -52,12 +52,17 @@ public:
     void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 
+    UFUNCTION(BlueprintPure, Category = "Movement")
+    float GetMoveRightInput();
+
+    UFUNCTION(BlueprintPure, Category = "Movement")
+    float GetMoveUpInput();
+
+	bool GetSneakActive();
+
 protected:
     // really protected ?
     void BeginPlay() override;
-
-    UFUNCTION(BlueprintPure, Category = "Movement")
-    float GetMoveRightInput();
 
     void JumpUpOrDown(float Val, FVector StartJumpPosition);
 
@@ -108,5 +113,5 @@ private:
 
     bool bSneakIsPressed;
 
-	float SneakMultiplierValue;
+    float SneakMultiplierValue;
 };

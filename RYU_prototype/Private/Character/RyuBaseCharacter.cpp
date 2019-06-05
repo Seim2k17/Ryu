@@ -140,29 +140,29 @@ void ARyuBaseCharacter::OnHandleCapsuleEndOverlap(UPrimitiveComponent* Overlappe
 // TODO CSTM relevant
 void ARyuBaseCharacter::ChangeMovementMode()
 {
-	switch (PlayerMovement)
-	{
-	case EPlayerMovement::STAND:
-		PlayerMovement = EPlayerMovement::CANGRABLEDGE;
-		break;
-	case EPlayerMovement::CANGRABLEDGE:
-		PlayerMovement = EPlayerMovement::JUMPUP;
-		break;
-	case EPlayerMovement::JUMPUP:
-		PlayerMovement = EPlayerMovement::CLIMBING;
-		break;
-	case EPlayerMovement::CLIMBING:
-		PlayerMovement = EPlayerMovement::STAND;
-		break;
-	case EPlayerMovement::SNEAK:
-		break;
-	case EPlayerMovement::STANDUP:
-		break;
-	case EPlayerMovement::COMBAT:
-		break;
-	default:
-		break;
-	}
+    switch (PlayerMovement)
+    {
+        case EPlayerMovement::STAND:
+            PlayerMovement = EPlayerMovement::CANGRABLEDGE;
+            break;
+        case EPlayerMovement::CANGRABLEDGE:
+            PlayerMovement = EPlayerMovement::JUMPUP;
+            break;
+        case EPlayerMovement::JUMPUP:
+            PlayerMovement = EPlayerMovement::CLIMBING;
+            break;
+        case EPlayerMovement::CLIMBING:
+            PlayerMovement = EPlayerMovement::STAND;
+            break;
+        case EPlayerMovement::SNEAK:
+            break;
+        case EPlayerMovement::STANDUP:
+            break;
+        case EPlayerMovement::COMBAT:
+            break;
+        default:
+            break;
+    }
 }
 
 void ARyuBaseCharacter::CheckOverlappingActors()
@@ -313,18 +313,18 @@ void ARyuBaseCharacter::SetClimbingMode(ERYUClimbingMode ClimbingModeToSet)
 
 void ARyuBaseCharacter::SetLookRight()
 {
-	FVector currV = GetVelocity();
+    FVector currV = GetVelocity();
 
-	if (currV.X > 0)
-	{
-		LookDirection = ERyuLookDirection::Right;
-		//bLookRight = true;
-	}
-	else if (currV.X < 0)
-	{
-		LookDirection = ERyuLookDirection::Left;
-		//bLookRight = false;
-	}
+    if (currV.X > 0)
+    {
+        LookDirection = ERyuLookDirection::Right;
+        //bLookRight = true;
+    }
+    else if (currV.X < 0)
+    {
+        LookDirection = ERyuLookDirection::Left;
+        //bLookRight = false;
+    }
 }
 
 ERYUClimbingMode ARyuBaseCharacter::GetClimbingMode()

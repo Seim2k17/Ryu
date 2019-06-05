@@ -7,6 +7,8 @@
 #include <Components/ActorComponent.h>
 #include "RyuDebugComponent.generated.h"
 
+class ARyuMainCharacter;
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class RYU_PROTOTYPE_API URyuDebugComponent : public UActorComponent
 {
@@ -20,6 +22,8 @@ public:
                        FActorComponentTickFunction* ThisTickFunction) override;
 
     void PostEditChangePropertyFromOwner();
+
+    void DrawDebugInfosOnScreen();
 
 protected:
     void BeginPlay() override;

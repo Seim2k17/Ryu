@@ -84,4 +84,7 @@ public:
 
     UPROPERTY(EditAnywhere, Category = "TimelineData")
     float ClimbUpOffsetZ;
+
+private:
+    ARyuMainCharacter* GetMainCharOwner();
 };

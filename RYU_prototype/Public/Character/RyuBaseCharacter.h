@@ -105,6 +105,8 @@ public:
 
     void StopJumping() override;
 
+    void OutputCapsuleOverlappedComponents();
+
 protected:
     virtual void BeginPlay() override;
 
@@ -115,8 +117,6 @@ protected:
 
     //CHECK ! is it used ANYMORE ?
     void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
-
-    void OutputCapsuleOverlappedComponents();
 
 public:
     /** Camera boom positioning the camera beside the character */
@@ -145,6 +145,9 @@ public:
     UPROPERTY(VisibleAnywhere, Category = "Components")
     USphereComponent* SphereTracer;
 
+    UPROPERTY(BlueprintReadOnly, Category = "Movement")
+    bool bJumpJustStarted;
+
     // TODO fully replace with LookDirection
     bool bLookRight;
 
@@ -152,18 +155,12 @@ public:
 
     ERyuLookDirection LookDirection;
 
-protected:
-    UPROPERTY(BlueprintReadOnly, Category = "Movement")
-    bool bJumpJustStarted;
-
     //** Overlapped CapsuleStuff, by design we only want to overlap UBoxComp ?*/
     TArray<UPrimitiveComponent*> CapsuleOverlappedComponents;
 
     TArray<AActor*> CapsuleOverlappedActors;
 
-    UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Climbing")
-    TSubclassOf<ARYUClimbingActor> ClimbableActorClass;
-
+protected:
     AActor* SphereOverlappedActor;
 
     UPrimitiveComponent* SphereOverlappedComponent;

@@ -20,7 +20,7 @@ public:
     // Sets default values for this component's properties
     URyuClimbingComponent();
 
-	UFUNCTION(BlueprintCallable, Category = "Climbing")
+    UFUNCTION(BlueprintCallable, Category = "Climbing")
     void ChangeClimbingMode();
 
     void CheckMoveUpState(float MoveUpInput);
@@ -94,6 +94,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement")
     // rename to: ERyuClimbingState RyuClimbingState and move to private;
     ERYUClimbingMode RYUClimbingMode;
+
+    UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Climbing")
+    TSubclassOf<ARYUClimbingActor> ClimbableActorClass;
 
 protected:
     void BeginPlay() override;

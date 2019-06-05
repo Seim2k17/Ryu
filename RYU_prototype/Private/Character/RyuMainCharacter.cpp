@@ -111,6 +111,8 @@ void ARyuMainCharacter::InitializeCharacterValues()
     // TODO: replace with CSTM
     PlayerMovement = EPlayerMovement::STAND;
     CharAnimation2DState = ERYU2DAnimationState::IDLE;
+
+    bSneakIsPressed = false;
 }
 
 void ARyuMainCharacter::BeginPlay()
@@ -551,6 +553,16 @@ bool ARyuMainCharacter::CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger)
 float ARyuMainCharacter::GetMoveRightInput()
 {
     return MoveRightInput;
+}
+
+float ARyuMainCharacter::GetMoveUpInput()
+{
+    return MoveUpInput;
+}
+
+bool ARyuMainCharacter::GetSneakActive()
+{
+    return bSneakIsPressed;
 }
 
 void ARyuMainCharacter::SneakPressed()

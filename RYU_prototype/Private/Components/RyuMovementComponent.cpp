@@ -48,13 +48,6 @@ void URyuMovementComponent::BeginPlay()
 void URyuMovementComponent::InitializeComponent()
 {
     Super::InitializeComponent();
-
-    bSneakIsPressed = false;
-
-    //*if not set
-    //SneakMultiplier = 1.0f;
-
-    SneakMultiplierValue = SneakMultiplier;
 }
 
 void URyuMovementComponent::JumpForward()
@@ -311,7 +304,6 @@ bool URyuMovementComponent::DoJump(bool bReplayingMoves)
     return false;
 }
 
-
 // TODO in climbingcomp ?
 void URyuMovementComponent::ResetClimbingState()
 {
@@ -344,13 +336,13 @@ void URyuMovementComponent::SetNormalMaxJumpCount(int32 MaxJumps)
 
 void URyuMovementComponent::StartLaunchCharacter()
 {
-	// need pimp
-	if (auto* Char = Cast<ARyuBaseCharacter>(GetOwner()))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Launching Char when Jumping with %s"),
-			*JumpImpulse.ToString());
-		Char->LaunchCharacter(JumpImpulse, false, false);
-	}
+    // need pimp
+    if (auto* Char = Cast<ARyuBaseCharacter>(GetOwner()))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Launching Char when Jumping with %s"),
+               *JumpImpulse.ToString());
+        Char->LaunchCharacter(JumpImpulse, false, false);
+    }
 }
 
 int32 URyuMovementComponent::GetNormalMaxJumpCount()
