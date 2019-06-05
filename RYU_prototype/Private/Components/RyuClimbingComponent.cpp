@@ -209,7 +209,7 @@ UBoxComponent* URyuClimbingComponent::GetOverlappedClimbingComponent(ERYULedgePo
     auto* CharOwner = Cast<ARyuMainCharacter>(GetOwner());
     if (CharOwner == nullptr)
     {
-        return;
+        return nullptr;
     }
 
     //make sure only relevant BoxTrigger are in the Componentsarray
@@ -261,7 +261,7 @@ UBoxComponent* URyuClimbingComponent::GetOverlappedClimbingComponent(FName UpOrD
     auto* CharOwner = Cast<ARyuMainCharacter>(GetOwner());
     if (CharOwner == nullptr)
     {
-        return;
+        return nullptr;
     }
 
     // uses Lambda-functionality / use of Algorithm (FindByPredicate); LERN DIE ALGORITHMEN ALDER SONST HANDKANTE ! (orig. MaxZitat XD )
@@ -308,7 +308,7 @@ void URyuClimbingComponent::SetClimbingPostitionsAndMovementMode(EPlayerMovement
             if (TimelineComp)
             {
                 //** Initialize the Start End Endpoints
-                TimelineComp->StartTimelineLocation = GetActorLocation();
+                TimelineComp->StartTimelineLocation = MainChar->GetActorLocation();
                 TimelineComp->EndTimelineLocation =
                     FVector(TimelineComp->StartTimelineLocation.X,
                             TimelineComp->StartTimelineLocation.Y,
@@ -551,7 +551,7 @@ void URyuClimbingComponent::GetOverlappingBoxComponents()
 {
     auto* MainChar = Cast<ARyuMainCharacter>(GetOwner());
 
-    GetOverlappingComponents(MainChar->CapsuleOverlappedComponents);
+    MainChar->GetOverlappingComponents(MainChar->CapsuleOverlappedComponents);
     //please use a Lambda dude ...
     MainChar->CapsuleOverlappedComponents.RemoveAll(
         [](auto* elem) { return !elem->IsA<UBoxComponent>(); });

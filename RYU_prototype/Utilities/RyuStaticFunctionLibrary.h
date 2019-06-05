@@ -4,14 +4,17 @@
 
 #include "RyuStaticFunctionLibrary.generated.h"
 
-class URyuMainCharacter;
+class ARyuMainCharacter;
+class UActorComponent;
 
 UCLASS()
 class URyuStaticFunctionLibrary : public UObject
 {
     GENERATED_UCLASS_BODY()
-
+public:
     //FORCEINLINE function
 
-    static URyuMainCharacter* GetMainChar();
+    static ARyuMainCharacter* GetMainChar(AActor* actor);
+
+    static ARyuMainCharacter* GetMainCharOwner(UActorComponent* Component);
 };

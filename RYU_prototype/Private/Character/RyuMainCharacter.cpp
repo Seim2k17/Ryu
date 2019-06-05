@@ -588,3 +588,273 @@ void ARyuMainCharacter::ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Playe
 
     Player->OnPlaybackSequenceComplete.AddDynamic(this, &ARyuMainCharacter::AnimationSequenceEnded);
 }
+
+
+/** CHaracter State Machine Prep 
+
+void ARyuMainCharacter::TickStates(float DeltaTime)
+{
+	switch (State)
+	{
+		case ERyuMainCharacterStates::Spawning:
+			OnSpawningTick(DeltaTime);
+			break;
+		case ERyuMainCharacterStates::Idle:
+			OnIdleTick(DeltaTime);
+			break;
+		case ERyuMainCharacterStates::Walking:
+			OnWalkingTick(DeltaTime);
+			break;
+		case ERyuMainCharacterStates::Running:
+			OnRunningTick(DeltaTime);
+			break;
+		case ERyuMainCharacterStates::Attacking:
+			OnAttackingTick(DeltaTime);
+			break;
+		case ERyuMainCharacterStates::Dying:
+			OnDyingTick(DeltaTime);
+			break;
+		case ERyuMainCharacterStates::Dead:
+			OnDeadTick(DeltaTime);
+			break;
+		default:
+			break;
+	}
+}
+
+void ARyuMainCharacter::OnSpawningEnter()
+{
+	check(State == ERyuMainCharacterStates::Spawning);
+}
+
+void ARyuMainCharacter1::OnSpawningTick(float DeltaTime)
+{
+	check(State == ERyuMainCharacterStates::Spawning);
+	TransitionSpawningToIdle();
+}
+
+void ARyuMainCharacter1::OnSpawningExit()
+{
+	check(State == ERyuMainCharacterStates::Spawning);
+}
+
+void ARyuMainCharacter1::TransitionSpawningToIdle()
+{
+	OnSpawningExit();
+	State = ERyuMainCharacterStates::Idle;
+	OnIdleEnter();
+}
+
+void ARyuMainCharacter1::OnIdleEnter()
+{
+	check(State == ERyuMainCharacterStates::Idle);
+}
+
+void ARyuMainCharacter1::OnIdleTick(float DeltaTime)
+{
+	check(State == ERyuMainCharacterStates::Idle);
+	if (ShouldDie())
+	{
+		TransitionIdleToDying();
+	}
+	else if (ShouldAttack())
+	{
+		TransitionIdleToAttacking();
+	}
+	else if (ShouldWalk())
+	{
+		TransitionIdleToWalking();
+	}
+}
+
+void ARyuMainCharacter1::OnIdleExit()
+{
+	check(State == ERyuMainCharacterStates::Idle);
+}
+
+void ARyuMainCharacter1::TransitionIdleToWalking()
+{
+	OnIdleExit();
+	State = ERyuMainCharacterStates::Walking;
+	OnWalkingEnter();
+}
+
+void ARyuMainCharacter1::TransitionIdleToAttacking()
+{
+	OnIdleExit();
+	State = ERyuMainCharacterStates::Attacking;
+	OnAttackingEnter();
+}
+
+void ARyuMainCharacter1::TransitionIdleToDying()
+{
+	OnIdleExit();
+	State = ERyuMainCharacterStates::Dying;
+	OnDyingEnter();
+}
+
+void ARyuMainCharacter1::OnWalkingEnter()
+{
+	check(State == ERyuMainCharacterStates::Walking);
+}
+
+void ARyuMainCharacter1::OnWalkingTick(float DeltaTime)
+{
+	check(State == ERyuMainCharacterStates::Walking);
+	if (ShouldDie())
+	{
+		TransitionWalkingToDying();
+	}
+	else if (ShouldAttack())
+	{
+		TransitionWalkingToAttacking();
+	}
+	else if (ShouldIdle())
+	{
+		TransitionWalkingToIdle();
+	}
+	else if (ShouldRun())
+	{
+		TransitionWalkingToRunning();
+	}
+}
+
+void ARyuMainCharacter1::OnWalkingExit()
+{
+	check(State == ERyuMainCharacterStates::Walking);
+}
+
+void ARyuMainCharacter1::TransitionWalkingToIdle()
+{
+	OnWalkingExit();
+	State = ERyuMainCharacterStates::Idle;
+	OnIdleEnter();
+}
+
+void ARyuMainCharacter1::TransitionWalkingToRunning()
+{
+	OnWalkingExit();
+	State = ERyuMainCharacterStates::Running;
+	OnRunningEnter();
+}
+
+void ARyuMainCharacter1::TransitionWalkingToAttacking()
+{
+	OnWalkingExit();
+	State = ERyuMainCharacterStates::Attacking;
+	OnAttackingEnter();
+}
+
+void ARyuMainCharacter1::TransitionWalkingToDying()
+{
+	OnWalkingExit();
+	State = ERyuMainCharacterStates::Dying;
+	OnDyingEnter();
+}
+
+void ARyuMainCharacter1::OnRunningEnter()
+{
+	check(State == ERyuMainCharacterStates::Running);
+}
+
+void ARyuMainCharacter1::OnRunningTick(float DeltaTime)
+{
+	check(State == ERyuMainCharacterStates::Running);
+	if (ShouldDie())
+	{
+		TransitionRunningToDying();
+	}
+	else if (ShouldAttack())
+	{
+		TransitionRunningToAttacking();
+	}
+	else if (ShouldWalk())
+	{
+		TransitionRunningToWalking();
+	}
+}
+
+void ARyuMainCharacter1::OnRunningExit()
+{
+	check(State == ERyuMainCharacterStates::Running);
+}
+
+void ARyuMainCharacter1::TransitionRunningToWalking()
+{
+	OnRunningExit();
+	State = ERyuMainCharacterStates::Walking;
+	OnWalkingEnter();
+}
+
+void ARyuMainCharacter1::TransitionRunningToAttacking()
+{
+	OnRunningExit();
+	State = ERyuMainCharacterStates::Attacking;
+	OnAttackingEnter();
+}
+
+void ARyuMainCharacter1::TransitionRunningToDying()
+{
+	OnRunningExit();
+	State = ERyuMainCharacterStates::Dying;
+	OnDyingEnter();
+}
+
+void ARyuMainCharacter1::OnAttackingEnter()
+{
+	check(State == ERyuMainCharacterStates::Attacking);
+}
+
+void ARyuMainCharacter1::OnAttackingTick(float DeltaTime)
+{
+	check(State == ERyuMainCharacterStates::Attacking);
+	TransitionAttackingToIdle();
+}
+
+void ARyuMainCharacter1::OnAttackingExit()
+{
+	check(State == ERyuMainCharacterStates::Attacking);
+}
+
+void ARyuMainCharacter1::TransitionAttackingToIdle()
+{
+	OnAttackingExit();
+	State = ERyuMainCharacterStates::Idle;
+	OnIdleEnter();
+}
+
+void ARyuMainCharacter1::OnDyingEnter()
+{
+	check(State == ERyuMainCharacterStates::Dying);
+}
+
+void ARyuMainCharacter1::OnDyingTick(float DeltaTime)
+{
+	check(State == ERyuMainCharacterStates::Dying);
+	TransitionDyingToDead();
+}
+
+void ARyuMainCharacter1::OnDyingExit()
+{
+	check(State == ERyuMainCharacterStates::Dying);
+}
+
+void ARyuMainCharacter1::TransitionDyingToDead()
+{
+	OnDyingExit();
+	State = ERyuMainCharacterStates::Dead;
+	OnDeadEnter();
+}
+
+void ARyuMainCharacter1::OnDeadEnter()
+{
+	check(State == ERyuMainCharacterStates::Dead);
+}
+
+void ARyuMainCharacter1::OnDeadTick(float DeltaTime)
+{
+	check(State == ERyuMainCharacterStates::Dead);
+}
+
+
+*/

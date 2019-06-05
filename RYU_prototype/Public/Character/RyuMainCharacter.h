@@ -58,7 +58,7 @@ public:
     UFUNCTION(BlueprintPure, Category = "Movement")
     float GetMoveUpInput();
 
-	bool GetSneakActive();
+    bool GetSneakActive();
 
 protected:
     // really protected ?
@@ -93,6 +93,7 @@ protected:
 
     void UpdateCharacter();
 
+    UPROPERTY(VisibleAnywhere, Category = "Components")
     URyuTimelineComponent* RyuTimelineComponent;
 
 private:
@@ -115,3 +116,54 @@ private:
 
     float SneakMultiplierValue;
 };
+
+/*
+protected:
+    
+	 * Character FSM
+	 * Note: Do not define other members below this point, this protected block is reserved for CSM
+	 
+    virtual void TickStates(float DeltaTime); - called in Tick 
+
+    virtual void OnSpawningEnter();
+    virtual void OnSpawningTick(float DeltaTime);
+    virtual void OnSpawningExit();
+    virtual void TransitionSpawningToIdle();
+
+    virtual void OnIdleEnter();
+    virtual void OnIdleTick(float DeltaTime);
+    virtual void OnIdleExit();
+    virtual void TransitionIdleToWalking();
+    virtual void TransitionIdleToAttacking();
+    virtual void TransitionIdleToDying();
+
+    virtual void OnWalkingEnter();
+    virtual void OnWalkingTick(float DeltaTime);
+    virtual void OnWalkingExit();
+    virtual void TransitionWalkingToIdle();
+    virtual void TransitionWalkingToRunning();
+    virtual void TransitionWalkingToAttacking();
+    virtual void TransitionWalkingToDying();
+
+    virtual void OnRunningEnter();
+    virtual void OnRunningTick(float DeltaTime);
+    virtual void OnRunningExit();
+    virtual void TransitionRunningToWalking();
+    virtual void TransitionRunningToAttacking();
+    virtual void TransitionRunningToDying();
+
+    virtual void OnAttackingEnter();
+    virtual void OnAttackingTick(float DeltaTime);
+    virtual void OnAttackingExit();
+    virtual void TransitionAttackingToIdle();
+
+    virtual void OnDyingEnter();
+    virtual void OnDyingTick(float DeltaTime);
+    virtual void OnDyingExit();
+    virtual void TransitionDyingToDead();
+
+    virtual void OnDeadEnter();
+    virtual void OnDeadTick(float DeltaTime);
+
+
+*/

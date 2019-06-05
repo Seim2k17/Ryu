@@ -44,12 +44,13 @@ void URyuTimelineComponent::TimelineFinishedCallback()
     //we use this to set back the movementmode now we go to the fun stuff the real climbing !
     auto* RyuMovementComp = GetOwner()->FindComponentByClass<URyuMovementComponent>();
     auto* ClimbingComp = GetOwner()->FindComponentByClass<URyuClimbingComponent>();
+	auto* MainChar = GetMainCharOwner();
 
     if (RyuMovementComp == nullptr)
     {
         return;
     }
-    switch (RyuMovementComp->GetPlayerMovement())
+    switch (MainChar->GetPlayerMovement())
     {
         case EPlayerMovement::JUMPUP:
             RyuMovementComp->SetMovementMode(MOVE_Walking);

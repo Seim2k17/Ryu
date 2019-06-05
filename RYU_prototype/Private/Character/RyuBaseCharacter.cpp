@@ -3,6 +3,7 @@
 #include "RyuBaseCharacter.h"
 #include "Components/RyuClimbingComponent.h"
 #include "Components/RyuMovementComponent.h"
+#include "ERyuLookDirection.h"
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
 #include <Camera/CameraComponent.h>
@@ -171,9 +172,11 @@ void ARyuBaseCharacter::CheckOverlappingActors()
 
     UE_LOG(LogTemp, Log, TEXT("CheckOverlappingActors(): "));
 
+    auto* ClimbComp = GetOwner()->FindComponentByClass<URyuClimbingComponent>();
+
     if (auto* ClimbingComp = FindComponentByClass<URyuClimbingComponent>())
     {
-        GetOverlappingActors(CapsuleOverlappedActors, ClimbableActorClass);
+        GetOverlappingActors(CapsuleOverlappedActors, ClimbComp->ClimbableActorClass);
     }
 
     // TODO : Move To Debug Comp
@@ -329,10 +332,10 @@ void ARyuBaseCharacter::SetLookRight()
 
 ERYUClimbingMode ARyuBaseCharacter::GetClimbingMode()
 {
-    if (auto* ClimbComp = FindComponentByClass<URyuClimbingComponent>())
-    {
-        return ClimbComp->GetClimbingState();
-    }
+
+    auto* ClimbComp = FindComponentByClass<URyuClimbingComponent>();
+
+    return ClimbComp->GetClimbingState();
 }
 
 ERyuLookDirection ARyuBaseCharacter::GetLookDirection()

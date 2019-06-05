@@ -9,6 +9,7 @@
 
 class UCurveFloat;
 class UCurveVector;
+class ARyuMainCharacter;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class RYU_PROTOTYPE_API URyuTimelineComponent : public UActorComponent
@@ -18,9 +19,6 @@ class RYU_PROTOTYPE_API URyuTimelineComponent : public UActorComponent
 public:
     URyuTimelineComponent();
 
-protected:
-    void BeginPlay() override;
-
     void PlayTimeline();
 
     void SetCurrentTimelineParamsFloat(UCurveFloat* FloatCurveX, UCurveFloat* FloatCurveZ,
@@ -28,6 +26,9 @@ protected:
 
     void SetCurrentTimelineParamsVector(UCurveVector* VectorCurve, bool TimelineIsLooping,
                                         bool IgnoreTimeDilation);
+
+protected:
+    void BeginPlay() override;
 
     //Updatefunction for the Timeline
     UFUNCTION()
