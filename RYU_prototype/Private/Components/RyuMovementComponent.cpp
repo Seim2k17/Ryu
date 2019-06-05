@@ -311,6 +311,8 @@ bool URyuMovementComponent::DoJump(bool bReplayingMoves)
     return false;
 }
 
+
+// TODO in climbingcomp ?
 void URyuMovementComponent::ResetClimbingState()
 {
     ARYU2D_CharacterBase* MyChar = Cast<ARYU2D_CharacterBase>(CharacterOwner);

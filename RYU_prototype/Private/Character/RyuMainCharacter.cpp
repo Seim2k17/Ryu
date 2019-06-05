@@ -557,7 +557,7 @@ void ARyuMainCharacter::SneakPressed()
 {
     if (PlayerMovement != EPlayerMovement::CLIMBING)
     {
-        SneakMultiplierValue = RyuClimbingComponent->GetSneakMultiplier();
+        SneakMultiplierValue = RyuMovementComponent->GetSneakMultiplier();
         bSneakIsPressed = true;
     }
 }

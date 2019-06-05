@@ -179,6 +179,7 @@ void URyuClimbingComponent::Climb(float MoveUpInput)
             {
                 /* Without a Timeline but we need to adjust the Pivotpoint in EVERY Frame this SUCKS! maybe i can automatisize it when making my own animatins in PS
 			(like we did in PS & Visionaire with a positioning exportfile?)*/
+
 				// TODO maybe solve this by Broadcasting an Event / CSTM relevant
                 MovementComp->SetMovementMode(MOVE_Custom,
                                               static_cast<uint8>(ERYUClimbingMode::CLIMBUPLEDGE));
