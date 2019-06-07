@@ -11,8 +11,8 @@ class URyuTimelineComponent;
 class URyuDebugComponent;
 /**
  * WIP - V2 MainCharacter
-1. Sort Methods and pack them to components
- 
+DONE 1. Sort Methods and pack them to components
+2. Implement State Machine with GangOfFour StatePattern 
  */
 UCLASS()
 class RYU_PROTOTYPE_API ARyuMainCharacter : public ARyuBaseCharacter

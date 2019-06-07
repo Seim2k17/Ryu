@@ -8,7 +8,7 @@ class ARyuMainCharacter;
 class UActorComponent;
 
 UCLASS()
-class URyuStaticFunctionLibrary : public UObject
+class RYU_PROTOTYPE_API URyuStaticFunctionLibrary : public UObject
 {
     GENERATED_UCLASS_BODY()
 public:
