@@ -10,6 +10,12 @@ UINTERAFCE(BlueprintType)
 class RYU_PROTOTYPE_API URyuCharacterState : public UInterface
 {
     GENERATED_BODY()
+};
+
+class RYU_PROTOTYPE_API IRyuCharacterState
+{
+    GENERATED_BODY()
+
 public:
     virtual ~URyuCharacterState(){};
     virtual void HandleInput(ARyuBaseCharacter& Character, const EInputEvent Input){};
