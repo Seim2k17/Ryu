@@ -4,3 +4,5 @@
 #include "Modules/ModuleManager.h"
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, RYU_prototype, "RYU_prototype" );
+
+DEFINE_LOG_CATEGORY(LogRyu);

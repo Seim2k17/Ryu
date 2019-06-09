@@ -5,7 +5,9 @@
 #include "Components/RyuDebugComponent.h"
 #include "Components/RyuMovementComponent.h"
 #include "Components/RyuTimelineComponent.h"
+#include "Enums/ERyuInputState.h"
 #include "RYUClimbingActor.h"
+#include "RyuCharacterState.h"
 #include <PaperFlipbookComponent.h>
 #include <Camera/CameraComponent.h>
 #include <Components/ArrowComponent.h>
@@ -51,6 +53,96 @@ void ARyuMainCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
     }
 }
 #endif
+
+// TODO CSTM relevant
+void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence)
+{
+    UE_LOG(LogTemp, Warning, TEXT("Finally AnimEnded called from code."));
+
+    ERYUClimbingMode RYUClimbingMode = RyuClimbingComponent->GetClimbingState();
+
+    /* Just for testing purpose until the StateMachine is fully implemented ! -> for removing finally the Notifier in ABP*/
+    switch (PlayerMovement)
+    {
+        case EPlayerMovement::STAND:
+            break;
+        case EPlayerMovement::WALK:
+            break;
+        case EPlayerMovement::STARTTURN:
+            TurnFlipBookFinished();
+            break;
+        case EPlayerMovement::STARTTURNRUN:
+            TurnRunFlipBookFinished();
+            break;
+        case EPlayerMovement::ENDTURN:
+            break;
+        case EPlayerMovement::BEGINRUN:
+            PlayerMovement = EPlayerMovement::RUN;
+            break;
+        case EPlayerMovement::RUN:
+            break;
+        case EPlayerMovement::ENDRUN:
+            CheckOverlappingActors();
+            break;
+        case EPlayerMovement::JUMPSTART: {
+            PlayerMovement = EPlayerMovement::JUMPLOOP;
+            RyuMovementComponent->JumpForward();
+        }
+        break;
+        case EPlayerMovement::JUMPLOOP:
+            break;
+        case EPlayerMovement::JUMPEND:
+            CheckOverlappingActors();
+            break;
+        case EPlayerMovement::JUMPUP:
+            break;
+        case EPlayerMovement::STARTFALLING:
+            break;
+        case EPlayerMovement::FALLING:
+            break;
+        case EPlayerMovement::CLIMBING:
+            switch (RYUClimbingMode)
+            {
+                case ERYUClimbingMode::NONE:
+                    break;
+                case ERYUClimbingMode::CANCLIMBUPLEDGE:
+                case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
+                case ERYUClimbingMode::CANCLIMBUPANDDOWN:
+                case ERYUClimbingMode::CLIMBDOWNLEDGE:
+                    RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::HANGONLEDGE);
+                    break;
+                case ERYUClimbingMode::JUMPTOLEDGE:
+                    break;
+                case ERYUClimbingMode::CLIMBUPLEDGE:
+                case ERYUClimbingMode::LETGOLEDGE:
+                    ClimbLedgeFlipBookFinished();
+                    break;
+                case ERYUClimbingMode::FALLDOWNLEDGE:
+                    break;
+                case ERYUClimbingMode::HANGONLEDGE:
+                    break;
+                case ERYUClimbingMode::CANENTERLADDER:
+                    break;
+                case ERYUClimbingMode::CLIMBLADDERUP:
+                    break;
+                case ERYUClimbingMode::CLIMBLADDERDOWN:
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case EPlayerMovement::CANGRABLEDGE:
+            break;
+        case EPlayerMovement::SNEAK:
+            break;
+        case EPlayerMovement::STANDUP:
+            break;
+        case EPlayerMovement::COMBAT:
+            break;
+        default:
+            break;
+    }
+}
 
 void ARyuMainCharacter::InitializeCharacterValues()
 {
@@ -132,10 +224,14 @@ void ARyuMainCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+    CharacterState->Update(this);
+
     //Temp save for Timelinestuff
     fDeltaSeconds = DeltaTime;
 
     //** due its better for complexicity AND clarity we do most of the ABP_Transition_Logic here in c++
+    // TODO: integrate this stuff in the new CharacterStateMachine !
+
     UpdateCharacter();
 }
 
@@ -155,6 +251,9 @@ void ARyuMainCharacter::Jump()
     //          bPressedJump = true;
     //          bJumpJustStarted = true;
 
+    HandleInput(ERyuInputState::PressJump);
+
+    // OLD, see CSTM now since 9/6/19
     switch (PlayerMovement)
     {
         case EPlayerMovement::STAND:
@@ -372,18 +471,6 @@ void ARyuMainCharacter::Climb()
 
 /** Getter and Setter*/
 
-void ARyuMainCharacter::TurnFlipBookFinished()
-{
-    FlipCharacter();
-}
-
-void ARyuMainCharacter::TurnRunFlipBookFinished()
-{
-    FlipCharacter();
-
-    PlayerMovement = EPlayerMovement::RUN;
-}
-
 // TODO CSTM relevant
 void ARyuMainCharacter::ClimbLedgeFlipBookFinished()
 {
@@ -415,6 +502,25 @@ void ARyuMainCharacter::ClimbLedgeFlipBookFinished()
     }
 }
 
+void ARyuMainCharacter::HandleInput(ERyuInputState Input)
+{
+    IRyuCharacterState* state = CharacterState->HandleInput(this, Input);
+    if (state != nullptr)
+    {
+		// Call Exit-Action on the old state
+		CharacterState->Exit(this);
+		EquipmentState->Exit(this);
+
+        // delete old CharacterState;
+        CharacterState = state;
+		EquipmentState = state;
+
+        // Call the enter Action on the new State
+        CharacterState->Enter(this);
+		EquipmentState->Enter(this);
+    }
+}
+
 void ARyuMainCharacter::ResetCollisionAndGravity()
 {
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -424,94 +530,16 @@ void ARyuMainCharacter::ResetCollisionAndGravity()
     CheckOverlappingActors();
 }
 
-// TODO CSTM relevant
-void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence)
+void ARyuMainCharacter::TurnFlipBookFinished()
 {
-    UE_LOG(LogTemp, Warning, TEXT("Finally AnimEnded called from code."));
+    FlipCharacter();
+}
 
-    ERYUClimbingMode RYUClimbingMode = RyuClimbingComponent->GetClimbingState();
+void ARyuMainCharacter::TurnRunFlipBookFinished()
+{
+    FlipCharacter();
 
-    /* Just for testing purpose until the StateMachine is fully implemented ! -> for removing finally the Notifier in ABP*/
-    switch (PlayerMovement)
-    {
-        case EPlayerMovement::STAND:
-            break;
-        case EPlayerMovement::WALK:
-            break;
-        case EPlayerMovement::STARTTURN:
-            TurnFlipBookFinished();
-            break;
-        case EPlayerMovement::STARTTURNRUN:
-            TurnRunFlipBookFinished();
-            break;
-        case EPlayerMovement::ENDTURN:
-            break;
-        case EPlayerMovement::BEGINRUN:
-            PlayerMovement = EPlayerMovement::RUN;
-            break;
-        case EPlayerMovement::RUN:
-            break;
-        case EPlayerMovement::ENDRUN:
-            CheckOverlappingActors();
-            break;
-        case EPlayerMovement::JUMPSTART: {
-            PlayerMovement = EPlayerMovement::JUMPLOOP;
-            RyuMovementComponent->JumpForward();
-        }
-        break;
-        case EPlayerMovement::JUMPLOOP:
-            break;
-        case EPlayerMovement::JUMPEND:
-            CheckOverlappingActors();
-            break;
-        case EPlayerMovement::JUMPUP:
-            break;
-        case EPlayerMovement::STARTFALLING:
-            break;
-        case EPlayerMovement::FALLING:
-            break;
-        case EPlayerMovement::CLIMBING:
-            switch (RYUClimbingMode)
-            {
-                case ERYUClimbingMode::NONE:
-                    break;
-                case ERYUClimbingMode::CANCLIMBUPLEDGE:
-                case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
-                case ERYUClimbingMode::CANCLIMBUPANDDOWN:
-                case ERYUClimbingMode::CLIMBDOWNLEDGE:
-                    RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::HANGONLEDGE);
-                    break;
-                case ERYUClimbingMode::JUMPTOLEDGE:
-                    break;
-                case ERYUClimbingMode::CLIMBUPLEDGE:
-                case ERYUClimbingMode::LETGOLEDGE:
-                    ClimbLedgeFlipBookFinished();
-                    break;
-                case ERYUClimbingMode::FALLDOWNLEDGE:
-                    break;
-                case ERYUClimbingMode::HANGONLEDGE:
-                    break;
-                case ERYUClimbingMode::CANENTERLADDER:
-                    break;
-                case ERYUClimbingMode::CLIMBLADDERUP:
-                    break;
-                case ERYUClimbingMode::CLIMBLADDERDOWN:
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case EPlayerMovement::CANGRABLEDGE:
-            break;
-        case EPlayerMovement::SNEAK:
-            break;
-        case EPlayerMovement::STANDUP:
-            break;
-        case EPlayerMovement::COMBAT:
-            break;
-        default:
-            break;
-    }
+    PlayerMovement = EPlayerMovement::RUN;
 }
 
 bool ARyuMainCharacter::CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger)
@@ -588,7 +616,6 @@ void ARyuMainCharacter::ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Playe
 
     Player->OnPlaybackSequenceComplete.AddDynamic(this, &ARyuMainCharacter::AnimationSequenceEnded);
 }
-
 
 /** CHaracter State Machine Prep 
 

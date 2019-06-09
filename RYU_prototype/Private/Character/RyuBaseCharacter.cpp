@@ -4,6 +4,7 @@
 #include "Components/RyuClimbingComponent.h"
 #include "Components/RyuMovementComponent.h"
 #include "ERyuLookDirection.h"
+#include "Enums/ERyuInputState.h"
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
 #include <Camera/CameraComponent.h>
@@ -21,6 +22,8 @@ ARyuBaseCharacter::ARyuBaseCharacter(const class FObjectInitializer& ObjectIniti
     : Super(ObjectInitializer.SetDefaultSubobjectClass<URyuMovementComponent>(
         ACharacter::CharacterMovementComponentName))
 {
+    PrimaryActorTick.bCanEverTick = true;
+
     // Create a camera boom attached to the root (capsule)
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
@@ -44,6 +47,11 @@ ARyuBaseCharacter::ARyuBaseCharacter(const class FObjectInitializer& ObjectIniti
     bJumpJustStarted = false;
 
     TreshholdYWalkRun = 220.0f;
+}
+
+void ARyuBaseCharacter::Tick(float DeltaTime)
+{
+    Super::Tick(DeltaTime);
 }
 
 void ARyuBaseCharacter::PostInitializeComponents()
@@ -332,7 +340,6 @@ void ARyuBaseCharacter::SetLookRight()
 
 ERYUClimbingMode ARyuBaseCharacter::GetClimbingMode()
 {
-
     auto* ClimbComp = FindComponentByClass<URyuClimbingComponent>();
 
     return ClimbComp->GetClimbingState();

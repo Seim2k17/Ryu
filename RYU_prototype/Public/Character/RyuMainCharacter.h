@@ -32,6 +32,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void ClimbLedgeFlipBookFinished();
 
+    void HandleInput(ERyuInputState Input) override;
+
     void Jump() override;
 
     void PostInitializeComponents() override;
@@ -105,6 +107,7 @@ private:
 
 public:
     // most need to be moved in components
+
 private:
     float fDeltaSeconds;
 

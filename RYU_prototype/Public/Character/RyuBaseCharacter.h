@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Character/RYU2DENUM_AnimationState.h"
+#include "Enums/ERyuInputState.h"
 #include "Enums/ERyuLookDirection.h"
 #include "RYU2DENUM_ClimbingMode.h"
 #include "RYU2DENUM_Movement.h"
@@ -16,6 +17,7 @@
 class USphereComponent;
 class URyuClimbingComponent;
 class URyuMovementComponent;
+class IRyuCharacterState;
 
 /**
 * This class is the default character for Paper2DIntro, and it is responsible for all
@@ -39,6 +41,8 @@ public:
     /** TO Climbing-Component-Start*/
 
     /** TO Climbing-Component-End*/
+
+    void Tick(float DeltaTime) override;
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void ChangeMovementMode();
@@ -118,6 +122,8 @@ protected:
     //CHECK ! is it used ANYMORE ?
     void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
 
+    virtual void HandleInput(ERyuInputState Input){};
+
 public:
     /** Camera boom positioning the camera beside the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera,
@@ -167,7 +173,17 @@ protected:
 
     // TODO does really every Character can Climb ? I don´t think so
     URyuClimbingComponent* RyuClimbingComponent;
+
     URyuMovementComponent* RyuMovementComponent;
+
+    // because we can do all the Stuff also with a equiped Item / Weapon, we need 2 FSM, else the states would explode
+    // == "Concurrent State Machines"
+
+	// TODO make it BP ready for ABP
+	// need to find out how to make all of this visible to UBP, guess due Interface reasen it´s not so obvious 
+	//  error : UPROPERTY pointers cannot be interfaces - did you mean TScriptInterface<IRyuCharacterState>?UPROPERTY(BlueprintReadOnly, Category = "CharacterState")
+    IRyuCharacterState* CharacterState;
+    IRyuCharacterState* EquipmentState;
 
 private:
     // UtilitySection

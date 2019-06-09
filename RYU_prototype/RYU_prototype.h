@@ -6,3 +6,5 @@
 
 #define RYU_BLUEPRINTPATH_PLAYERCONTROLLER "Blueprint'/Game/Blueprints/Controller/RYU_PlayerController_BP.RYU_PlayerController_BP'"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogRyu, Log, All);
+

@@ -5,14 +5,14 @@
 #include "Character/RyuBaseCharacter.h"
 #include "Enums/ERyuInputState.h"
 #include "RyuCharacterOnGroundState.h"
-#include "RyuCharacterIdleState.generated.h"
+#include "RyuCharacterDuckState.generated.h"
 
 UCLASS()
-class RYU_PROTOTYPE_API URyuCharacterIdleState : public URyuCharacterOnGroundState
+class RYU_PROTOTYPE_API URyuCharacterDuckState : public URyuCharacterOnGroundState
 {
     GENERATED_BODY()
 public:
-    URyuCharacterIdleState();
+    URyuCharacterDuckState();
 
     // virtual void HandleInput(ARyuBaseCharacter& Character, const EInputEvent Input) override;
 
