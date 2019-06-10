@@ -24,6 +24,10 @@ public:
 	virtual void Enter(ARyuBaseCharacter* Character) override {};
 	virtual void Exit(ARyuBaseCharacter* Character) override {};
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "CharacterState")
+		ERyuCharacterState GetState();
+	virtual ERyuCharacterState GetState_Implementation() override { return CharacterState; }
+
 private:
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
 };

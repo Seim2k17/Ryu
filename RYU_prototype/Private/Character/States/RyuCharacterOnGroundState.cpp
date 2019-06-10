@@ -1,6 +1,7 @@
 // Copyright 2019 80k Games, All Rights Reserved.
 
 #include "RyuCharacterOnGroundState.h"
+#include "RyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
@@ -33,4 +34,9 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
 
 void URyuCharacterOnGroundState::Update(ARyuBaseCharacter* Character)
 {
+}
+
+ERyuCharacterState URyuCharacterOnGroundState::GetState_Implementation()
+{
+	return CharacterState;
 }

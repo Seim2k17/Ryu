@@ -4,6 +4,7 @@
 
 #include "Character/RyuBaseCharacter.h"
 #include "Enums/ERyuInputState.h"
+#include "Enums/ERyuCharacterState.h"
 #include "RyuCharacterState.h"
 #include "RyuCharacterOnGroundState.generated.h"
 
@@ -24,6 +25,11 @@ public:
 
     virtual void Enter(ARyuBaseCharacter* Character) override{};
     virtual void Exit(ARyuBaseCharacter* Character) override{};
+
+    UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "CharacterState")
+    ERyuCharacterState GetState();
+	//	bool GetState();
+    virtual ERyuCharacterState GetState_Implementation() override;
 
 private:
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)

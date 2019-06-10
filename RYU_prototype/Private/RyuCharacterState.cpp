@@ -2,4 +2,5 @@
 
 #include "RyuCharacterState.h"
 
-// I guess we need the implementation to generated the "ClassName.generated.h" file !
+// I guess we need the CPP-File to generated the "ClassName.generated.h" file !
+
