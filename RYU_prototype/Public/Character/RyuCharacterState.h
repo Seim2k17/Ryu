@@ -3,8 +3,8 @@
 #pragma once
 
 #include "Character/RyuBaseCharacter.h"
-#include "Enums/ERyuInputState.h"
 #include "Enums/ERyuCharacterState.h"
+#include "Enums/ERyuInputState.h"
 #include "UObject/Interface.h"
 #include "RyuCharacterState.generated.h"
 
@@ -37,12 +37,15 @@ public:
 
     virtual void Exit(ARyuBaseCharacter* Character) = 0;
 
-//     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "CharacterState")
-//     ERyuCharacterState GetState();
-// 	virtual ERyuCharacterState GetState_Implementation() = 0;
-	//	bool GetState();
+    //UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "CharacterState")
+    //IRyuCharacterState* GetState();
+    //UFUNCTION(BlueprintNati)
+    ERyuCharacterState GetState()
+    // ERyuCharacterState GetState_Implementation()
+    {
+        return CharacterState;
+    }
 
 protected:
-
-	// ERyuCharacterState CharacterState = ERyuCharacterState::Idle;
+    ERyuCharacterState CharacterState = ERyuCharacterState::Idle;
 };

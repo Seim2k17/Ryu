@@ -21,12 +21,8 @@ public:
     virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
                                             const ERyuInputState Input) override;
     virtual void Update(ARyuBaseCharacter* Character) override;
-	virtual void Enter(ARyuBaseCharacter* Character) override {};
-	virtual void Exit(ARyuBaseCharacter* Character) override {};
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "CharacterState")
-		ERyuCharacterState GetState();
-	virtual ERyuCharacterState GetState_Implementation() override { return CharacterState; }
+    virtual void Enter(ARyuBaseCharacter* Character) override{};
+    virtual void Exit(ARyuBaseCharacter* Character) override{};
 
 private:
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)

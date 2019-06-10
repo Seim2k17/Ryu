@@ -30,3 +30,4 @@ void URyuCharacterIdleState::Enter(ARyuBaseCharacter* Character)
 void URyuCharacterIdleState::Exit(ARyuBaseCharacter* Character)
 {
 }
+	

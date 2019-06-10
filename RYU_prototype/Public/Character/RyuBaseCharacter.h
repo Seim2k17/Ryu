@@ -5,6 +5,7 @@
 #include "Character/RYU2DENUM_AnimationState.h"
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuLookDirection.h"
+#include "Enums/ERyuCharacterState.h"
 #include "RYU2DENUM_ClimbingMode.h"
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
@@ -52,6 +53,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void FlipCharacter();
+
+    UFUNCTION(BlueprintCallable, Category = "CharacterState")
+    ERyuCharacterState GetCharacterState();
 
     // TODO Rethink after Implementing StateMachine */
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
@@ -179,9 +183,9 @@ protected:
     // because we can do all the Stuff also with a equiped Item / Weapon, we need 2 FSM, else the states would explode
     // == "Concurrent State Machines"
 
-	// TODO make it BP ready for ABP
-	// need to find out how to make all of this visible to UBP, guess due Interface reasen it´s not so obvious 
-	//  error : UPROPERTY pointers cannot be interfaces - did you mean TScriptInterface<IRyuCharacterState>?UPROPERTY(BlueprintReadOnly, Category = "CharacterState")
+    // TODO make it BP ready for ABP
+    // need to find out how to make all of this visible to UBP, guess due Interface reasen it´s not so obvious
+    //  error : UPROPERTY pointers cannot be interfaces - did you mean TScriptInterface<IRyuCharacterState>?UPROPERTY(BlueprintReadOnly, Category = "CharacterState")
     IRyuCharacterState* CharacterState;
     IRyuCharacterState* EquipmentState;
 

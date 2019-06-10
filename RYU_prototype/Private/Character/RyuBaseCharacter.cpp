@@ -3,10 +3,12 @@
 #include "RyuBaseCharacter.h"
 #include "Components/RyuClimbingComponent.h"
 #include "Components/RyuMovementComponent.h"
-#include "ERyuLookDirection.h"
+#include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
+#include "ERyuLookDirection.h"
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
+#include "RyuCharacterState.h"
 #include <Camera/CameraComponent.h>
 #include <Components/BoxComponent.h>
 #include <Components/CapsuleComponent.h>
@@ -384,6 +386,11 @@ void ARyuBaseCharacter::FlipCharacter()
     //       bLookRight ? TEXT("true") : TEXT("false"));
     //coa vs reset ?
     CheckOverlappingActors();
+}
+
+ERyuCharacterState ARyuBaseCharacter::GetCharacterState()
+{
+    return CharacterState->GetState();
 }
 
 void ARyuBaseCharacter::BeginPlay()

@@ -3,8 +3,8 @@
 #pragma once
 
 #include "Character/RyuBaseCharacter.h"
-#include "Enums/ERyuInputState.h"
 #include "Enums/ERyuCharacterState.h"
+#include "Enums/ERyuInputState.h"
 #include "RyuCharacterState.h"
 #include "RyuCharacterOnGroundState.generated.h"
 
@@ -26,13 +26,19 @@ public:
     virtual void Enter(ARyuBaseCharacter* Character) override{};
     virtual void Exit(ARyuBaseCharacter* Character) override{};
 
+	//now everything in Interface
     //UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "CharacterState")
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "CharacterState")
     // ERyuCharacterState GetState();
-		URyuCharacterOnGroundState* GetState();
-	//	bool GetState();
-    // virtual ERyuCharacterState GetState_Implementation() override;
-	virtual URyuCharacterOnGroundState* GetState_Implementation() = 0;
+    //IRyuCharacterState* GetState();
+    //     virtual IRyuCharacterState* GetState_Implementation() override
+    //     {
+    //         return this;
+    //     }
+
+//     virtual ERyuCharacterState GetState_Implementation() override
+//     {
+//         return CharacterState;
+//     };
 
 private:
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)

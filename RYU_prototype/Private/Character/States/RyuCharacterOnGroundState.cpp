@@ -36,7 +36,8 @@ void URyuCharacterOnGroundState::Update(ARyuBaseCharacter* Character)
 {
 }
 
-ERyuCharacterState URyuCharacterOnGroundState::GetState_Implementation()
-{
-	return CharacterState;
-}
+
+// ERyuCharacterState URyuCharacterOnGroundState::GetState_Implementation()
+// {
+// 	return CharacterState;
+// }
