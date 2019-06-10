@@ -37,12 +37,12 @@ public:
 
     virtual void Exit(ARyuBaseCharacter* Character) = 0;
 
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "CharacterState")
-    ERyuCharacterState GetState();
-	virtual ERyuCharacterState GetState_Implementation() = 0;
+//     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "CharacterState")
+//     ERyuCharacterState GetState();
+// 	virtual ERyuCharacterState GetState_Implementation() = 0;
 	//	bool GetState();
 
 protected:
 
-	ERyuCharacterState CharacterState = ERyuCharacterState::Idle;
+	// ERyuCharacterState CharacterState = ERyuCharacterState::Idle;
 };
