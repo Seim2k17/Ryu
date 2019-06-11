@@ -23,6 +23,7 @@ void URyuCharacterJumpState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterJumpState::Enter(ARyuBaseCharacter* Character)
 {
+	CharacterState = ERyuCharacterState::Jump;
     // Set JumpGraphics/Sound or other Asset related stuff / fire a event for the engine / although this is controlled by the UnrealPaperZDStateMachine (2DAssetChanges)
 }
 

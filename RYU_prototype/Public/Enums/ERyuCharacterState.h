@@ -7,8 +7,18 @@ UENUM(BlueprintType)
 enum class ERyuCharacterState : uint8
 {
 	Idle,
-	Walking,
-	Running,
-	Sprinting,
-	Ducking,
+	Run,
+	Sprint,
+	Sneak,
+	Duck,
+	Jump,
+	Climb,
+	Push,
+	Pull,
+	Combat,
+	Ability,
+	Open,
+	Close,
+	Talk,
+	Death,
 };

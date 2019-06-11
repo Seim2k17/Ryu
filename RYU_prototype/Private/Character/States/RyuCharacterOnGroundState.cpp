@@ -7,6 +7,7 @@
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterJumpState.h"
 #include "RyuCharacterDuckState.h"
+#include "RyuCharacterClimbState.h"
 
 URyuCharacterOnGroundState::URyuCharacterOnGroundState()
 {
@@ -28,6 +29,14 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
         // we need to return a JumpStateObject
         return NewObject<URyuCharacterDuckState>();
     }
+
+	if (Input == ERyuInputState::PressUp)
+	{
+		// Do we need to check if climbing possible here ?
+		UE_LOG(LogRyu, Log, TEXT("Character will be Climbing"));
+		// we need to return a JumpStateObject
+		return NewObject<URyuCharacterClimbState>();
+	}
 
     return nullptr;
 }
