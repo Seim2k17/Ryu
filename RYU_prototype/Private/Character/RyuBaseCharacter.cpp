@@ -9,6 +9,7 @@
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
 #include "RyuCharacterState.h"
+#include "RyuCharacterIdleState.h"
 #include <Camera/CameraComponent.h>
 #include <Components/BoxComponent.h>
 #include <Components/CapsuleComponent.h>
@@ -49,6 +50,11 @@ ARyuBaseCharacter::ARyuBaseCharacter(const class FObjectInitializer& ObjectIniti
     bJumpJustStarted = false;
 
     TreshholdYWalkRun = 220.0f;
+
+
+	// Create CharacterState
+	CharacterState = NewObject<URyuCharacterIdleState>();
+	EquipmentState = NewObject<URyuCharacterIdleState>();
 }
 
 void ARyuBaseCharacter::Tick(float DeltaTime)
@@ -401,6 +407,7 @@ void ARyuBaseCharacter::BeginPlay()
         this, &ARyuBaseCharacter::OnHandleCapsuleBeginOverlap);
     GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(
         this, &ARyuBaseCharacter::OnHandleCapsuleEndOverlap);
+
 }
 
 /** General Movement Stuff*/

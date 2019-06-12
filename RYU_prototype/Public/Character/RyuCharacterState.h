@@ -29,13 +29,22 @@ public:
     // UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Input")
     // mark as pure (=0) to MUST implement them in th Class which implements the Interface
     virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
-                                            const ERyuInputState Input) = 0;
+                                            const ERyuInputState Input)
+    {
+        return nullptr;
+    }; // = 0;
 
-    virtual void Update(ARyuBaseCharacter* Character) = 0;
+    virtual void Update(ARyuBaseCharacter* Character)
+    {
+    } //= 0;
 
-    virtual void Enter(ARyuBaseCharacter* Character) = 0;
+    virtual void Enter(ARyuBaseCharacter* Character)
+    {
+    } // = 0;
 
-    virtual void Exit(ARyuBaseCharacter* Character) = 0;
+    virtual void Exit(ARyuBaseCharacter* Character)
+    {
+    } // = 0;
 
     //UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "CharacterState")
     //IRyuCharacterState* GetState();

@@ -224,6 +224,7 @@ void ARyuMainCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
+	//TODO implement it correct then call it / atm crash -> pure virtual function call !
     CharacterState->Update(this);
 
     //Temp save for Timelinestuff
@@ -297,11 +298,43 @@ void ARyuMainCharacter::MoveRight(float Val)
 {
     //for slow Movement , TODO: Clamp for ControllerInput (AxisValus...)
 
+	bool PressRight = false;
+
     float SneakValue = 1.0f;
 
     bSneakIsPressed ? SneakValue = RyuMovementComponent->GetSneakMultiplier() : SneakValue = 1.0f;
 
     MoveRightInput = Val * SneakValue;
+
+	if (bSneakIsPressed)
+	{
+		//HandleInput(ERyuInputState::PressSneak);
+	}
+
+	// Bind to Press / Release Button Events ?
+	if (MoveRightInput < 0)
+	{
+		PressRight = false;
+		HandleInput(ERyuInputState::PressLeft);
+	}
+	else if (MoveRightInput > 0)
+	{
+		PressRight = true;
+		HandleInput(ERyuInputState::PressRight);
+	}
+	else
+	{
+		if (PressRight)
+		{
+			HandleInput(ERyuInputState::ReleaseRight);
+		}
+		else
+		{
+			HandleInput(ERyuInputState::ReleaseLeft);
+		}
+		
+	}
+	
 
     /*
 	if ((PlayerMovement != EPlayerMovement::BEGINRUN) &&
