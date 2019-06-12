@@ -82,7 +82,7 @@ void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAni
         case EPlayerMovement::RUN:
             break;
         case EPlayerMovement::ENDRUN:
-            CheckOverlappingActors();
+            CheckOverlapClimbableActors();
             break;
         case EPlayerMovement::JUMPSTART: {
             PlayerMovement = EPlayerMovement::JUMPLOOP;
@@ -92,7 +92,7 @@ void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAni
         case EPlayerMovement::JUMPLOOP:
             break;
         case EPlayerMovement::JUMPEND:
-            CheckOverlappingActors();
+            CheckOverlapClimbableActors();
             break;
         case EPlayerMovement::JUMPUP:
             break;
@@ -560,7 +560,7 @@ void ARyuMainCharacter::ResetCollisionAndGravity()
     SphereTracer->SetEnableGravity(true);
     GetCapsuleComponent()->SetEnableGravity(true);
     RyuMovementComponent->SetMovementMode(MOVE_Walking);
-    CheckOverlappingActors();
+    CheckOverlapClimbableActors();
 }
 
 void ARyuMainCharacter::TurnFlipBookFinished()

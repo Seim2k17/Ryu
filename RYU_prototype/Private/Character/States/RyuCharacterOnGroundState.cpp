@@ -21,18 +21,15 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
     {
         case ERyuInputState::PressJump: {
             UE_LOG(LogRyu, Log, TEXT("Jump is pressed"));
-            // we need to return a JumpStateObject
             return NewObject<URyuCharacterJumpState>();
         }
         case ERyuInputState::PressDown: {
             UE_LOG(LogRyu, Log, TEXT("Character will be ducking"));
-            // we need to return a JumpStateObject
             return NewObject<URyuCharacterDuckState>();
         }
         case ERyuInputState::PressUp: {
-            // Do we need to check if climbing possible here ?
+            // TODO Do we need to check if climbing possible here ?
             UE_LOG(LogRyu, Log, TEXT("Character will be Climbing"));
-            // we need to return a JumpStateObject
             return NewObject<URyuCharacterClimbState>();
         }
         case ERyuInputState::PressLeft:
@@ -63,8 +60,3 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
 void URyuCharacterOnGroundState::Update(ARyuBaseCharacter* Character)
 {
 }
-
-// ERyuCharacterState URyuCharacterOnGroundState::GetState_Implementation()
-// {
-// 	return CharacterState;
-// }

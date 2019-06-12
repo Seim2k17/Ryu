@@ -49,7 +49,7 @@ public:
     void ChangeMovementMode();
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
-    void CheckOverlappingActors();
+    bool CheckOverlapClimbableActors();
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void FlipCharacter();
@@ -118,7 +118,7 @@ public:
 protected:
     virtual void BeginPlay() override;
 
-    void CheckOverlappingComponents();
+    bool CheckOverlappingComponents();
 
     /** Called for side to side input */
     void MoveRight(float Val);

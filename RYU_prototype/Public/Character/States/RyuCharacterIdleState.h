@@ -7,6 +7,9 @@
 #include "RyuCharacterOnGroundState.h"
 #include "RyuCharacterIdleState.generated.h"
 
+class ARyuBaseCharacter;
+class IRyuCharacterState;
+
 UCLASS()
 class RYU_PROTOTYPE_API URyuCharacterIdleState : public URyuCharacterOnGroundState
 {
@@ -23,5 +26,8 @@ public:
     virtual void Exit(ARyuBaseCharacter* Character) override;
 
 private:
+
+	IRyuCharacterState* InputPressDown(ARyuBaseCharacter* Character);
+	IRyuCharacterState* InputPressUp(ARyuBaseCharacter* Character)
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
 };
