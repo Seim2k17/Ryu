@@ -8,6 +8,7 @@
 #include "RyuDebugComponent.generated.h"
 
 class ARyuMainCharacter;
+class UPrimitiveComponent;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class RYU_PROTOTYPE_API URyuDebugComponent : public UActorComponent
@@ -24,6 +25,8 @@ public:
     void PostEditChangePropertyFromOwner();
 
     void DrawDebugInfosOnScreen();
+
+    void OutputCapsuleOverlappedComponents(TArray<UPrimitiveComponent*>& ComponentArray);
 
 protected:
     void BeginPlay() override;

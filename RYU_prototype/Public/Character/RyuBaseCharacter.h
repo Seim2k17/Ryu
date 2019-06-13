@@ -3,9 +3,9 @@
 #pragma once
 
 #include "Character/RYU2DENUM_AnimationState.h"
+#include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuLookDirection.h"
-#include "Enums/ERyuCharacterState.h"
 #include "RYU2DENUM_ClimbingMode.h"
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
@@ -16,6 +16,7 @@
 #include "RyuBaseCharacter.generated.h"
 
 class USphereComponent;
+class UPrimitiveComponent;
 class URyuClimbingComponent;
 class URyuMovementComponent;
 class IRyuCharacterState;
@@ -44,9 +45,6 @@ public:
     /** TO Climbing-Component-End*/
 
     void Tick(float DeltaTime) override;
-
-    UFUNCTION(BlueprintCallable, Category = "Movement")
-    void ChangeMovementMode();
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     bool CheckOverlapClimbableActors();
@@ -112,8 +110,6 @@ public:
     void SetPlayerMovement(EPlayerMovement PlayerStateToSet);
 
     void StopJumping() override;
-
-    void OutputCapsuleOverlappedComponents();
 
 protected:
     virtual void BeginPlay() override;

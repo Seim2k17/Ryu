@@ -28,6 +28,6 @@ public:
 private:
 
 	IRyuCharacterState* InputPressDown(ARyuBaseCharacter* Character);
-	IRyuCharacterState* InputPressUp(ARyuBaseCharacter* Character)
+	IRyuCharacterState* InputPressUp(ARyuBaseCharacter* Character);
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
 };

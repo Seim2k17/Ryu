@@ -3,6 +3,7 @@
 #include "RyuBaseCharacter.h"
 #include "Components/RyuClimbingComponent.h"
 #include "Components/RyuMovementComponent.h"
+#include "Components/RyuDebugComponent.h"
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
 #include "ERyuLookDirection.h"
@@ -161,7 +162,7 @@ bool ARyuBaseCharacter::CheckOverlapClimbableActors()
 
     if (auto* ClimbingComp = FindComponentByClass<URyuClimbingComponent>())
     {
-        GetOverlappingActors(CapsuleOverlappedActors, ClimbComp->ClimbableActorClass);
+        GetOverlappingActors(CapsuleOverlappedActors, ClimbingComp->ClimbableActorClass);
     }
 
     // TODO : Move To Debug Comp
@@ -178,7 +179,7 @@ bool ARyuBaseCharacter::CheckOverlapClimbableActors()
     else
     {
         RyuClimbingComponent->ResetClimbingState();
-		return false;
+        return false;
     }
 }
 /*
@@ -194,14 +195,14 @@ bool ARyuBaseCharacter::CheckOverlappingComponents()
     //check if overlapped comp right or left
 
     //check if overlapped comp up or/and down
-	// TODO: really ?
+    // TODO: really ?
 
     int countTrigger = CapsuleOverlappedActors.Num();
 
-	if (countTrigger == 0)
-	{
-		return false;
-	}
+    if (countTrigger == 0)
+    {
+        return false;
+    }
 
     UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): %s"), *FString::FromInt(countTrigger));
 
@@ -217,13 +218,10 @@ bool ARyuBaseCharacter::CheckOverlappingComponents()
             UE_LOG(LogTemp, Log, TEXT("CheckOverlappingComponents(): %s"),
                    *CapsuleOverlappedActors[i]->GetName());
         }
-		return false;
+        return false;
     }
     else
     {
-		//
-        // PlayerMovement = EPlayerMovement::CANGRABLEDGE;
-
         ERYULedgePosition2D LedgePosition = RyuClimbingComponent->GetLedgePosition();
         ERYULedgeSideEntered LedgeSide = RyuClimbingComponent->GetLedgeSide(0);
 
@@ -231,7 +229,7 @@ bool ARyuBaseCharacter::CheckOverlappingComponents()
 
         if (countTrigger == 1)
         {
-            //save all Overlapping Components in a arry, before that we make sure that the array is empty
+            //save all Overlapping Components in a array, before that we make sure that the array is empty
             //CapsuleOverlappedComponents.Empty(); wird in
 
             //we know that the TriggerComponents we search for, are UBoxComponents and we do not need any other
@@ -243,12 +241,19 @@ bool ARyuBaseCharacter::CheckOverlappingComponents()
             //ERYULedgeSideEntered LedgeSide = ERYULedgeSideEntered::NONE;
 
             /* fast check what kind of trigger*/
-            OutputCapsuleOverlappedComponents();
+
+            if (auto* DebugComp = FindComponentByClass<URyuDebugComponent>())
+            {
+                DebugComp->OutputCapsuleOverlappedComponents(CapsuleOverlappedComponents);
+            }
+
             //UBoxComponent* OverlapClimbComp = GetOverlappedClimbingComponent();
 
             UE_LOG(LogTemp, Log,
                    TEXT("CheckOverlappingComponents(): Yes it´s %s with the Trigger at ... "),
                    *CapsuleOverlappedActors[0]->GetName());
+
+            // TODO: to ClimbStateMachine ! (if needable)
 
             if (LedgePosition == ERYULedgePosition2D::PosiDown)
             {
@@ -280,18 +285,7 @@ bool ARyuBaseCharacter::CheckOverlappingComponents()
             // TODO later call to Character StateMachine !
             RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::CANCLIMBUPANDDOWN);
         }
-		return true;
-    }
-}
-
-void ARyuBaseCharacter::OutputCapsuleOverlappedComponents()
-{
-    for (int i = 0; i < CapsuleOverlappedComponents.Num(); i++)
-    {
-        UPrimitiveComponent* el = CapsuleOverlappedComponents[i];
-        UE_LOG(LogTemp, Log, TEXT("OutputCapsuleOverlapArray[%s]: %s Posi: %s Owner: %s"),
-               *FString::FromInt(i), *el->GetName(), *el->GetOwner()->GetActorLocation().ToString(),
-               *el->GetOwner()->GetName());
+        return true;
     }
 }
 

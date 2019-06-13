@@ -4,6 +4,7 @@
 #include "Character/RYU2DENUM_Movement.h"
 #include "Character/RyuMainCharacter.h"
 #include "Components/RyuClimbingComponent.h"
+#include "Utilities/RyuStaticFunctionLibrary.h"
 
 URyuDebugComponent::URyuDebugComponent()
 {
@@ -155,6 +156,18 @@ void URyuDebugComponent::DrawDebugInfosOnScreen()
                                      FString::Printf(TEXT("Movement: %s"), *MoveMode), false);
     GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red,
                                      FString::Printf(TEXT("ClimbingMode: %s"), *ClimbMode), false);
+}
+
+void URyuDebugComponent::OutputCapsuleOverlappedComponents(
+    TArray<UPrimitiveComponent*>& ComponentArray)
+{
+    for (int i = 0; i < ComponentArray.Num(); i++)
+    {
+        UPrimitiveComponent* el = ComponentArray[i];
+        UE_LOG(LogTemp, Log, TEXT("OutputCapsuleOverlapArray[%s]: %s Posi: %s Owner: %s"),
+               *FString::FromInt(i), *el->GetName(), *el->GetOwner()->GetActorLocation().ToString(),
+               *el->GetOwner()->GetName());
+    }
 }
 
 // Move to a BaseClass or Static UtilityLibrary !

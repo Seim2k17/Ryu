@@ -4,6 +4,7 @@
 #include "Character/RYU2DENUM_ClimbingMode.h"
 #include "Character/RYU2DENUM_Movement.h"
 #include "Character/RyuMainCharacter.h"
+#include "Components/RyuDebugComponent.h"
 #include "Components/RyuMovementComponent.h"
 #include "Components/RyuTimelineComponent.h"
 #include "RyuBaseCharacter.h"
@@ -231,7 +232,10 @@ UBoxComponent* URyuClimbingComponent::GetOverlappedClimbingComponent(ERYULedgePo
             return false;
     });
 
-    CharOwner->OutputCapsuleOverlappedComponents();
+    if (auto* DebugComp = CharOwner->FindComponentByClass<URyuDebugComponent>())
+    {
+        DebugComp->OutputCapsuleOverlappedComponents(CharOwner->CapsuleOverlappedComponents);
+    }
 
     return CharOwner->CapsuleOverlappedComponents[0]
                ? Cast<UBoxComponent>(CharOwner->CapsuleOverlappedComponents[0])

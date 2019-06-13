@@ -18,6 +18,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressDown(ARyuBaseCharacter* Ch
     {
         return NewObject<URyuCharacterClimbState>();
     }
+    return Super::HandleInput(Character, ERyuInputState::PressDown);
 }
 
 IRyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Character)
@@ -26,6 +27,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Char
     {
         return NewObject<URyuCharacterClimbState>();
     }
+    return Super::HandleInput(Character, ERyuInputState::PressUp);
 }
 
 IRyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Character,
