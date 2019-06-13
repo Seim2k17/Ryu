@@ -2,8 +2,8 @@
 
 #include "RyuBaseCharacter.h"
 #include "Components/RyuClimbingComponent.h"
-#include "Components/RyuMovementComponent.h"
 #include "Components/RyuDebugComponent.h"
+#include "Components/RyuMovementComponent.h"
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
 #include "ERyuLookDirection.h"
@@ -165,11 +165,9 @@ bool ARyuBaseCharacter::CheckOverlapClimbableActors()
         GetOverlappingActors(CapsuleOverlappedActors, ClimbingComp->ClimbableActorClass);
     }
 
-    // TODO : Move To Debug Comp
-    for (int i = 0; i < CapsuleOverlappedActors.Num(); i++)
+    if (auto* DebugComp = FindComponentByClass<URyuDebugComponent>())
     {
-        UE_LOG(LogTemp, Log, TEXT("[%s] : %s"), *FString::FromInt(i),
-               *CapsuleOverlappedActors[i]->GetName());
+        DebugComp->OutputCapsuleOverlappedComponents(CapsuleOverlappedComponents);
     }
 
     if (CapsuleOverlappedActors.Num() > 0)
@@ -325,9 +323,12 @@ void ARyuBaseCharacter::SetLookRight()
 
 ERYUClimbingMode ARyuBaseCharacter::GetClimbingMode()
 {
-    auto* ClimbComp = FindComponentByClass<URyuClimbingComponent>();
+    if (auto* ClimbComp = FindComponentByClass<URyuClimbingComponent>())
+    {
+        return ClimbComp->GetClimbingState();
+    }
 
-    return ClimbComp->GetClimbingState();
+    return nullptr;
 }
 
 ERyuLookDirection ARyuBaseCharacter::GetLookDirection()
@@ -347,23 +348,17 @@ void ARyuBaseCharacter::FlipCharacter()
         {
             Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
             CameraBoom->RelativeRotation = FRotator(0.0f, 90.0f, 0.0f);
+            LookDirection = ERyuLookDirection::Left;
         }
         //else if (TravelDirection > 0.0f)
         else
         {
             Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
             CameraBoom->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
+            LookDirection = ERyuLookDirection::Right;
         }
     }
 
-    if (LookDirection == ERyuLookDirection::Right)
-    {
-        LookDirection = ERyuLookDirection::Left;
-    }
-    else
-    {
-        LookDirection = ERyuLookDirection::Right;
-    }
     // LookDirection = !LookDirection;
     //UE_LOG(LogTemp, Log, TEXT("FlipCharacter(): lookRight = %s"),
     //       bLookRight ? TEXT("true") : TEXT("false"));
