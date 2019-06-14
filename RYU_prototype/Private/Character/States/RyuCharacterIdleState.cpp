@@ -2,7 +2,9 @@
 
 #include "RyuCharacterIdleState.h"
 #include "Character/RyuBaseCharacter.h"
+#include "Components/RyuClimbingComponent.h"
 #include "Enums/ERyuInputState.h"
+#include "Enums/ERyuLedgePosition.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterClimbState.h"
@@ -14,18 +16,33 @@ URyuCharacterIdleState::URyuCharacterIdleState()
 
 IRyuCharacterState* URyuCharacterIdleState::InputPressDown(ARyuBaseCharacter* Character)
 {
-    if (Character->CheckOverlapClimbableActors())
+    if (auto* ClimbingComp = Character->FindComponentByClass<URyuClimbingComponent>())
     {
-        return NewObject<URyuCharacterClimbState>();
+        if (Character->CheckOverlapClimbableActors()
+            && ((ClimbingComp->GetLedgePosition() == ERyuLedgePosition::PosiDown)
+                || (ClimbingComp->GetLedgePosition() == ERyuLedgePosition::PosiUpDown)))
+        {
+            // RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::CANCLIMBDOWNLEDGE);
+
+            return NewObject<URyuCharacterClimbState>();
+        }
     }
+
     return Super::HandleInput(Character, ERyuInputState::PressDown);
 }
 
 IRyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Character)
 {
-    if (Character->CheckOverlapClimbableActors())
+    if (auto* ClimbingComp = Character->FindComponentByClass<URyuClimbingComponent>())
     {
-        return NewObject<URyuCharacterClimbState>();
+        if (Character->CheckOverlapClimbableActors()
+            && ((ClimbingComp->GetLedgePosition() == ERyuLedgePosition::PosiUp)
+                || (ClimbingComp->GetLedgePosition() == ERyuLedgePosition::PosiUpDown)))
+        {
+            // RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::CANCLIMBUPLEDGE);
+
+            return NewObject<URyuCharacterClimbState>();
+        }
     }
     return Super::HandleInput(Character, ERyuInputState::PressUp);
 }

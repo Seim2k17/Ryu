@@ -4,7 +4,7 @@
 
 #include "Character/RYU2DENUM_ClimbingMode.h"
 #include "Character/RYU2DENUM_Movement.h"
-#include "Character/RYUENUM_LedgePosition.h"
+#include "Enums/ERyuLedgePosition.h"
 #include <CoreMinimal.h>
 #include <Components/ActorComponent.h>
 #include "RyuClimbingComponent.generated.h"
@@ -39,7 +39,7 @@ public:
     ERYULedgeSideEntered GetLedgeSide(int posi);
 
     //ERYULedgePosition2D ARyuBaseCharacter::GetLedgePosition();
-    ERYULedgePosition2D GetLedgePosition();
+    ERyuLedgePosition GetLedgePosition();
 
     void GetOverlappingBoxComponents();
 

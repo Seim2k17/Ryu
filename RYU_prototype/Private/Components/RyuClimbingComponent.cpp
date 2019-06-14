@@ -7,6 +7,7 @@
 #include "Components/RyuDebugComponent.h"
 #include "Components/RyuMovementComponent.h"
 #include "Components/RyuTimelineComponent.h"
+#include "Utilities/RyuStaticFunctionLibrary.h"
 #include "RyuBaseCharacter.h"
 #include <Components/BoxComponent.h>
 
@@ -476,15 +477,15 @@ FVector URyuClimbingComponent::GetLedgeHangPosition()
 /*
 param posi - Position in the OverlappedComponentArray to receive the correct TriggerBox
 */
-ERYULedgePosition2D URyuClimbingComponent::GetLedgePosition()
+ERyuLedgePosition URyuClimbingComponent::GetLedgePosition()
 {
     auto* MainChar = Cast<ARyuMainCharacter>(GetOwner());
-    ERYULedgePosition2D LedgePosi;
+    ERyuLedgePosition LedgePosi;
 
     // if character can Climb Up AND Down the Ledges are at Top and Bottom from the char
     if (RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPANDDOWN)
     {
-        LedgePosi = ERYULedgePosition2D::PosiUpDown;
+        LedgePosi = ERyuLedgePosition::PosiUpDown;
         CurrentClimbTagName = CanClimbUpDownName;
         UE_LOG(LogTemp, Log, TEXT("GetLedgePosition(): PositionUpAndDown"));
     }
@@ -494,13 +495,13 @@ ERYULedgePosition2D URyuClimbingComponent::GetLedgePosition()
         // if there is only ony ledge to climb we need to find the correct trigger ! (CapsuleOverlappedComponents[posi])
         if (MainChar->CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbUpTagName)
         {
-            LedgePosi = ERYULedgePosition2D::PosiUp;
+            LedgePosi = ERyuLedgePosition::PosiUp;
             CurrentClimbTagName = CanClimbUpTagName;
             UE_LOG(LogTemp, Log, TEXT("GetLedgePosition(): PositionUp"));
         }
         else if (MainChar->CapsuleOverlappedComponents[0]->ComponentTags[0] == CanClimbDownTagName)
         {
-            LedgePosi = ERYULedgePosition2D::PosiDown;
+            LedgePosi = ERyuLedgePosition::PosiDown;
             CurrentClimbTagName = CanClimbDownTagName;
             UE_LOG(LogTemp, Log, TEXT("GetLedgePosition(): PositionDown"));
         }
@@ -511,7 +512,7 @@ ERYULedgePosition2D URyuClimbingComponent::GetLedgePosition()
                         "is: 'CanClimbUp' or 'CanClimbDown'."),
                    *MainChar->CapsuleOverlappedComponents[0]->GetName(),
                    *MainChar->CapsuleOverlappedComponents[0]->GetOwner()->GetName());
-            LedgePosi = ERYULedgePosition2D::NONE;
+            LedgePosi = ERyuLedgePosition::None;
         }
     }
     return LedgePosi;
@@ -524,7 +525,13 @@ ERYULedgeSideEntered URyuClimbingComponent::GetLedgeSideEntered()
 
 ERYULedgeSideEntered URyuClimbingComponent::GetLedgeSide(int posi)
 {
-    auto* MainChar = Cast<ARyuMainCharacter>(GetOwner());
+    auto* MainChar = URyuStaticFunctionLibrary::GetMainCharOwner(this);
+
+    if (MainChar == nullptr)
+    {
+        return ERYULedgeSideEntered::NONE;
+    }
+
     //needs to be checked when getting input, the we need to decide if we flip the char or not
     ERYULedgeSideEntered LedgeSideEntered;
     //By design we Tag the Side in Array: ComponentTags[1]
@@ -546,6 +553,7 @@ ERYULedgeSideEntered URyuClimbingComponent::GetLedgeSide(int posi)
                     "'Right' or 'Left'."),
                *MainChar->CapsuleOverlappedComponents[posi]->GetName(),
                *MainChar->CapsuleOverlappedComponents[posi]->GetOwner()->GetName());
+
         LedgeSideEntered = ERYULedgeSideEntered::NONE;
     }
     return LedgeSideEntered;
@@ -553,21 +561,13 @@ ERYULedgeSideEntered URyuClimbingComponent::GetLedgeSide(int posi)
 
 void URyuClimbingComponent::GetOverlappingBoxComponents()
 {
-    auto* MainChar = Cast<ARyuMainCharacter>(GetOwner());
+    if (auto* MainChar = URyuStaticFunctionLibrary::GetMainCharOwner(this))
+    {
+        MainChar->GetOverlappingComponents(MainChar->CapsuleOverlappedComponents);
 
-    MainChar->GetOverlappingComponents(MainChar->CapsuleOverlappedComponents);
-    //please use a Lambda dude ...
-    MainChar->CapsuleOverlappedComponents.RemoveAll(
-        [](auto* elem) { return !elem->IsA<UBoxComponent>(); });
-
-    //you can use this, but iterate from end to start not from start to end
-    // 	for (int i = ItemArray.Num()-1; i >= 0 ; i--)
-    // 	{
-    // 		if (!ItemArray[i]->IsA(UBoxComponent::StaticClass()))
-    // 		{
-    // 			ItemArray.RemoveAt(i);
-    // 		}
-    // 	}
+        MainChar->CapsuleOverlappedComponents.RemoveAll(
+            [](auto* elem) { return !elem->IsA<UBoxComponent>(); });
+    }
 }
 
 void URyuClimbingComponent::ToggleEnterLedgeSide()
