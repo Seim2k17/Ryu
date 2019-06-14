@@ -2,52 +2,80 @@
 
 #include "RyuCharacterOnGroundState.h"
 #include "Enums/ERyuInputState.h"
+#include "Enums/ERyuLookDirection.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterClimbState.h"
 #include "RyuCharacterDuckState.h"
-#include "RyuCharacterJumpState.h"
+#include "RyuCharacterJumpBackwardState.h"
+#include "RyuCharacterJumpForwardState.h"
+#include "RyuCharacterJumpUpwardState.h"
 #include "RyuCharacterRunState.h"
+#include "RyuCharacterSneakState.h"
 #include "RyuCharacterState.h"
 
 URyuCharacterOnGroundState::URyuCharacterOnGroundState()
 {
 }
 
+// TODO: whats with TwoButtonInput ? Like Jump & Forward
 IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* Character,
                                                             const ERyuInputState Input)
 {
     switch (Input)
     {
-        case ERyuInputState::PressJump: {
+        case ERyuInputState::PressJumpUp:
+        case ERyuInputState::PressJump:
+        {
             UE_LOG(LogRyu, Log, TEXT("Jump is pressed"));
-            return NewObject<URyuCharacterJumpState>();
+            return NewObject<URyuCharacterJumpUpwardState>();
         }
-        case ERyuInputState::PressDown: {
-            UE_LOG(LogRyu, Log, TEXT("Character will be ducking"));
+        case ERyuInputState::PressJumpForward:
+        {
+            return NewObject<URyuCharacterJumpForwardState>();
+        }
+        case ERyuInputState::PressJumpBackward:
+        {
+            return NewObject<URyuCharacterJumpBackwardState>()
+        }
+        case ERyuInputState::PressDown:
+        {
+            UE_LOG(LogRyu, Log, TEXT("Character is ducking"));
             return NewObject<URyuCharacterDuckState>();
         }
-        case ERyuInputState::PressUp: {
-            // TODO Do we need to check if climbing possible here ?
-            UE_LOG(LogRyu, Log, TEXT("Character will be Climbing"));
-            return NewObject<URyuCharacterClimbState>();
-        }
         case ERyuInputState::PressLeft:
-        case ERyuInputState::PressRight: {
+        case ERyuInputState::PressRight:
+        {
+            ERyuLookDirection LookDirection = Character->GetLookDirection();
             if (Input == ERyuInputState::PressRight)
             {
+                if (LookDirection == ERyuLookDirection::Left)
+                {
+                    Character->FlipCharacter();
+                }
                 UE_LOG(LogRyu, Log, TEXT("Character is walking Right."));
             }
             else
             {
+                if (LookDirection == ERyuLookDirection::Right)
+                {
+                    Character->FlipCharacter();
+                }
                 UE_LOG(LogRyu, Log, TEXT("Character is walking Left."));
             }
+
             return NewObject<URyuCharacterRunState>();
         }
         case ERyuInputState::ReleaseLeft:
-        case ERyuInputState::ReleaseRight: {
+        case ERyuInputState::ReleaseRight:
+        case ERyuInputState::ReleaseSneak:
+        {
             UE_LOG(LogRyu, Log, TEXT("Character finished walking."));
             return NewObject<URyuCharacterIdleState>();
+        }
+        case ERyuInputState::PressSneak:
+        {
+            return NewObject<URyuCharacterSneakState>();
         }
 
         default:

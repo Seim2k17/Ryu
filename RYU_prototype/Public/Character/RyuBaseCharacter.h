@@ -5,6 +5,7 @@
 #include "Character/RYU2DENUM_AnimationState.h"
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
+#include "Enums/ERyuInteractionStatus.h"
 #include "Enums/ERyuLookDirection.h"
 #include "RYU2DENUM_ClimbingMode.h"
 #include "RYU2DENUM_Movement.h"
@@ -59,7 +60,11 @@ public:
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     ERYUClimbingMode GetClimbingMode();
 
+    ERyuInteractionStatus GetInteractionStatus();
+
     ERyuLookDirection GetLookDirection();
+
+	bool IsInCombat();
 
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     EPlayerMovement GetPlayerMovement();
@@ -159,8 +164,6 @@ public:
 
     bool bPlayTurnAni;
 
-    ERyuLookDirection LookDirection;
-
     //** Overlapped CapsuleStuff, by design we only want to overlap UBoxComp ?*/
     TArray<UPrimitiveComponent*> CapsuleOverlappedComponents;
 
@@ -187,6 +190,10 @@ protected:
 
 private:
     // UtilitySection
+
+    ERyuLookDirection LookDirection;
+
+    ERyuInteractionStatus InteractionStatus = ERyuInteractionStatus::None;
 
     bool bSphereTracerOverlap;
 

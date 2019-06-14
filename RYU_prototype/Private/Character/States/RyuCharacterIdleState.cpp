@@ -4,11 +4,17 @@
 #include "Character/RyuBaseCharacter.h"
 #include "Components/RyuClimbingComponent.h"
 #include "Enums/ERyuInputState.h"
+#include "Enums/ERyuInteractionStatus.h"
 #include "Enums/ERyuLedgePosition.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterClimbState.h"
+#include "RyuCharacterCloseState.h"
+#include "RyuCharacterOpenState.h"
+#include "RyuCharacterPullState.h"
+#include "RyuCharacterPushState.h"
 #include "RyuCharacterState.h"
+#include "RyuCharacterTalkState.h"
 
 URyuCharacterIdleState::URyuCharacterIdleState()
 {
@@ -22,6 +28,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressDown(ARyuBaseCharacter* Ch
             && ((ClimbingComp->GetLedgePosition() == ERyuLedgePosition::PosiDown)
                 || (ClimbingComp->GetLedgePosition() == ERyuLedgePosition::PosiUpDown)))
         {
+            //TODO: is this needable ??
             // RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::CANCLIMBDOWNLEDGE);
 
             return NewObject<URyuCharacterClimbState>();
@@ -47,6 +54,60 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Char
     return Super::HandleInput(Character, ERyuInputState::PressUp);
 }
 
+IRyuCharacterState* URyuCharacterIdleState::InputPressInteract(ARyuBaseCharacter* Character)
+{
+    ERyuInteractionStatus IAStatus = Character->GetInteractionStatus();
+    switch (IAStatus)
+    {
+        case ERyuInteractionStatus::Close:
+        {
+            return NewObject<URyuCharacterCloseState>();
+            break;
+        }
+        case ERyuInteractionStatus::Open:
+        {
+            return NewObject<URyuCharacterOpenState>();
+            break;
+        }
+        case ERyuInteractionStatus::Pull:
+        {
+            return NewObject<URyuCharacterPullState>();
+            break;
+        }
+        case ERyuInteractionStatus::Push:
+        {
+            return NewObject<URyuCharacterPushState>();
+            break;
+        }
+        case ERyuInteractionStatus::Talk:
+        {
+            return NewObject<URyuCharacterTalkState>();
+            break;
+        }
+        default:
+        {
+            return Super::HandleInput(Character, ERyuInputState::PressInteract);
+            break;
+        }
+    }
+}
+
+IRyuCharacterState* URyuCharacterIdleState::InputPressAbility(ARyuBaseCharacter* Character)
+{
+    //TODO: which Ability is selected
+}
+
+IRyuCharacterState* URyuCharacterIdleState::InputPressAttack(ARyuBaseCharacter* Character)
+{
+    if (Character->IsInCombat())
+    {
+        //TODO which Attacks can be performed, atm no StateChanges
+        return nullptr; //IRyuCharacterCombatState
+    }
+
+    return nullptr;
+}
+
 IRyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Character,
                                                         const ERyuInputState Input)
 {
@@ -55,13 +116,27 @@ IRyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Chara
     //     return state;
     switch (Input)
     {
-        case ERyuInputState::PressUp: {
+        case ERyuInputState::PressUp:
+        {
             return InputPressUp(Character);
             break;
         }
-        case ERyuInputState::PressDown: {
+        case ERyuInputState::PressDown:
+        {
             return InputPressDown(Character);
             break;
+        }
+        case ERyuInputState::PressInteract:
+        {
+            return InputPressInteract(Character);
+        }
+        case ERyuInputState::PressAbility:
+        {
+            return InputPressAbility(Character);
+        }
+        case ERyuInputState::PressAttack:
+        {
+            return InputPressAttack(Character);
         }
         default:
             return Super::HandleInput(Character, Input);

@@ -304,10 +304,22 @@ ERYUClimbingMode ARyuBaseCharacter::GetClimbingMode()
     return ERYUClimbingMode::NONE;
 }
 
+ERyuInteractionStatus ARyuBaseCharacter::GetInteractionStatus()
+{
+    // TODO GetInteractionStatus resp. Objects/Person collided, else return None
+    return InteractionStatus;
+}
+
 ERyuLookDirection ARyuBaseCharacter::GetLookDirection()
 {
     //return bLookRight;
     return LookDirection;
+}
+
+bool ARyuBaseCharacter::IsInCombat()
+{
+    //TODO check if Character is in a Combat-Situation
+    return false;
 }
 
 void ARyuBaseCharacter::FlipCharacter()

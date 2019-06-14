@@ -41,4 +41,5 @@ void URyuCharacterSneakState::Enter(ARyuBaseCharacter* Character)
 
 void URyuCharacterSneakState::Exit(ARyuBaseCharacter* Character)
 {
+	CharacterState = ERyuCharacterState::Idle;
 }

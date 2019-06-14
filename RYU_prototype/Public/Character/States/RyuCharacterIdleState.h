@@ -26,8 +26,10 @@ public:
     virtual void Exit(ARyuBaseCharacter* Character) override;
 
 private:
-
-	IRyuCharacterState* InputPressDown(ARyuBaseCharacter* Character);
-	IRyuCharacterState* InputPressUp(ARyuBaseCharacter* Character);
+    IRyuCharacterState* InputPressDown(ARyuBaseCharacter* Character);
+    IRyuCharacterState* InputPressUp(ARyuBaseCharacter* Character);
+    IRyuCharacterState* InputPressInteract(ARyuBaseCharacter* Character);
+    IRyuCharacterState* InputPressAbility(ARyuBaseCharacter* Character);
+    IRyuCharacterState* InputPressAttack(ARyuBaseCharacter* Character);
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
 };
