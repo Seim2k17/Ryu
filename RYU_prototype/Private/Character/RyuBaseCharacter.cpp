@@ -324,22 +324,20 @@ bool ARyuBaseCharacter::IsInCombat()
 
 void ARyuBaseCharacter::FlipCharacter()
 {
-    //float TravelDirection = currV.X;
-    // Set the rotation so that the character faces his direction of travel.
     if (Controller != nullptr)
     {
         //if (TravelDirection < 0.0f)
         if (LookDirection == ERyuLookDirection::Right)
         {
             Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
-            CameraBoom->RelativeRotation = FRotator(0.0f, 90.0f, 0.0f);
+            //CameraBoom->RelativeRotation = FRotator(0.0f, 90.0f, 0.0f);
             LookDirection = ERyuLookDirection::Left;
         }
         //else if (TravelDirection > 0.0f)
         else
         {
             Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
-            CameraBoom->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
+            //CameraBoom->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
             LookDirection = ERyuLookDirection::Right;
         }
     }
@@ -395,4 +393,9 @@ void ARyuBaseCharacter::Jump()
 
 void ARyuBaseCharacter::StopJumping()
 {
+}
+
+void ARyuBaseCharacter::SetLookDirection(ERyuLookDirection Direction)
+{
+    LookDirection = LookDirection;
 }

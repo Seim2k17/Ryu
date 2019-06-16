@@ -36,7 +36,7 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
         }
         case ERyuInputState::PressJumpBackward:
         {
-            return NewObject<URyuCharacterJumpBackwardState>()
+            return NewObject<URyuCharacterJumpBackwardState>();
         }
         case ERyuInputState::PressDown:
         {

@@ -50,6 +50,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
     bool CheckOverlapClimbableActors();
 
+    /*
+	* Sets the rotation of the Sprite so that the character faces his direction of travel.
+	*/
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void FlipCharacter();
 
@@ -64,7 +67,7 @@ public:
 
     ERyuLookDirection GetLookDirection();
 
-	bool IsInCombat();
+    bool IsInCombat();
 
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     EPlayerMovement GetPlayerMovement();
@@ -115,6 +118,8 @@ public:
     void SetPlayerMovement(EPlayerMovement PlayerStateToSet);
 
     void StopJumping() override;
+
+    void SetLookDirection(ERyuLookDirection Direction);
 
 protected:
     virtual void BeginPlay() override;

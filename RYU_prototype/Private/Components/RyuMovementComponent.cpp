@@ -83,7 +83,8 @@ void URyuMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovement
 
     switch (CustomMovementMode)
     {
-        case ERYUClimbingMode::CLIMBUPLEDGE: {
+        case ERYUClimbingMode::CLIMBUPLEDGE:
+        {
             //	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
             //UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): Colission %s"),*CapCol.ToString());
             //DONOT SET PARAMETER WHEN ABP ANIMATION ACTIVE !
@@ -94,7 +95,8 @@ void URyuMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovement
             OnMoveModeChanged.Broadcast(EPlayerMovement::CLIMBING);
             break;
         }
-        case ERYUClimbingMode::CLIMBDOWNLEDGE: {
+        case ERYUClimbingMode::CLIMBDOWNLEDGE:
+        {
             //	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
             //UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
             //MyChar->FlipCharacter();
@@ -109,7 +111,8 @@ void URyuMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovement
 
             break;
         }
-        case ERYUClimbingMode::HANGONLEDGE: {
+        case ERYUClimbingMode::HANGONLEDGE:
+        {
             UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): ... to Hanging: Waiting!"));
 
             OnMoveModeChanged.Broadcast(EPlayerMovement::CLIMBING);
@@ -123,7 +126,8 @@ void URyuMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovement
             MyChar->GetCapsuleComponent()->SetEnableGravity(false);
             break;
         }
-        case ERYUClimbingMode::JUMPTOLEDGE: {
+        case ERYUClimbingMode::JUMPTOLEDGE:
+        {
             UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): ... to CustomJumpUp:"))
             OnMoveModeChanged.Broadcast(EPlayerMovement::CLIMBING);
             break;
@@ -136,7 +140,8 @@ void URyuMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovement
     /**FallBack , just use Flying */
     switch (MovementMode)
     {
-        case MOVE_Flying: {
+        case MOVE_Flying:
+        {
             ARYU2D_CharacterBase* MyChar = Cast<ARYU2D_CharacterBase>(CharacterOwner);
             //	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
             //UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());

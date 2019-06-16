@@ -84,7 +84,8 @@ void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAni
         case EPlayerMovement::ENDRUN:
             CheckOverlapClimbableActors();
             break;
-        case EPlayerMovement::JUMPSTART: {
+        case EPlayerMovement::JUMPSTART:
+        {
             PlayerMovement = EPlayerMovement::JUMPLOOP;
             RyuMovementComponent->JumpForward();
         }
@@ -156,7 +157,7 @@ void ARyuMainCharacter::InitializeCharacterValues()
     bReplicates = true;
 
     bPlayTurnAni = false;
-    LookDirection = ERyuLookDirection::Right;
+    SetLookDirection(ERyuLookDirection::Right);
     bLookRight = true;
 
     // Set the size of our collision capsule.
@@ -224,7 +225,7 @@ void ARyuMainCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-	//TODO implement it correct then call it / atm crash -> pure virtual function call !
+    //TODO implement it correct then call it / atm crash -> pure virtual function call !
     CharacterState->Update(this);
 
     //Temp save for Timelinestuff
@@ -298,7 +299,7 @@ void ARyuMainCharacter::MoveRight(float Val)
 {
     //for slow Movement , TODO: Clamp for ControllerInput (AxisValus...)
 
-	bool PressRight = false;
+    bool PressRight = false;
 
     float SneakValue = 1.0f;
 
@@ -306,63 +307,31 @@ void ARyuMainCharacter::MoveRight(float Val)
 
     MoveRightInput = Val * SneakValue;
 
-	if (bSneakIsPressed)
-	{
-		//HandleInput(ERyuInputState::PressSneak);
-	}
-
-	// Bind to Press / Release Button Events ?
-	if (MoveRightInput < 0)
-	{
-		PressRight = false;
-		HandleInput(ERyuInputState::PressLeft);
-	}
-	else if (MoveRightInput > 0)
-	{
-		PressRight = true;
-		HandleInput(ERyuInputState::PressRight);
-	}
-	else
-	{
-		if (PressRight)
-		{
-			HandleInput(ERyuInputState::ReleaseRight);
-		}
-		else
-		{
-			HandleInput(ERyuInputState::ReleaseLeft);
-		}
-		
-	}
-	
-
-    /*
-	if ((PlayerMovement != EPlayerMovement::BEGINRUN) &&
-		(PlayerMovement != EPlayerMovement::ENDRUN) &&
-		(PlayerMovement != EPlayerMovement::STARTTURN) &&
-		(PlayerMovement != EPlayerMovement::ENDTURN))
-		*/
-    //TODO
-    //** needs rework when turning whole running
-
-    if (PlayerMovement == EPlayerMovement::STARTTURNRUN)
+    if (bSneakIsPressed)
     {
-        AddMovementInput(FVector(1.0f, 0.0f, 0.0f), -0.1f * Val);
-        UE_LOG(LogTemp, Log, TEXT("MoveRight(): Turn while Running %s:"),
-               *FString::SanitizeFloat((-0.1 * Val)));
+        //HandleInput(ERyuInputState::PressSneak);
     }
 
-    if ((PlayerMovement == EPlayerMovement::STAND) || (PlayerMovement == EPlayerMovement::RUN)
-        || (PlayerMovement == EPlayerMovement::CANGRABLEDGE)
-        || (PlayerMovement == EPlayerMovement::WALK))
-
+    // Bind to Press / Release Button Events ?
+    if (MoveRightInput < 0)
     {
-        if ((LookDirection == ERyuLookDirection::Right && Val > 0)
-            || (LookDirection == ERyuLookDirection::Left && Val < 0))
+        PressRight = false;
+        HandleInput(ERyuInputState::PressLeft);
+    }
+    else if (MoveRightInput > 0)
+    {
+        PressRight = true;
+        HandleInput(ERyuInputState::PressRight);
+    }
+    else
+    {
+        if (PressRight)
         {
-            if (PlayerMovement == EPlayerMovement::CANGRABLEDGE)
-                PlayerMovement = EPlayerMovement::BEGINRUN;
-            AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput);
+            HandleInput(ERyuInputState::ReleaseRight);
+        }
+        else
+        {
+            HandleInput(ERyuInputState::ReleaseLeft);
         }
     }
 }
@@ -412,8 +381,8 @@ void ARyuMainCharacter::UpdateCharacter()
         //TODO curV.Z > 0 (was auch immer das heisst)
 
         //Character can Turn around --> it playes the turnAnimation
-        if ((LookDirection == ERyuLookDirection::Right && MoveRightInput < 0)
-            || (LookDirection == ERyuLookDirection::Left && MoveRightInput > 0))
+        if ((GetLookDirection() == ERyuLookDirection::Right && MoveRightInput < 0)
+            || (GetLookDirection() == ERyuLookDirection::Left && MoveRightInput > 0))
         {
             if (PlayerMovement == EPlayerMovement::RUN)
             {
@@ -434,9 +403,10 @@ void ARyuMainCharacter::UpdateCharacter()
 
         switch (PlayerMovement)
         {
-            case EPlayerMovement::STAND: {
-                if ((LookDirection == ERyuLookDirection::Right && (currV.X > 0))
-                    || (LookDirection == ERyuLookDirection::Left && (currV.X < 0)))
+            case EPlayerMovement::STAND:
+            {
+                if ((GetLookDirection() == ERyuLookDirection::Right && (currV.X > 0))
+                    || (GetLookDirection() == ERyuLookDirection::Left && (currV.X < 0)))
                 {
                     PlayerMovement = EPlayerMovement::BEGINRUN;
                     break;
@@ -447,7 +417,8 @@ void ARyuMainCharacter::UpdateCharacter()
                 //return;
                 break;
             }
-            case EPlayerMovement::BEGINRUN: {
+            case EPlayerMovement::BEGINRUN:
+            {
                 //change State to stop walking or Running
                 if (MoveRightInput == 0)
                 {
@@ -460,7 +431,8 @@ void ARyuMainCharacter::UpdateCharacter()
                 //return;
                 break;
             }
-            case EPlayerMovement::RUN: {
+            case EPlayerMovement::RUN:
+            {
                 if (currV.X == 0)
                 {
                     if (PlayerMovement != EPlayerMovement::STARTTURNRUN)
@@ -470,24 +442,29 @@ void ARyuMainCharacter::UpdateCharacter()
                 //return;
                 break;
             }
-            case EPlayerMovement::ENDTURN: {
+            case EPlayerMovement::ENDTURN:
+            {
                 PlayerMovement = EPlayerMovement::STAND;
                 //return;
                 break;
             }
-            case EPlayerMovement::STARTFALLING: {
+            case EPlayerMovement::STARTFALLING:
+            {
                 PlayerMovement = EPlayerMovement::STANDUP;
                 break;
             }
-            case EPlayerMovement::FALLING: {
+            case EPlayerMovement::FALLING:
+            {
                 PlayerMovement = EPlayerMovement::STANDUP;
                 break;
             }
-            case EPlayerMovement::CLIMBING: {
+            case EPlayerMovement::CLIMBING:
+            {
                 RyuClimbingComponent->Climb(MoveUpInput);
                 break;
             }
-            case EPlayerMovement::CANGRABLEDGE: {
+            case EPlayerMovement::CANGRABLEDGE:
+            {
                 RyuClimbingComponent->CheckMoveUpState(MoveUpInput);
                 break;
             }
@@ -514,17 +491,20 @@ void ARyuMainCharacter::ClimbLedgeFlipBookFinished()
 
     switch (RYUClimbingMode)
     {
-        case ERYUClimbingMode::CLIMBDOWNLEDGE: {
+        case ERYUClimbingMode::CLIMBDOWNLEDGE:
+        {
             RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::HANGONLEDGE);
             //RYUClimbingMode = ERYUClimbingMode::HANGONLEDGE;
         }
         break;
-        case ERYUClimbingMode::CLIMBUPLEDGE: {
+        case ERYUClimbingMode::CLIMBUPLEDGE:
+        {
             SetActorLocation(RyuClimbingComponent->ClimbStandUpPosition);
             ResetCollisionAndGravity();
             break;
         }
-        case ERYUClimbingMode::LETGOLEDGE: {
+        case ERYUClimbingMode::LETGOLEDGE:
+        {
             UE_LOG(LogTemp, Log, TEXT("ClimbLedgeFlipBookFinished(): LETGOEND"));
             ResetCollisionAndGravity();
             break;
@@ -540,17 +520,17 @@ void ARyuMainCharacter::HandleInput(ERyuInputState Input)
     IRyuCharacterState* state = CharacterState->HandleInput(this, Input);
     if (state != nullptr)
     {
-		// Call Exit-Action on the old state
-		CharacterState->Exit(this);
-		EquipmentState->Exit(this);
+        // Call Exit-Action on the old state
+        CharacterState->Exit(this);
+        EquipmentState->Exit(this);
 
         // delete old CharacterState;
         CharacterState = state;
-		EquipmentState = state;
+        EquipmentState = state;
 
         // Call the enter Action on the new State
         CharacterState->Enter(this);
-		EquipmentState->Enter(this);
+        EquipmentState->Enter(this);
     }
 }
 

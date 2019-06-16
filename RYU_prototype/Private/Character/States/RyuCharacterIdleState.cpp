@@ -95,6 +95,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressInteract(ARyuBaseCharacter
 IRyuCharacterState* URyuCharacterIdleState::InputPressAbility(ARyuBaseCharacter* Character)
 {
     //TODO: which Ability is selected
+	return nullptr;
 }
 
 IRyuCharacterState* URyuCharacterIdleState::InputPressAttack(ARyuBaseCharacter* Character)
