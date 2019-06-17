@@ -68,9 +68,11 @@ void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAni
             break;
         case EPlayerMovement::WALK:
             break;
+        // TODO: is this even needable, because we´ll integrate the start/end-Anis in the Transitions of the ABP! -> CHECK
         case EPlayerMovement::STARTTURN:
             TurnFlipBookFinished();
             break;
+        // TODO: is this even needable, because we´ll integrate the start/end-Anis in the Transitions of the ABP! -> CHECK
         case EPlayerMovement::STARTTURNRUN:
             TurnRunFlipBookFinished();
             break;
@@ -201,10 +203,6 @@ void ARyuMainCharacter::InitializeCharacterValues()
     // behavior on the edge of a ledge versus inclines by setting this to true or false
     GetCharacterMovement()->bUseFlatBaseForFloorChecks = true;
 
-    // TODO: replace with CSTM
-    PlayerMovement = EPlayerMovement::STAND;
-    CharAnimation2DState = ERYU2DAnimationState::IDLE;
-
     bSneakIsPressed = false;
 }
 
@@ -250,22 +248,11 @@ void ARyuMainCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 void ARyuMainCharacter::Jump()
 {
+    // TODO: is this even executed atm ? see SetupPlayerInputComponent
+    // from CharacterClass
     //          bPressedJump = true;
     //          bJumpJustStarted = true;
-
     HandleInput(ERyuInputState::PressJump);
-
-    // OLD, see CSTM now since 9/6/19
-    switch (PlayerMovement)
-    {
-        case EPlayerMovement::STAND:
-        case EPlayerMovement::CANGRABLEDGE:
-
-        {
-            PlayerMovement = EPlayerMovement::JUMPSTART;
-            break;
-        }
-    }
 }
 
 void ARyuMainCharacter::HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -517,6 +504,7 @@ void ARyuMainCharacter::ClimbLedgeFlipBookFinished()
 
 void ARyuMainCharacter::HandleInput(ERyuInputState Input)
 {
+    // TODO: check if objects are created every frame !?
     IRyuCharacterState* state = CharacterState->HandleInput(this, Input);
     if (state != nullptr)
     {
@@ -608,11 +596,8 @@ bool ARyuMainCharacter::GetSneakActive()
 
 void ARyuMainCharacter::SneakPressed()
 {
-    if (PlayerMovement != EPlayerMovement::CLIMBING)
-    {
-        SneakMultiplierValue = RyuMovementComponent->GetSneakMultiplier();
-        bSneakIsPressed = true;
-    }
+    SneakMultiplierValue = RyuMovementComponent->GetSneakMultiplier();
+    bSneakIsPressed = true;
 }
 
 void ARyuMainCharacter::SneakReleased()

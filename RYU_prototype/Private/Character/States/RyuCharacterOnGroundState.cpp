@@ -75,6 +75,12 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
         case ERyuInputState::PressSneakRight:
         case ERyuInputState::PressSneakLeft:
         {
+			// TODOD
+			/*
+
+			if (CharacterState->GetState() != ERyuCharacterState::Climb) -> SneakActive -.-
+				
+			*/
             ERyuLookDirection LookDirection = Character->GetLookDirection();
             if (Input == ERyuInputState::PressSneakRight)
             {
