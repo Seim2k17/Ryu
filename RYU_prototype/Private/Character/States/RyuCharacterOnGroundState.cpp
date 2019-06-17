@@ -68,13 +68,31 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
         }
         case ERyuInputState::ReleaseLeft:
         case ERyuInputState::ReleaseRight:
-        case ERyuInputState::ReleaseSneak:
         {
             UE_LOG(LogRyu, Log, TEXT("Character finished walking."));
             return NewObject<URyuCharacterIdleState>();
         }
-        case ERyuInputState::PressSneak:
+        case ERyuInputState::PressSneakRight:
+        case ERyuInputState::PressSneakLeft:
         {
+            ERyuLookDirection LookDirection = Character->GetLookDirection();
+            if (Input == ERyuInputState::PressSneakRight)
+            {
+                if (LookDirection == ERyuLookDirection::Left)
+                {
+                    Character->FlipCharacter();
+                }
+                UE_LOG(LogRyu, Log, TEXT("Character is walking Right."));
+            }
+            else
+            {
+                if (LookDirection == ERyuLookDirection::Right)
+                {
+                    Character->FlipCharacter();
+                }
+                UE_LOG(LogRyu, Log, TEXT("Character is walking Left."));
+            }
+
             return NewObject<URyuCharacterSneakState>();
         }
 
