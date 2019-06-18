@@ -6,7 +6,9 @@
 #include "Components/RyuMovementComponent.h"
 #include "Components/RyuTimelineComponent.h"
 #include "Enums/ERyuInputState.h"
+#include "Utilities/RyuStaticFunctionLibrary.h"
 #include "RYUClimbingActor.h"
+#include "RYU_prototype.h"
 #include "RyuCharacterState.h"
 #include <PaperFlipbookComponent.h>
 #include <Camera/CameraComponent.h>
@@ -504,8 +506,10 @@ void ARyuMainCharacter::ClimbLedgeFlipBookFinished()
 
 void ARyuMainCharacter::HandleInput(ERyuInputState Input)
 {
-    // TODO: check if objects are created every frame !?
+    // TODO: check if objects are created every frame !? /// HM DAMN it crashes sometimes ?
     IRyuCharacterState* state = CharacterState->HandleInput(this, Input);
+    UE_LOG(LogRyu, Warning, TEXT("GetCharState: %s"),
+           *URyuStaticFunctionLibrary::GetCharacterStateName(CharacterState->GetState()));
     if (state != nullptr)
     {
         // Call Exit-Action on the old state

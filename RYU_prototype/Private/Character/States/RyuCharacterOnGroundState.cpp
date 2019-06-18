@@ -22,6 +22,8 @@ URyuCharacterOnGroundState::URyuCharacterOnGroundState()
 IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* Character,
                                                             const ERyuInputState Input)
 {
+	++test;
+	UE_LOG(LogRyu, Log, TEXT("i: %d"), test);
     switch (Input)
     {
         case ERyuInputState::PressJumpUp:
@@ -46,24 +48,6 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
         case ERyuInputState::PressLeft:
         case ERyuInputState::PressRight:
         {
-            ERyuLookDirection LookDirection = Character->GetLookDirection();
-            if (Input == ERyuInputState::PressRight)
-            {
-                if (LookDirection == ERyuLookDirection::Left)
-                {
-                    Character->FlipCharacter();
-                }
-                UE_LOG(LogRyu, Log, TEXT("Character is walking Right."));
-            }
-            else
-            {
-                if (LookDirection == ERyuLookDirection::Right)
-                {
-                    Character->FlipCharacter();
-                }
-                UE_LOG(LogRyu, Log, TEXT("Character is walking Left."));
-            }
-
             return NewObject<URyuCharacterRunState>();
         }
         case ERyuInputState::ReleaseLeft:
@@ -75,8 +59,8 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
         case ERyuInputState::PressSneakRight:
         case ERyuInputState::PressSneakLeft:
         {
-			// TODOD
-			/*
+            // TODOD
+            /*
 
 			if (CharacterState->GetState() != ERyuCharacterState::Climb) -> SneakActive -.-
 				

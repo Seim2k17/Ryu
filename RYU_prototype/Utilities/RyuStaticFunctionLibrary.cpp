@@ -18,3 +18,8 @@ ARyuMainCharacter* URyuStaticFunctionLibrary::GetMainCharOwner(UActorComponent* 
 {
     return Cast<ARyuMainCharacter>(Component->GetOwner());
 }
+
+FString URyuStaticFunctionLibrary::GetCharacterStateName(const ERyuCharacterState State)
+{
+    return EnumToString(TEXT("ERyuCharacterState"), State, TEXT("ERyuCharacterState::Invalid"));
+}

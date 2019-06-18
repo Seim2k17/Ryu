@@ -56,4 +56,21 @@ void URyuCharacterRunState::Enter(ARyuBaseCharacter* Character)
 
 void URyuCharacterRunState::Exit(ARyuBaseCharacter* Character)
 {
+// 	ERyuLookDirection LookDirection = Character->GetLookDirection();
+// 	if (Input == ERyuInputState::PressRight)
+// 	{
+// 		if (LookDirection == ERyuLookDirection::Left)
+// 		{
+// 			Character->FlipCharacter();
+// 		}
+// 		UE_LOG(LogRyu, Log, TEXT("Character is walking Right."));
+// 	}
+// 	else
+// 	{
+// 		if (LookDirection == ERyuLookDirection::Right)
+// 		{
+// 			Character->FlipCharacter();
+// 		}
+// 		UE_LOG(LogRyu, Log, TEXT("Character is walking Left."));
+// 	}
 }
