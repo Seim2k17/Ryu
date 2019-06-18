@@ -32,5 +32,5 @@ public:
     static ARyuMainCharacter* GetMainCharOwner(UActorComponent* Component);
 
     UFUNCTION(BlueprintCallable, Category = "Debug")
-    static FString GetCharacterStateName(const ERyuCharacterState State);
+    static FString CharacterStateToString(const ERyuCharacterState State);
 };

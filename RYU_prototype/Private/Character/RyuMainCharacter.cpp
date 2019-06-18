@@ -509,7 +509,7 @@ void ARyuMainCharacter::HandleInput(ERyuInputState Input)
     // TODO: check if objects are created every frame !? /// HM DAMN it crashes sometimes ?
     IRyuCharacterState* state = CharacterState->HandleInput(this, Input);
     UE_LOG(LogRyu, Warning, TEXT("GetCharState: %s"),
-           *URyuStaticFunctionLibrary::GetCharacterStateName(CharacterState->GetState()));
+           *URyuStaticFunctionLibrary::CharacterStateToString(CharacterState->GetState()));
     if (state != nullptr)
     {
         // Call Exit-Action on the old state
