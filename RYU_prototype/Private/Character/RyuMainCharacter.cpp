@@ -234,7 +234,7 @@ void ARyuMainCharacter::Tick(float DeltaTime)
     //** due its better for complexicity AND clarity we do most of the ABP_Transition_Logic here in c++
     // TODO: integrate this stuff in the new CharacterStateMachine !
 
-    UpdateCharacter();
+    //UpdateCharacter();
 }
 
 void ARyuMainCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -517,6 +517,7 @@ void ARyuMainCharacter::HandleInput(ERyuInputState Input)
         EquipmentState->Exit(this);
 
         // delete old CharacterState;
+		
         CharacterState = state;
         EquipmentState = state;
 
