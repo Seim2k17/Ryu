@@ -24,23 +24,17 @@ public:
     virtual void Update(ARyuBaseCharacter* Character) override;
 
     virtual void Enter(ARyuBaseCharacter* Character) override{};
-    virtual void Exit(ARyuBaseCharacter* Character) override{};
+    virtual void Exit(ARyuBaseCharacter* Character) override
+    {
+        InputPressed = ERyuInputState::None;
+    };
 
-	//now everything in Interface
-    //UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "CharacterState")
-    // ERyuCharacterState GetState();
-    //IRyuCharacterState* GetState();
-    //     virtual IRyuCharacterState* GetState_Implementation() override
-    //     {
-    //         return this;
-    //     }
+protected:
+    ERyuInputState InputPressed = ERyuInputState::None;
 
-//     virtual ERyuCharacterState GetState_Implementation() override
-//     {
-//         return CharacterState;
-//     };
+	void FlipCharacter(ARyuBaseCharacter* Character);
 
 private:
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
-	int test = 0;
+    int test = 0;
 };

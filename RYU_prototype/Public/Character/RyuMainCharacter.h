@@ -5,6 +5,7 @@
 #include "Character/RyuBaseCharacter.h"
 #include <CoreMinimal.h>
 #include <Components/TimelineComponent.h>
+#include "Enums/ERyuMoveRightAxisInputState.h"
 #include "RyuMainCharacter.generated.h"
 
 class URyuTimelineComponent;
@@ -120,6 +121,10 @@ private:
     bool bSneakIsPressed;
 
     float SneakMultiplierValue;
+
+	ERyuMoveRightAxisInputState MoveRightAxisState;
+
+	
 };
 
 /*

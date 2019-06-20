@@ -24,6 +24,7 @@ public:
 
 private:
 	// TODO here we can include Stuff which is only related to this state (e.g. charging Times)
+
 };
 
 

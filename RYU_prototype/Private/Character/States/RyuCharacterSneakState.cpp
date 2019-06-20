@@ -35,6 +35,8 @@ void URyuCharacterSneakState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterSneakState::Enter(ARyuBaseCharacter* Character)
 {
+    Super::FlipCharacter(Character);
+
     CharacterState = ERyuCharacterState::Sneak;
     // Set IdleGraphics or other Asset related stuff
 }

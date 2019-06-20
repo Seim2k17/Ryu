@@ -15,6 +15,8 @@ URyuCharacterRunState::URyuCharacterRunState()
 IRyuCharacterState* URyuCharacterRunState::HandleInput(ARyuBaseCharacter* Character,
                                                        const ERyuInputState Input)
 {
+    InputPressed = Input;
+
     if (Input == ERyuInputState::ReleaseDown)
     {
         UE_LOG(LogRyu, Log, TEXT("Character stands up."));
@@ -32,7 +34,7 @@ IRyuCharacterState* URyuCharacterRunState::HandleInput(ARyuBaseCharacter* Charac
 
 void URyuCharacterRunState::Update(ARyuBaseCharacter* Character)
 {
-	/* TODO check: Old Movement when Turning ! needable ?
+    /* TODO check: Old Movement when Turning ! needable ?
 	if (PlayerMovement == EPlayerMovement::STARTTURNRUN)
 	{
 		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), -0.1f * Val);
@@ -50,27 +52,13 @@ void URyuCharacterRunState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterRunState::Enter(ARyuBaseCharacter* Character)
 {
+    Super::FlipCharacter(Character);
+
     CharacterState = ERyuCharacterState::Run;
     // Set IdleGraphics or other Asset related stuff
 }
 
 void URyuCharacterRunState::Exit(ARyuBaseCharacter* Character)
 {
-// 	ERyuLookDirection LookDirection = Character->GetLookDirection();
-// 	if (Input == ERyuInputState::PressRight)
-// 	{
-// 		if (LookDirection == ERyuLookDirection::Left)
-// 		{
-// 			Character->FlipCharacter();
-// 		}
-// 		UE_LOG(LogRyu, Log, TEXT("Character is walking Right."));
-// 	}
-// 	else
-// 	{
-// 		if (LookDirection == ERyuLookDirection::Right)
-// 		{
-// 			Character->FlipCharacter();
-// 		}
-// 		UE_LOG(LogRyu, Log, TEXT("Character is walking Left."));
-// 	}
+    Super::Exit(Character);
 }

@@ -210,8 +210,8 @@ void ARyuMainCharacter::InitializeCharacterValues()
 
 float ARyuMainCharacter::MoveRightKeyStatus()
 {
-	UE_LOG(LogRyu, Error, TEXT("MoveRightKeyStatus is called"));
-	return 0;
+    UE_LOG(LogRyu, Error, TEXT("MoveRightKeyStatus is called"));
+    return 0;
 }
 
 void ARyuMainCharacter::BeginPlay()
@@ -254,9 +254,9 @@ void ARyuMainCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
     PlayerInputComponent->BindAction("Sneak", IE_Pressed, this, &ARyuMainCharacter::SneakPressed);
     PlayerInputComponent->BindAction("Sneak", IE_Released, this, &ARyuMainCharacter::SneakReleased);
 
-	// check State of MoveRightKeyAxis
+    // check State of MoveRightKeyAxis
     //PlayerInputComponent->BindAxisKey("MoveRight", this, &ARyuMainCharacter::MoveRightKeyStatus);
-	PlayerInputComponent->BindAxisKey("MoveRight");
+    PlayerInputComponent->BindAxisKey("MoveRight");
 }
 
 void ARyuMainCharacter::Jump()
@@ -317,22 +317,36 @@ void ARyuMainCharacter::MoveRight(float Val)
     if (MoveRightInput < 0)
     {
         PressRight = false;
-        HandleInput(ERyuInputState::PressLeft);
+        if (MoveRightAxisState != ERyuMoveRightAxisInputState::PressRightAxisKey)
+        {
+            HandleInput(ERyuInputState::PressLeft);
+            MoveRightAxisState = ERyuMoveRightAxisInputState::PressRightAxisKey;
+        }
     }
     else if (MoveRightInput > 0)
     {
         PressRight = true;
-        HandleInput(ERyuInputState::PressRight);
+        if (MoveRightAxisState != ERyuMoveRightAxisInputState::PressRightAxisKey)
+        {
+            HandleInput(ERyuInputState::PressRight);
+            MoveRightAxisState = ERyuMoveRightAxisInputState::PressRightAxisKey;
+        }
     }
     else
     {
-        if (PressRight)
+        if (MoveRightAxisState != ERyuMoveRightAxisInputState::Inactive)
         {
-            HandleInput(ERyuInputState::ReleaseRight);
-        }
-        else
-        {
-            HandleInput(ERyuInputState::ReleaseLeft);
+			// TODO: check is needable (ReleaseAxisKey .... / or only switch to inactive when release is done, is it executed in one frame ?
+            MoveRightAxisState = ERyuMoveRightAxisInputState::ReleaseRightAxisKey;
+            if (PressRight)
+            {
+                HandleInput(ERyuInputState::ReleaseRight);
+            }
+            else
+            {
+                HandleInput(ERyuInputState::ReleaseLeft);
+            }
+			MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
         }
     }
 }
