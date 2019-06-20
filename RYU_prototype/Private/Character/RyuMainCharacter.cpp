@@ -208,6 +208,12 @@ void ARyuMainCharacter::InitializeCharacterValues()
     bSneakIsPressed = false;
 }
 
+float ARyuMainCharacter::MoveRightKeyStatus()
+{
+	UE_LOG(LogRyu, Error, TEXT("MoveRightKeyStatus is called"));
+	return 0;
+}
+
 void ARyuMainCharacter::BeginPlay()
 {
     Super::BeginPlay();
@@ -237,6 +243,7 @@ void ARyuMainCharacter::Tick(float DeltaTime)
     //UpdateCharacter();
 }
 
+//TODO Movecompletely to BaseCharacter when everythings works
 void ARyuMainCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
     // Note: the 'Jump' action and the 'MoveRight' axis are bound to actual keys/buttons/sticks in DefaultInput.ini (editable from Project Settings..Input)
@@ -246,6 +253,10 @@ void ARyuMainCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
     PlayerInputComponent->BindAxis("Climb", this, &ARyuMainCharacter::MoveUp);
     PlayerInputComponent->BindAction("Sneak", IE_Pressed, this, &ARyuMainCharacter::SneakPressed);
     PlayerInputComponent->BindAction("Sneak", IE_Released, this, &ARyuMainCharacter::SneakReleased);
+
+	// check State of MoveRightKeyAxis
+    //PlayerInputComponent->BindAxisKey("MoveRight", this, &ARyuMainCharacter::MoveRightKeyStatus);
+	PlayerInputComponent->BindAxisKey("MoveRight");
 }
 
 void ARyuMainCharacter::Jump()
@@ -301,6 +312,7 @@ void ARyuMainCharacter::MoveRight(float Val)
         //HandleInput(ERyuInputState::PressSneak);
     }
 
+    //TODO we only need to "handleInput" once, otherwise we create new states every tick!
     // Bind to Press / Release Button Events ?
     if (MoveRightInput < 0)
     {
@@ -517,7 +529,7 @@ void ARyuMainCharacter::HandleInput(ERyuInputState Input)
         EquipmentState->Exit(this);
 
         // delete old CharacterState;
-		
+
         CharacterState = state;
         EquipmentState = state;
 

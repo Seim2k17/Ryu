@@ -105,6 +105,8 @@ private:
 
     void InitializeCharacterValues();
 
+	float MoveRightKeyStatus();
+
 public:
     // most need to be moved in components
 
