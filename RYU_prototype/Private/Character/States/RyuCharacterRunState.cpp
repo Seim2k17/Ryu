@@ -2,6 +2,7 @@
 
 #include "RyuCharacterRunState.h"
 #include "Enums/ERyuInputState.h"
+#include "Utilities/RyuStaticFunctionLibrary.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterIdleState.h"
@@ -16,11 +17,11 @@ IRyuCharacterState* URyuCharacterRunState::HandleInput(ARyuBaseCharacter* Charac
                                                        const ERyuInputState Input)
 {
     InputPressed = Input;
+	UE_LOG(LogRyu, Log, TEXT("HandleInputState: %s"), *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
 
     if (Input == ERyuInputState::ReleaseDown)
     {
         UE_LOG(LogRyu, Log, TEXT("Character stands up."));
-        // we need to return a JumpStateObject
         return NewObject<URyuCharacterIdleState>();
     }
     else
@@ -52,6 +53,7 @@ void URyuCharacterRunState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterRunState::Enter(ARyuBaseCharacter* Character)
 {
+    UE_LOG(LogRyu, Log, TEXT("InputState: %s"), *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
     Super::FlipCharacter(Character);
 
     CharacterState = ERyuCharacterState::Run;

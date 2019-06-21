@@ -59,11 +59,14 @@ void ARyuMainCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 // TODO CSTM relevant
 void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence)
 {
-    UE_LOG(LogTemp, Warning, TEXT("Finally AnimEnded called from code."));
+    // UE_LOG(LogTemp, Warning, TEXT("Finally AnimEnded called from code."));
 
-    ERYUClimbingMode RYUClimbingMode = RyuClimbingComponent->GetClimbingState();
+	
+    // ERYUClimbingMode RYUClimbingMode = RyuClimbingComponent->GetClimbingState();
 
     /* Just for testing purpose until the StateMachine is fully implemented ! -> for removing finally the Notifier in ABP*/
+
+	/*
     switch (PlayerMovement)
     {
         case EPlayerMovement::STAND:
@@ -147,6 +150,7 @@ void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAni
         default:
             break;
     }
+	*/
 }
 
 void ARyuMainCharacter::InitializeCharacterValues()
@@ -231,16 +235,19 @@ void ARyuMainCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    //TODO implement it correct then call it / atm crash -> pure virtual function call !
-    CharacterState->Update(this);
-
     //Temp save for Timelinestuff
     fDeltaSeconds = DeltaTime;
+
+    //TODO implement it correct then call it / atm crash -> pure virtual function call !
+    if (CharacterState)
+    {
+        CharacterState->Update(this);
+    }
 
     //** due its better for complexicity AND clarity we do most of the ABP_Transition_Logic here in c++
     // TODO: integrate this stuff in the new CharacterStateMachine !
 
-    //UpdateCharacter();
+    //UpdateCharacter();a
 }
 
 //TODO Movecompletely to BaseCharacter when everythings works
@@ -253,10 +260,6 @@ void ARyuMainCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
     PlayerInputComponent->BindAxis("Climb", this, &ARyuMainCharacter::MoveUp);
     PlayerInputComponent->BindAction("Sneak", IE_Pressed, this, &ARyuMainCharacter::SneakPressed);
     PlayerInputComponent->BindAction("Sneak", IE_Released, this, &ARyuMainCharacter::SneakReleased);
-
-    // check State of MoveRightKeyAxis
-    //PlayerInputComponent->BindAxisKey("MoveRight", this, &ARyuMainCharacter::MoveRightKeyStatus);
-    PlayerInputComponent->BindAxisKey("MoveRight");
 }
 
 void ARyuMainCharacter::Jump()
@@ -336,7 +339,7 @@ void ARyuMainCharacter::MoveRight(float Val)
     {
         if (MoveRightAxisState != ERyuMoveRightAxisInputState::Inactive)
         {
-			// TODO: check is needable (ReleaseAxisKey .... / or only switch to inactive when release is done, is it executed in one frame ?
+            // TODO: check is needable (ReleaseAxisKey .... / or only switch to inactive when release is done, is it executed in one frame ?
             MoveRightAxisState = ERyuMoveRightAxisInputState::ReleaseRightAxisKey;
             if (PressRight)
             {
@@ -346,7 +349,7 @@ void ARyuMainCharacter::MoveRight(float Val)
             {
                 HandleInput(ERyuInputState::ReleaseLeft);
             }
-			MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
+            MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
         }
     }
 }

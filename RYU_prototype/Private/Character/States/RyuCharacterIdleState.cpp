@@ -147,7 +147,7 @@ IRyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Chara
 
 void URyuCharacterIdleState::Update(ARyuBaseCharacter* Character)
 {
-    UE_LOG(LogRyu, Log, TEXT("Idle-State Updating."));
+    // LOG(LogRyu, Log, TEXT("Idle-State Updating."));
 }
 
 void URyuCharacterIdleState::Enter(ARyuBaseCharacter* Character)

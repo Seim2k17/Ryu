@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "Enums/ERyuCharacterState.h"
+#include "Enums/ERyuInputState.h"
 #include "RyuStaticFunctionLibrary.generated.h"
 
 class ARyuMainCharacter;
@@ -33,4 +35,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Debug")
     static FString CharacterStateToString(const ERyuCharacterState State);
+
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+    static FString InputStateToString(const ERyuInputState State);
 };

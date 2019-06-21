@@ -7,6 +7,7 @@
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterClimbState.h"
 #include "RyuCharacterDuckState.h"
+#include "RyuCharacterIdleState.h"
 #include "RyuCharacterJumpBackwardState.h"
 #include "RyuCharacterJumpForwardState.h"
 #include "RyuCharacterJumpUpwardState.h"
@@ -48,12 +49,13 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
         case ERyuInputState::PressLeft:
         case ERyuInputState::PressRight:
         {
+            UE_LOG(LogRyu, Log, TEXT("Character starts walking."));
             return NewObject<URyuCharacterRunState>();
         }
         case ERyuInputState::ReleaseLeft:
         case ERyuInputState::ReleaseRight:
         {
-            UE_LOG(LogRyu, Log, TEXT("Character finished walking."));
+            UE_LOG(LogRyu, Log, TEXT("Character finish walking."));
             return NewObject<URyuCharacterIdleState>();
         }
         case ERyuInputState::PressSneakRight:
@@ -86,6 +88,7 @@ void URyuCharacterOnGroundState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterOnGroundState::FlipCharacter(ARyuBaseCharacter* Character)
 {
+    UE_LOG(LogRyu, Log, TEXT("FlipCharacter is called"));
     ERyuLookDirection LookDirection = Character->GetLookDirection();
     switch (InputPressed)
     {
