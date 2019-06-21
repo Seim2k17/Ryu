@@ -54,7 +54,12 @@ public:
     {
         return CharacterState;
     }
+    void SetInputPressedState(ERyuInputState Input)
+    {
+        InputPressed = Input;
+    }
 
 protected:
     ERyuCharacterState CharacterState = ERyuCharacterState::Idle;
+    ERyuInputState InputPressed = ERyuInputState::None;
 };

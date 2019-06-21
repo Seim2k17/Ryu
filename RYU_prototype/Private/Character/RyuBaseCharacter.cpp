@@ -124,7 +124,7 @@ void ARyuBaseCharacter::OnSphereTracerCheckOverlap(AActor* OtherActor,
             && (ClimbState != ERYUClimbingMode::CANCLIMBUPLEDGE)
             && (ClimbState != ERYUClimbingMode::CLIMBDOWNLEDGE)
             && (ClimbState != ERYUClimbingMode::CLIMBUPLEDGE)
-            && (PlayerMovement != EPlayerMovement::CLIMBING))
+            //&& (PlayerMovement != EPlayerMovement::CLIMBING))
 
         {
             UE_LOG(LogTemp, Log,

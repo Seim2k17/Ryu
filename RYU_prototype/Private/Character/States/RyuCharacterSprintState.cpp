@@ -12,21 +12,21 @@ URyuCharacterSprintState::URyuCharacterSprintState()
 }
 
 IRyuCharacterState* URyuCharacterSprintState::HandleInput(ARyuBaseCharacter* Character,
-	const ERyuInputState Input)
+                                                          const ERyuInputState Input)
 {
-	if (Input == ERyuInputState::ReleaseDown)
-	{
-		UE_LOG(LogRyu, Log, TEXT("Character stands up."));
-		// we need to return a JumpStateObject
-		return NewObject<URyuCharacterIdleState>();
-	}
-	else
-	{
-		// only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
-		return Super::HandleInput(Character, Input);
-	}
+    if (Input == ERyuInputState::PressJump)
+    {
+		// if Back is pressed fast
+		//return NewObject<URyuCharacterJumpBackwardState>();
+        return NewObject<URyuCharacterJumpForwardState>();
+    }
+    else
+    {
+        // only make special call when Input occurs which is not handled in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
+        return Super::HandleInput(Character, Input);
+    }
 
-	return nullptr;
+    return nullptr;
 }
 
 void URyuCharacterSprintState::Update(ARyuBaseCharacter* Character)
@@ -35,8 +35,8 @@ void URyuCharacterSprintState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterSprintState::Enter(ARyuBaseCharacter* Character)
 {
-	CharacterState = ERyuCharacterState::Sprint;
-	// Set IdleGraphics or other Asset related stuff
+    CharacterState = ERyuCharacterState::Sprint;
+    // Set IdleGraphics or other Asset related stuff
 }
 
 void URyuCharacterSprintState::Exit(ARyuBaseCharacter* Character)

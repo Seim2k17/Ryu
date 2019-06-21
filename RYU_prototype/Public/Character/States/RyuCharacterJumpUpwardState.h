@@ -4,11 +4,11 @@
 
 #include "Character/RyuBaseCharacter.h"
 #include "Enums/ERyuInputState.h"
-#include "RyuCharacterOnGroundState.h"
+#include "RyuCharacterJumpState.h"
 #include "RyuCharacterJumpUpwardState.generated.h"
 
 UCLASS()
-class RYU_PROTOTYPE_API URyuCharacterJumpUpwardState : public URyuCharacterOnGroundState
+class RYU_PROTOTYPE_API URyuCharacterJumpUpwardState : public URyuCharacterJumpState
 {
     GENERATED_BODY()
 public:
@@ -24,4 +24,5 @@ public:
 
 private:
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
+
 };

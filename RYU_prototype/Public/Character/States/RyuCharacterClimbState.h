@@ -8,20 +8,22 @@
 #include "RyuCharacterClimbState.generated.h"
 
 UCLASS()
-class RYU_PROTOTYPE_API URyuCharacterClimbState : public URyuCharacterOnGroundState
+class RYU_PROTOTYPE_API URyuCharacterClimbState
+    : public UObject
+    , public IRyuCharacterState
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 public:
-	URyuCharacterClimbState();
+    URyuCharacterClimbState();
 
-	// virtual void HandleInput(ARyuBaseCharacter& Character, const EInputEvent Input) override;
+    // virtual void HandleInput(ARyuBaseCharacter& Character, const EInputEvent Input) override;
 
-	virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
-		const ERyuInputState Input) override;
-	virtual void Update(ARyuBaseCharacter* Character) override;
-	virtual void Enter(ARyuBaseCharacter* Character) override;
-	virtual void Exit(ARyuBaseCharacter* Character) override;
+    virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
+                                            const ERyuInputState Input) override;
+    virtual void Update(ARyuBaseCharacter* Character) override;
+	virtual void Enter(ARyuBaseCharacter* Character) override {};
+    virtual void Exit(ARyuBaseCharacter* Character) override;
 
 private:
-	// TODO here we can include Stuff which is only related to this state (e.g. charging Times)
+    // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
 };

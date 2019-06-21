@@ -3,9 +3,9 @@
 #pragma once
 
 #include "Character/RyuBaseCharacter.h"
+#include "Enums/ERyuMoveRightAxisInputState.h"
 #include <CoreMinimal.h>
 #include <Components/TimelineComponent.h>
-#include "Enums/ERyuMoveRightAxisInputState.h"
 #include "RyuMainCharacter.generated.h"
 
 class URyuTimelineComponent;
@@ -42,9 +42,6 @@ public:
     void ResetCollisionAndGravity();
 
     void StopJumping() override;
-
-    UFUNCTION(BlueprintCallable, Category = "Movement")
-    void TurnFlipBookFinished();
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void TurnRunFlipBookFinished();
@@ -99,6 +96,8 @@ protected:
     UPROPERTY(VisibleAnywhere, Category = "Components")
     URyuTimelineComponent* RyuTimelineComponent;
 
+    URyuClimbingComponent* RyuClimbingComponent;
+
 private:
     // our own functionality gets called at the end of an animation, due its a delegate function we need to mark it as UFUNCTION() with InAnimSequence parmList
     UFUNCTION()
@@ -106,7 +105,7 @@ private:
 
     void InitializeCharacterValues();
 
-	float MoveRightKeyStatus();
+    float MoveRightKeyStatus();
 
 public:
     // most need to be moved in components
@@ -122,9 +121,7 @@ private:
 
     float SneakMultiplierValue;
 
-	ERyuMoveRightAxisInputState MoveRightAxisState;
-
-	
+    ERyuMoveRightAxisInputState MoveRightAxisState;
 };
 
 /*

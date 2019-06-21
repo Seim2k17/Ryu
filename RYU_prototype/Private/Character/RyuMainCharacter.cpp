@@ -61,41 +61,19 @@ void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAni
 {
     // UE_LOG(LogTemp, Warning, TEXT("Finally AnimEnded called from code."));
 
-	
     // ERYUClimbingMode RYUClimbingMode = RyuClimbingComponent->GetClimbingState();
 
     /* Just for testing purpose until the StateMachine is fully implemented ! -> for removing finally the Notifier in ABP*/
 
-	/*
+    /*
     switch (PlayerMovement)
     {
-        case EPlayerMovement::STAND:
-            break;
-        case EPlayerMovement::WALK:
-            break;
-        // TODO: is this even needable, because we´ll integrate the start/end-Anis in the Transitions of the ABP! -> CHECK
-        case EPlayerMovement::STARTTURN:
-            TurnFlipBookFinished();
-            break;
+        
         // TODO: is this even needable, because we´ll integrate the start/end-Anis in the Transitions of the ABP! -> CHECK
         case EPlayerMovement::STARTTURNRUN:
             TurnRunFlipBookFinished();
             break;
-        case EPlayerMovement::ENDTURN:
-            break;
-        case EPlayerMovement::BEGINRUN:
-            PlayerMovement = EPlayerMovement::RUN;
-            break;
-        case EPlayerMovement::RUN:
-            break;
-        case EPlayerMovement::ENDRUN:
-            CheckOverlapClimbableActors();
-            break;
-        case EPlayerMovement::JUMPSTART:
-        {
-            PlayerMovement = EPlayerMovement::JUMPLOOP;
-            RyuMovementComponent->JumpForward();
-        }
+                
         break;
         case EPlayerMovement::JUMPLOOP:
             break;
@@ -537,10 +515,13 @@ void ARyuMainCharacter::HandleInput(ERyuInputState Input)
 {
     // TODO: check if objects are created every frame !? /// HM DAMN it crashes sometimes ?
     IRyuCharacterState* state = CharacterState->HandleInput(this, Input);
-    UE_LOG(LogRyu, Warning, TEXT("GetCharState: %s"),
-           *URyuStaticFunctionLibrary::CharacterStateToString(CharacterState->GetState()));
+
     if (state != nullptr)
     {
+        state->SetInputPressedState(Input);
+        UE_LOG(LogRyu, Warning, TEXT("GetCharState: %s"),
+               *URyuStaticFunctionLibrary::CharacterStateToString(CharacterState->GetState()));
+
         // Call Exit-Action on the old state
         CharacterState->Exit(this);
         EquipmentState->Exit(this);
@@ -563,11 +544,6 @@ void ARyuMainCharacter::ResetCollisionAndGravity()
     GetCapsuleComponent()->SetEnableGravity(true);
     RyuMovementComponent->SetMovementMode(MOVE_Walking);
     CheckOverlapClimbableActors();
-}
-
-void ARyuMainCharacter::TurnFlipBookFinished()
-{
-    FlipCharacter();
 }
 
 void ARyuMainCharacter::TurnRunFlipBookFinished()

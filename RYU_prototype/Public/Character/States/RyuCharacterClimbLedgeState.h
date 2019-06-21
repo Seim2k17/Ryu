@@ -4,18 +4,15 @@
 
 #include "Character/RyuBaseCharacter.h"
 #include "Enums/ERyuInputState.h"
-#include "Enums/ERyuMovementState.h"
-#include "RyuCharacterJumpState.h"
-#include "RyuCharacterJumpBackwardState.generated.h"
+#include "RyuCharacterClimbState.h"
+#include "RyuCharacterClimbLedgeState.generated.h"
 
 UCLASS()
-class RYU_PROTOTYPE_API URyuCharacterJumpBackwardState : public URyuCharacterJumpState
+class RYU_PROTOTYPE_API URyuCharacterClimbLedgeState : public URyuCharacterClimbState
 {
     GENERATED_BODY()
 public:
-    URyuCharacterJumpBackwardState(ERyuMovementState MovementState);
-
-    // virtual void HandleInput(ARyuBaseCharacter& Character, const EInputEvent Input) override;
+    URyuCharacterClimbLedgeState();
 
     virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
                                             const ERyuInputState Input) override;
@@ -25,5 +22,4 @@ public:
 
 private:
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
-    ERyuMovementState CharacterMovementState = ERyuMovementState::Standing;
 };

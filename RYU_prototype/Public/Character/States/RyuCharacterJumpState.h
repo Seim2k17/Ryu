@@ -8,7 +8,9 @@
 #include "RyuCharacterJumpState.generated.h"
 
 UCLASS()
-class RYU_PROTOTYPE_API URyuCharacterJumpState : public URyuCharacterOnGroundState
+class RYU_PROTOTYPE_API URyuCharacterJumpState
+    : public UObject
+    , public IRyuCharacterState
 {
     GENERATED_BODY()
 public:

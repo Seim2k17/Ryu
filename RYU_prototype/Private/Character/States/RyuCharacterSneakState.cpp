@@ -16,13 +16,11 @@ IRyuCharacterState* URyuCharacterSneakState::HandleInput(ARyuBaseCharacter* Char
 {
     if (Input == ERyuInputState::ReleaseSneak)
     {
-        UE_LOG(LogRyu, Log, TEXT("Character stands up."));
-        //TODO we need to return a new state, do we check here which transitions are possible ? / atm just return Idle
         return NewObject<URyuCharacterIdleState>();
     }
     else
     {
-        // only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
+        // only make special call when Input occurs which is not handled in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
         return Super::HandleInput(Character, Input);
     }
 

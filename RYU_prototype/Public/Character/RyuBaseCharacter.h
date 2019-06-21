@@ -148,10 +148,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     ERYU2DAnimationState CharAnimation2DState;
 
-    /** State of the Character Movement*/
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Character Movement")
-    EPlayerMovement PlayerMovement;
-
     /** Side view camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera,
               meta = (AllowPrivateAccess = "true"))
@@ -178,9 +174,6 @@ protected:
     AActor* SphereOverlappedActor;
 
     UPrimitiveComponent* SphereOverlappedComponent;
-
-    // TODO does really every Character can Climb ? I don´t think so
-    URyuClimbingComponent* RyuClimbingComponent;
 
     URyuMovementComponent* RyuMovementComponent;
 

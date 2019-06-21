@@ -10,6 +10,9 @@
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterClimbState.h"
 #include "RyuCharacterCloseState.h"
+#include "RyuCharacterJumpBackwardState.h"
+#include "RyuCharacterJumpForwardState.h"
+#include "RyuCharacterJumpUpwardState.h"
 #include "RyuCharacterOpenState.h"
 #include "RyuCharacterPullState.h"
 #include "RyuCharacterPushState.h"
@@ -95,7 +98,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressInteract(ARyuBaseCharacter
 IRyuCharacterState* URyuCharacterIdleState::InputPressAbility(ARyuBaseCharacter* Character)
 {
     //TODO: which Ability is selected
-	return nullptr;
+    return nullptr;
 }
 
 IRyuCharacterState* URyuCharacterIdleState::InputPressAttack(ARyuBaseCharacter* Character)
@@ -107,6 +110,22 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressAttack(ARyuBaseCharacter* 
     }
 
     return nullptr;
+}
+
+IRyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Character)
+{
+    switch (InputPressed)
+    {
+        case ERyuInputState::PressJump:
+        case ERyuInputState::PressJumpUp:
+            return NewObject<URyuCharacterJumpUpwardState>();
+        case ERyuInputState::PressJumpBackward:
+            return NewObject<URyuCharacterJumpBackwardState>(false);
+        case ERyuInputState::PressJumpForward:
+            return NewObject<URyuCharacterJumpForwardState>(false);
+        default:
+            break;
+    }
 }
 
 IRyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Character,
@@ -138,6 +157,13 @@ IRyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Chara
         case ERyuInputState::PressAttack:
         {
             return InputPressAttack(Character);
+        }
+        case ERyuInputState::PressJump:
+        case ERyuInputState::PressJumpBackward:
+        case ERyuInputState::PressJumpUp:
+        case ERyuInputState::PressJumpForward:
+        {
+            return InputPressJump(Character);
         }
         default:
             return Super::HandleInput(Character, Input);

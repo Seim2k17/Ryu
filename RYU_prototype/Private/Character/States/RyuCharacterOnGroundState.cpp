@@ -23,8 +23,6 @@ URyuCharacterOnGroundState::URyuCharacterOnGroundState()
 IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* Character,
                                                             const ERyuInputState Input)
 {
-    ++test;
-    UE_LOG(LogRyu, Log, TEXT("i: %d"), test);
     switch (Input)
     {
         case ERyuInputState::PressJumpUp:
@@ -35,11 +33,11 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
         }
         case ERyuInputState::PressJumpForward:
         {
-            return NewObject<URyuCharacterJumpForwardState>();
+            return NewObject<URyuCharacterJumpForwardState>(false);
         }
         case ERyuInputState::PressJumpBackward:
         {
-            return NewObject<URyuCharacterJumpBackwardState>();
+            return NewObject<URyuCharacterJumpBackwardState>(false);
         }
         case ERyuInputState::PressDown:
         {

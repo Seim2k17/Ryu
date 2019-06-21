@@ -16,17 +16,15 @@ URyuCharacterRunState::URyuCharacterRunState()
 IRyuCharacterState* URyuCharacterRunState::HandleInput(ARyuBaseCharacter* Character,
                                                        const ERyuInputState Input)
 {
-    InputPressed = Input;
-	UE_LOG(LogRyu, Log, TEXT("HandleInputState: %s"), *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
-
-    if (Input == ERyuInputState::ReleaseDown)
+    if (Input == ERyuInputState::PressJump) //|| JumpForward ?
     {
-        UE_LOG(LogRyu, Log, TEXT("Character stands up."));
-        return NewObject<URyuCharacterIdleState>();
+		// if other direction is pressed
+		//return NewObject<URyuCharacterJumpBackwardState>();
+        return NewObject<URyuCharacterJumpForwardState>(false);
     }
     else
     {
-        // only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
+        // only make special call when Input occurs which is not handled in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
         return Super::HandleInput(Character, Input);
     }
 
@@ -53,7 +51,8 @@ void URyuCharacterRunState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterRunState::Enter(ARyuBaseCharacter* Character)
 {
-    UE_LOG(LogRyu, Log, TEXT("InputState: %s"), *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
+    UE_LOG(LogRyu, Log, TEXT("InputState: %s"),
+           *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
     Super::FlipCharacter(Character);
 
     CharacterState = ERyuCharacterState::Run;
