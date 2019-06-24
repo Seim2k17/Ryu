@@ -19,12 +19,14 @@ URyuCharacterOnGroundState::URyuCharacterOnGroundState()
 {
 }
 
-// TODO: whats with TwoButtonInput ? Like Jump & Forward
+// TODO: whats with TwoButtonInput ? Like Jump & Forward; thats should be solved within the CSM-States because we´re e.g. in the running state and change it to Jump, then we trigger the transition ferom running to jump (= far jump)
 IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* Character,
                                                             const ERyuInputState Input)
 {
+	/** First we define the Action how described in GDD-CSM-Diagram !, then we´ll decide which states can go up to the BaseClasses /
     switch (Input)
     {
+		
         case ERyuInputState::PressJumpUp:
         case ERyuInputState::PressJump:
         {
@@ -59,12 +61,10 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
         case ERyuInputState::PressSneakRight:
         case ERyuInputState::PressSneakLeft:
         {
-            // TODOD
-            /*
-
-			if (CharacterState->GetState() != ERyuCharacterState::Climb) -> SneakActive -.-
+            // TODO
+            // if (CharacterState->GetState() != ERyuCharacterState::Climb) -> SneakActive -.-
 				
-			*/
+			
 
             return NewObject<URyuCharacterSneakState>();
         }
@@ -76,6 +76,8 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
         default:
             break;
     }
+
+	*/
 
     return nullptr;
 }
