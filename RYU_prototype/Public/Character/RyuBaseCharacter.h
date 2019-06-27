@@ -69,9 +69,6 @@ public:
 
     bool IsInCombat();
 
-    UFUNCTION(BlueprintCallable, Category = "RYU Movement")
-    EPlayerMovement GetPlayerMovement();
-
     /** Returns CameraBoom subobject **/
     FORCEINLINE class USpringArmComponent* GetCameraBoom() const
     {
@@ -114,9 +111,6 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void SetLookRight();
 
-    UFUNCTION(BlueprintCallable, Category = "RYU Movement")
-    void SetPlayerMovement(EPlayerMovement PlayerStateToSet);
-
     void StopJumping() override;
 
     void SetLookDirection(ERyuLookDirection Direction);
@@ -125,9 +119,6 @@ protected:
     virtual void BeginPlay() override;
 
     bool CheckOverlappingComponents();
-
-    /** Called for side to side input */
-    void MoveRight(float Val);
 
     //CHECK ! is it used ANYMORE ?
     void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);

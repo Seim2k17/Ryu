@@ -353,13 +353,15 @@ void ARyuMainCharacter::UpdateCharacter()
 
     UE_LOG(LogTemp, Log, TEXT("%s"), *bla);
 
+	//** ABP-TRANSITION-RULES *******//
+	//** TransitionRules for the ABP, moved it completely to c++ due clarity and complexicity reason
+	/* TODO CSMN
     if (PlayerMovement == EPlayerMovement::JUMPLOOP && !bIsinAir)
     {
         PlayerMovement = EPlayerMovement::JUMPEND;
     }
 
-    //** ABP-TRANSITION-RULES *******//
-    //** TransitionRules for the ABP, moved it completely to c++ due clarity and complexicity reason
+    
     if (currV.Z < -500)
     {
         if (PlayerMovement != EPlayerMovement::FALLING)
@@ -468,6 +470,7 @@ void ARyuMainCharacter::UpdateCharacter()
                 break;
         }
     }
+	*/
 }
 
 void ARyuMainCharacter::Climb()
@@ -550,7 +553,7 @@ void ARyuMainCharacter::TurnRunFlipBookFinished()
 {
     FlipCharacter();
 
-    PlayerMovement = EPlayerMovement::RUN;
+//TODO CSTM    PlayerMovement = EPlayerMovement::RUN;
 }
 
 bool ARyuMainCharacter::CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger)

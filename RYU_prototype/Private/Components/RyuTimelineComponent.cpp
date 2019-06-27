@@ -50,14 +50,15 @@ void URyuTimelineComponent::TimelineFinishedCallback()
     {
         return;
     }
-    switch (MainChar->GetPlayerMovement())
-    {
-        case EPlayerMovement::JUMPUP:
-            RyuMovementComp->SetMovementMode(MOVE_Walking);
-            break;
-        default:
-            break;
-    }
+	// TODO CSM
+//     switch (MainChar->GetPlayerMovement())
+//     {
+//         case EPlayerMovement::JUMPUP:
+//             RyuMovementComp->SetMovementMode(MOVE_Walking);
+//             break;
+//         default:
+//             break;
+//     }
 
     if (ClimbingComp == nullptr)
     {
@@ -104,7 +105,8 @@ void URyuTimelineComponent::TimelineCallbackFloat(float val)
     //UE_LOG(LogTemp, Log, TEXT("TimelineCallbackFloat(): Here incr. z-Location: %s"), *FString::SanitizeFloat(val));
 
     //Switch PMove needable ? ? ? or are all timelines handled the same ?
-    switch (GetMainCharOwner()->PlayerMovement)
+    // TODO CSM
+	/* switch (GetMainCharOwner()->PlayerMovement)
     {
         case EPlayerMovement::JUMPUP:
             //TODO: look for ClimbUp vs. Down etc // see mix from 3D LedgeClimbing but wo Rootmotion ...
@@ -113,7 +115,7 @@ void URyuTimelineComponent::TimelineCallbackFloat(float val)
         default:
             break;
     }
-
+	*/
     GetOwner()->SetActorLocation(FMath::Lerp(StartTimelineLocation, EndTimelineLocation, val));
     //AddActorLocalOffset(FVector(0,0,CurrentTimeline->));
 }
@@ -124,7 +126,9 @@ void URyuTimelineComponent::TimelineCallbackVector(FVector Vec)
     //UE_LOG(LogTemp, Log, TEXT("TimelineCallbackVector(): Here incr. z-Location: %s"), *FString::SanitizeFloat(val));
 
     //Switch PMove needable ? ? ? or are all timelines handled the same ?
-    switch (GetMainCharOwner()->PlayerMovement)
+    // TODO CSM
+	/*
+	switch (GetMainCharOwner()->PlayerMovement)
     {
         case EPlayerMovement::JUMPUP:
             //TODO: look for ClimbUp vs. Down etc // see mix from 3D LedgeClimbing but wo Rootmotion ...
@@ -133,6 +137,7 @@ void URyuTimelineComponent::TimelineCallbackVector(FVector Vec)
         default:
             break;
     }
+	*/
 
     GetOwner()->SetActorLocation(FMath::Lerp(StartTimelineLocation, EndTimelineLocation, Vec));
     //AddActorLocalOffset(FVector(0,0,CurrentTimeline->));

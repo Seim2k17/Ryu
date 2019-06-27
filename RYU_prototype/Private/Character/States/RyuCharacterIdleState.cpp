@@ -10,6 +10,7 @@
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterClimbState.h"
 #include "RyuCharacterCloseState.h"
+#include "RyuCharacterDuckState.h"
 #include "RyuCharacterJumpBackwardState.h"
 #include "RyuCharacterJumpForwardState.h"
 #include "RyuCharacterJumpUpwardState.h"
@@ -25,6 +26,7 @@ URyuCharacterIdleState::URyuCharacterIdleState()
 
 IRyuCharacterState* URyuCharacterIdleState::InputPressDown(ARyuBaseCharacter* Character)
 {
+    // if Climbing is possible we want to climb down
     if (auto* ClimbingComp = Character->FindComponentByClass<URyuClimbingComponent>())
     {
         if (Character->CheckOverlapClimbableActors()
@@ -38,11 +40,14 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressDown(ARyuBaseCharacter* Ch
         }
     }
 
-    return Super::HandleInput(Character, ERyuInputState::PressDown);
+    // we later decide what we move to the BaseClass
+    // return Super::HandleInput(Character, ERyuInputState::PressDown);
+    return NewObject<URyuCharacterDuckState>();
 }
 
 IRyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Character)
 {
+    // if Climbing is possible we want to climb up
     if (auto* ClimbingComp = Character->FindComponentByClass<URyuClimbingComponent>())
     {
         if (Character->CheckOverlapClimbableActors()
@@ -59,8 +64,8 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Char
 
 IRyuCharacterState* URyuCharacterIdleState::InputPressInteract(ARyuBaseCharacter* Character)
 {
-    ERyuInteractionStatus IAStatus = Character->GetInteractionStatus();
-    switch (IAStatus)
+    ERyuInteractionStatus InteractStatus = Character->GetInteractionStatus();
+    switch (InteractStatus)
     {
         case ERyuInteractionStatus::Close:
         {
@@ -72,14 +77,9 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressInteract(ARyuBaseCharacter
             return NewObject<URyuCharacterOpenState>();
             break;
         }
-        case ERyuInteractionStatus::Pull:
+        case ERyuInteractionStatus::StartMoveObject:
         {
             return NewObject<URyuCharacterPullState>();
-            break;
-        }
-        case ERyuInteractionStatus::Push:
-        {
-            return NewObject<URyuCharacterPushState>();
             break;
         }
         case ERyuInteractionStatus::Talk:
@@ -124,6 +124,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Ch
         case ERyuInputState::PressJumpForward:
             return NewObject<URyuCharacterJumpForwardState>(false);
         default:
+            return nullptr;
             break;
     }
 }

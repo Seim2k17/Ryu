@@ -18,6 +18,7 @@ enum class ERyuCharacterState : uint8
     JumpUpward,
     ClimbLedge,
     ClimbObstacle,
+	StartMoveObject,
     Push,
     Pull,
     Combat,

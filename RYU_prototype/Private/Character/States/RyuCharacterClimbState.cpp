@@ -4,7 +4,7 @@
 #include "Enums/ERyuInputState.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
-#include "RyuCharacterIdleState.h"
+#include "RyuCharacterJumpBackwardState.h"
 #include "RyuCharacterOnGroundState.h"
 
 URyuCharacterClimbState::URyuCharacterClimbState()
@@ -14,7 +14,14 @@ URyuCharacterClimbState::URyuCharacterClimbState()
 IRyuCharacterState* URyuCharacterClimbState::HandleInput(ARyuBaseCharacter* Character,
                                                          const ERyuInputState Input)
 {
-    return Super::HandleInput(Character, Input);
+    switch (Input)
+    {
+        case ERyuInputState::PressJump:
+            return NewObject<URyuCharacterJumpBackwardState>();
+        default:
+            return nullptr;
+            break;
+    }
 }
 
 void URyuCharacterClimbState::Update(ARyuBaseCharacter* Character)

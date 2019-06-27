@@ -13,8 +13,9 @@ class RYU_PROTOTYPE_API URyuCharacterJumpForwardState : public URyuCharacterJump
 {
     GENERATED_BODY()
 public:
-	URyuCharacterJumpForwardState(ERyuMovementState MovementState);
-	
+    URyuCharacterJumpForwardState();
+
+    URyuCharacterJumpForwardState(ERyuMovementState MovementState);
 
     // virtual void HandleInput(ARyuBaseCharacter& Character, const EInputEvent Input) override;
 
@@ -23,8 +24,8 @@ public:
     virtual void Update(ARyuBaseCharacter* Character) override;
     virtual void Enter(ARyuBaseCharacter* Character) override;
     virtual void Exit(ARyuBaseCharacter* Character) override;
-	
+
 private:
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
-	ERyuMovementState CharacterMovementState = ERyuMovementState::Standing;
+    ERyuMovementState CharacterMovementState = ERyuMovementState::Standing;
 };

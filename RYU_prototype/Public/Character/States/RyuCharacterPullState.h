@@ -4,11 +4,11 @@
 
 #include "Character/RyuBaseCharacter.h"
 #include "Enums/ERyuInputState.h"
-#include "RyuCharacterInteractState.h"
+#include "RyuCharacterMoveObjectState.h"
 #include "RyuCharacterPullState.generated.h"
 
 UCLASS()
-class RYU_PROTOTYPE_API URyuCharacterPullState : public URyuCharacterInteractState
+class RYU_PROTOTYPE_API URyuCharacterPullState : public URyuCharacterMoveObjectState
 {
 	GENERATED_BODY()
 public:

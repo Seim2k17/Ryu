@@ -13,6 +13,9 @@ class RYU_PROTOTYPE_API URyuCharacterJumpBackwardState : public URyuCharacterJum
 {
     GENERATED_BODY()
 public:
+
+	URyuCharacterJumpBackwardState();
+
     URyuCharacterJumpBackwardState(ERyuMovementState MovementState);
 
     // virtual void HandleInput(ARyuBaseCharacter& Character, const EInputEvent Input) override;

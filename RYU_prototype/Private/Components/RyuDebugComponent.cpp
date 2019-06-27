@@ -56,6 +56,8 @@ void URyuDebugComponent::DrawDebugInfosOnScreen()
     {
         return;
     }
+
+	/*TODO CSM
     EPlayerMovement PlayerMovement = CharOwner->PlayerMovement;
 
     switch (PlayerMovement)
@@ -105,7 +107,7 @@ void URyuDebugComponent::DrawDebugInfosOnScreen()
         default:
             MoveMode = "STANDING";
     }
-
+	*/
     auto* ClimbingComp = GetOwner()->FindComponentByClass<URyuClimbingComponent>();
 
     if (ClimbingComp == nullptr)
@@ -152,8 +154,8 @@ void URyuDebugComponent::DrawDebugInfosOnScreen()
             break;
     }
 
-    GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red,
-                                     FString::Printf(TEXT("Movement: %s"), *MoveMode), false);
+//     GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red,
+//                                      FString::Printf(TEXT("Movement: %s"), *MoveMode), false);
     GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red,
                                      FString::Printf(TEXT("ClimbingMode: %s"), *ClimbMode), false);
 }

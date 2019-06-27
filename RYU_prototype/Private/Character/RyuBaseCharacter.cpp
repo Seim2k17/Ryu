@@ -116,8 +116,10 @@ void ARyuBaseCharacter::OnSphereTracerCheckOverlap(AActor* OtherActor,
 
         bSphereTracerOverlap = true;
 
-        // TODO ClimbingStateMachine
-        ERYUClimbingMode ClimbState = RyuClimbingComponent->GetClimbingState();
+        /*
+
+        // TODO to ClimbingStateMachine
+		ERYUClimbingMode ClimbState = RyuClimbingComponent->GetClimbingState();
 
         if ((ClimbState != ERYUClimbingMode::CANCLIMBDOWNLEDGE)
             && (ClimbState != ERYUClimbingMode::CANCLIMBUPANDDOWN)
@@ -132,6 +134,8 @@ void ARyuBaseCharacter::OnSphereTracerCheckOverlap(AActor* OtherActor,
             //PlayerMovement = EPlayerMovementMode::CANTRACELEDGE;
             //PlayerMovement = EPlayerMovement::CANGRABLEDGE;
         }
+
+		*/
     }
 }
 
@@ -156,7 +160,7 @@ void ARyuBaseCharacter::OnHandleCapsuleEndOverlap(UPrimitiveComponent* Overlappe
 
 bool ARyuBaseCharacter::CheckOverlapClimbableActors()
 {
-    // TODO genauer abchecken nach was geprueft wird: a) climbingActors b) pushactors c) blabla ...
+    // TODO ClimbStateMach genauer abchecken nach was geprueft wird: a) climbingActors b) pushactors c) blabla ...
 
     UE_LOG(LogTemp, Log, TEXT("CheckOverlappingActors(): "));
 
@@ -180,7 +184,7 @@ bool ARyuBaseCharacter::CheckOverlapClimbableActors()
     }
     else
     {
-        RyuClimbingComponent->ResetClimbingState();
+        ClimbingComp->ResetClimbingState();
         return false;
     }
 }
@@ -218,13 +222,20 @@ bool ARyuBaseCharacter::CheckOverlappingComponents()
     }
     else
     {
-        ERYULedgeSideEntered LedgeSide = RyuClimbingComponent->GetLedgeSide(0);
+        auto* ClimbingComp = FindComponentByClass<URyuClimbingComponent>();
+
+        if (!ClimbingComp)
+        {
+            return false;
+        }
+
+        ERYULedgeSideEntered LedgeSide = ClimbingComp->GetLedgeSide(0);
 
         if (CountClimbTrigger == 1)
         {
             //save all Overlapping Components in a array, before that we make sure that the array is empty
             //we know that the TriggerComponents we search for, are UBoxComponents and we do not need any other
-            RyuClimbingComponent->GetOverlappingBoxComponents();
+            ClimbingComp->GetOverlappingBoxComponents();
 
             UE_LOG(LogTemp, Log,
                    TEXT("CheckOverlappingComponents(): Yes it´s %s with the Trigger at ... "),
@@ -254,20 +265,10 @@ bool ARyuBaseCharacter::CheckOverlappingComponents()
             //check if overlapped comp right or left
 
             // TODO later call to Character StateMachine !
-            RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::CANCLIMBUPANDDOWN);
+            ClimbingComp->SetClimbingState(ERYUClimbingMode::CANCLIMBUPANDDOWN);
         }
         return true;
     }
-}
-
-void ARyuBaseCharacter::SetPlayerMovement(EPlayerMovement PlayerStateToSet)
-{
-    PlayerMovement = PlayerStateToSet;
-}
-
-EPlayerMovement ARyuBaseCharacter::GetPlayerMovement()
-{
-    return PlayerMovement;
 }
 
 void ARyuBaseCharacter::SetClimbingMode(ERYUClimbingMode ClimbingModeToSet)
@@ -306,7 +307,8 @@ ERYUClimbingMode ARyuBaseCharacter::GetClimbingMode()
 
 ERyuInteractionStatus ARyuBaseCharacter::GetInteractionStatus()
 {
-    // TODO GetInteractionStatus resp. Objects/Person collided, else return None
+    // TODO GetInteractionStatus resp. which Objects/Person is colliding; else return None
+	// if Movable Object: InteractionStatus = StartMoveObjects
     return InteractionStatus;
 }
 
@@ -362,29 +364,6 @@ void ARyuBaseCharacter::BeginPlay()
         this, &ARyuBaseCharacter::OnHandleCapsuleBeginOverlap);
     GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(
         this, &ARyuBaseCharacter::OnHandleCapsuleEndOverlap);
-}
-
-/** General Movement Stuff*/
-
-void ARyuBaseCharacter::MoveRight(float Val)
-{
-    if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > 0)
-    {
-        if (FMath::Abs(GetCharacterMovement()->Velocity.Y) > TreshholdYWalkRun)
-        {
-            PlayerMovement = EPlayerMovement::RUN;
-        }
-        else
-        {
-            PlayerMovement = EPlayerMovement::WALK;
-        }
-    }
-    else
-    {
-        PlayerMovement = EPlayerMovement::STAND;
-    }
-    // add movement in that direction
-    AddMovementInput(FVector(0.f, -1.f, 0.f), Val);
 }
 
 void ARyuBaseCharacter::Jump()

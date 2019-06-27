@@ -5,14 +5,14 @@
 #include "Character/RyuBaseCharacter.h"
 #include "Enums/ERyuInputState.h"
 #include "RyuCharacterClimbState.h"
-#include "RyuCharacterClimbObstcaleState.generated.h"
+#include "RyuCharacterClimbObstacleState.generated.h"
 
 UCLASS()
-class RYU_PROTOTYPE_API URyuCharacterClimbObstcaleState : public URyuCharacterClimbState
+class RYU_PROTOTYPE_API URyuCharacterClimbObstacleState : public URyuCharacterClimbState
 {
     GENERATED_BODY()
 public:
-    URyuCharacterClimbObstcaleState();
+    URyuCharacterClimbObstacleState();
 
     virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
                                             const ERyuInputState Input) override;

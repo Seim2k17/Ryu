@@ -294,7 +294,8 @@ void URyuClimbingComponent::SetClimbingPostitionsAndMovementMode(EPlayerMovement
                                                                  UBoxComponent* ClimbingTrigger)
 {
     // TODO UtilityFunction / EventBroadcast Communication
-
+	// TODO CSM
+	/*
     auto* MainChar = Cast<ARyuMainCharacter>(GetOwner());
     auto* MovementComp = GetOwner()->FindComponentByClass<URyuMovementComponent>();
     auto* TimelineComp = GetOwner()->FindComponentByClass<URyuTimelineComponent>();
@@ -304,11 +305,12 @@ void URyuClimbingComponent::SetClimbingPostitionsAndMovementMode(EPlayerMovement
         return;
     }
 
+	
     switch (PlayerMove)
     {
         case EPlayerMovement::JUMPUP: {
             //Use a Timeline for Positioning the Up-Jumps
-            MainChar->PlayerMovement = EPlayerMovement::JUMPUP;
+            //MainChar->PlayerMovement = EPlayerMovement::JUMPUP;
             // TODO Broadcast Message
             if (TimelineComp)
             {
@@ -372,6 +374,7 @@ void URyuClimbingComponent::SetClimbingPostitionsAndMovementMode(EPlayerMovement
             //SetClimbingPositions(ClimbingTrigger);
         }
     }
+	*/
 }
 
 //TODO: can be summarized, take a closer look ....
@@ -616,8 +619,9 @@ void URyuClimbingComponent::ResetClimbingState()
 {
     auto* MainChar = Cast<ARyuMainCharacter>(GetOwner());
 
-    MainChar->PlayerMovement = EPlayerMovement::STAND;
-    RYUClimbingMode = ERYUClimbingMode::NONE;
+	//TODO CSM
+    //MainChar->PlayerMovement = EPlayerMovement::STAND;
+    //RYUClimbingMode = ERYUClimbingMode::NONE;
     CurrentLedgePosiTagName = "";
     CurrentClimbTagName = "";
 }

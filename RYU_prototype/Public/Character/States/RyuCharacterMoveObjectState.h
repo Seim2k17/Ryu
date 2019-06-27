@@ -4,15 +4,15 @@
 
 #include "Character/RyuBaseCharacter.h"
 #include "Enums/ERyuInputState.h"
-#include "RyuCharacterMoveObjectState.h"
-#include "RyuCharacterPushState.generated.h"
+#include "RyuCharacterInteractState.h"
+#include "RyuCharacterMoveObjectState.generated.h"
 
 UCLASS()
-class RYU_PROTOTYPE_API URyuCharacterPushState : public URyuCharacterMoveObjectState
+class RYU_PROTOTYPE_API URyuCharacterMoveObjectState : public URyuCharacterInteractState
 {
     GENERATED_BODY()
 public:
-    URyuCharacterPushState();
+    URyuCharacterMoveObjectState();
 
     // virtual void HandleInput(ARyuBaseCharacter& Character, const EInputEvent Input) override;
 

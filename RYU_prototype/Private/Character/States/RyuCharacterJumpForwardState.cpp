@@ -8,6 +8,10 @@
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 
+URyuCharacterJumpForwardState::URyuCharacterJumpForwardState()
+{
+}
+
 URyuCharacterJumpForwardState::URyuCharacterJumpForwardState(ERyuMovementState MovementState)
     : CharacterMovementState(MovementState)
 {

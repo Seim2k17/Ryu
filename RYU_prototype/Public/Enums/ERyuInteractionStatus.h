@@ -10,6 +10,7 @@ enum class ERyuInteractionStatus : uint8
     Talk,
     Open,
     Close,
+	StartMoveObject,
     Push,
     Pull,
 

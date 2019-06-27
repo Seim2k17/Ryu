@@ -6,6 +6,10 @@
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 
+URyuCharacterJumpBackwardState::URyuCharacterJumpBackwardState()
+{
+}
+
 URyuCharacterJumpBackwardState::URyuCharacterJumpBackwardState(ERyuMovementState MovementState)
     : CharacterMovementState(MovementState)
 {
