@@ -20,12 +20,6 @@ void URyuCharacterMoveObjectState::Update(ARyuBaseCharacter* Character)
 {
 }
 
-void URyuCharacterMoveObjectState::Enter(ARyuBaseCharacter* Character)
-{
-    CharacterState = ERyuCharacterState::StartMoveObject;
-    // Set IdleGraphics or other Asset related stuff
-}
-
 void URyuCharacterMoveObjectState::Exit(ARyuBaseCharacter* Character)
 {
 }

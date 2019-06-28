@@ -1,17 +1,17 @@
 // Copyright 2019 80k Games, All Rights Reserved.
 
-#include "RyuCharacterPushState.h"
+#include "RyuCharacterIdleMoveObjectState.h"
 #include "Enums/ERyuInputState.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterIdleState.h"
 #include "RyuCharacterOnGroundState.h"
 
-URyuCharacterPushState::URyuCharacterPushState()
+URyuCharacterIdleMoveObjectState::URyuCharacterIdleMoveObjectState()
 {
 }
 
-IRyuCharacterState* URyuCharacterPushState::HandleInput(ARyuBaseCharacter* Character,
+IRyuCharacterState* URyuCharacterIdleMoveObjectState::HandleInput(ARyuBaseCharacter* Character,
 	const ERyuInputState Input)
 {
 	if (Input == ERyuInputState::PressInteract)
@@ -28,16 +28,16 @@ IRyuCharacterState* URyuCharacterPushState::HandleInput(ARyuBaseCharacter* Chara
 	return nullptr;
 }
 
-void URyuCharacterPushState::Update(ARyuBaseCharacter* Character)
+void URyuCharacterIdleMoveObjectState::Update(ARyuBaseCharacter* Character)
 {
 }
 
-void URyuCharacterPushState::Enter(ARyuBaseCharacter* Character)
+void URyuCharacterIdleMoveObjectState::Enter(ARyuBaseCharacter* Character)
 {
-	CharacterState = ERyuCharacterState::Push;
+	CharacterState = ERyuCharacterState::IdleMoveObject;
 	// Set IdleGraphics or other Asset related stuff
 }
 
-void URyuCharacterPushState::Exit(ARyuBaseCharacter* Character)
+void URyuCharacterIdleMoveObjectState::Exit(ARyuBaseCharacter* Character)
 {
 }

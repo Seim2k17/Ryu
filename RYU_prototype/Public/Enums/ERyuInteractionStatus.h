@@ -6,12 +6,9 @@ UENUM(BlueprintType)
 
 enum class ERyuInteractionStatus : uint8
 {
-	None,
+    None,
     Talk,
     Open,
     Close,
-	StartMoveObject,
-    Push,
-    Pull,
-
+    MoveObject,
 };
