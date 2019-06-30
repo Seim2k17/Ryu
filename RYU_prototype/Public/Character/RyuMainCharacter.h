@@ -91,6 +91,12 @@ protected:
     UFUNCTION()
     void SneakReleased();
 
+    UFUNCTION()
+    void SprintPressed();
+
+    UFUNCTION()
+    void SprintReleased();
+
     void UpdateCharacter();
 
     UPROPERTY(VisibleAnywhere, Category = "Components")

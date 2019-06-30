@@ -6,6 +6,7 @@
 #include "Components/RyuMovementComponent.h"
 #include "Components/RyuTimelineComponent.h"
 #include "Enums/ERyuInputState.h"
+#include "Enums/ERyuMovementState.h"
 #include "Utilities/RyuStaticFunctionLibrary.h"
 #include "RYUClimbingActor.h"
 #include "RYU_prototype.h"
@@ -238,6 +239,9 @@ void ARyuMainCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
     PlayerInputComponent->BindAxis("Climb", this, &ARyuMainCharacter::MoveUp);
     PlayerInputComponent->BindAction("Sneak", IE_Pressed, this, &ARyuMainCharacter::SneakPressed);
     PlayerInputComponent->BindAction("Sneak", IE_Released, this, &ARyuMainCharacter::SneakReleased);
+    PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ARyuMainCharacter::SprintPressed);
+    PlayerInputComponent->BindAction("Sprint", IE_Released, this,
+                                     &ARyuMainCharacter::SprintReleased);
 }
 
 void ARyuMainCharacter::Jump()
@@ -353,9 +357,9 @@ void ARyuMainCharacter::UpdateCharacter()
 
     UE_LOG(LogTemp, Log, TEXT("%s"), *bla);
 
-	//** ABP-TRANSITION-RULES *******//
-	//** TransitionRules for the ABP, moved it completely to c++ due clarity and complexicity reason
-	/* TODO CSMN
+    //** ABP-TRANSITION-RULES *******//
+    //** TransitionRules for the ABP, moved it completely to c++ due clarity and complexicity reason
+    /* TODO CSMN
     if (PlayerMovement == EPlayerMovement::JUMPLOOP && !bIsinAir)
     {
         PlayerMovement = EPlayerMovement::JUMPEND;
@@ -553,7 +557,7 @@ void ARyuMainCharacter::TurnRunFlipBookFinished()
 {
     FlipCharacter();
 
-//TODO CSTM    PlayerMovement = EPlayerMovement::RUN;
+    //TODO CSTM    PlayerMovement = EPlayerMovement::RUN;
 }
 
 bool ARyuMainCharacter::CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger)
@@ -611,12 +615,31 @@ void ARyuMainCharacter::SneakPressed()
 {
     SneakMultiplierValue = RyuMovementComponent->GetSneakMultiplier();
     bSneakIsPressed = true;
+    CharacterMovementState = ERyuMovementState::Sneaking;
 }
 
 void ARyuMainCharacter::SneakReleased()
 {
     SneakMultiplierValue = 1.0f;
     bSneakIsPressed = false;
+    CharacterMovementState = ERyuMovementState::Standing;
+}
+
+void ARyuMainCharacter::SprintPressed()
+{
+    CharacterMovementState = ERyuMovementState::Sprinting;
+}
+
+void ARyuMainCharacter::SprintReleased()
+{
+    if (bSneakIsPressed)
+    {
+        CharacterMovementState = ERyuMovementState::Sneaking;
+    }
+    else
+    {
+        CharacterMovementState = ERyuMovementState::Running;
+    }
 }
 
 void ARyuMainCharacter::ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player)

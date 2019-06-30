@@ -8,6 +8,7 @@
 #include "Enums/ERyuLedgePosition.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
+#include "RyuCharacterAbilityState.h"
 #include "RyuCharacterClimbState.h"
 #include "RyuCharacterCloseState.h"
 #include "RyuCharacterDuckState.h"
@@ -16,6 +17,8 @@
 #include "RyuCharacterJumpForwardState.h"
 #include "RyuCharacterJumpUpwardState.h"
 #include "RyuCharacterOpenState.h"
+#include "RyuCharacterSneakState.h"
+#include "RyuCharacterSprintState.h"
 #include "RyuCharacterState.h"
 #include "RyuCharacterTalkState.h"
 
@@ -44,7 +47,8 @@ IRyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Chara
         case ERyuInputState::PressLeft:
         case ERyuInputState::PressRight:
         {
-            return NewObject<URyuCharacterRunState>();
+            return InputPressLeftRight(Character, Input);
+            break;
         }
         case ERyuInputState::PressUp:
         {
@@ -84,18 +88,38 @@ IRyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Chara
 IRyuCharacterState* URyuCharacterIdleState::InputPressAbility(ARyuBaseCharacter* Character)
 {
     //TODO: which Ability is selected
-    return nullptr;
+    return NewObject<URyuCharacterAbilityState>();
 }
 
 IRyuCharacterState* URyuCharacterIdleState::InputPressAttack(ARyuBaseCharacter* Character)
 {
-    if (Character->IsInCombat())
+    if (Character->EnemyInSight())
     {
-        //TODO which Attacks can be performed, atm no StateChanges
-        return nullptr; //IRyuCharacterCombatState
+        return NewObject<URyuCharacterCombatState>();
     }
-
     return nullptr;
+}
+
+IRyuCharacterState* URyuCharacterIdleState::InputPressLeftRight(ARyuBaseCharacter* Character,
+                                                                const ERyuInputState Input)
+{
+    ERyuMovementState CharacterMovement = Character->GetCharacterMovementState();
+    switch (CharacterMovement)
+    {
+        case ERyuMovementState::Sneaking:
+        {
+            return NewObject<URyuCharacterSneakState>();
+            break;
+        }
+        case ERyuMovementState::Sprinting:
+        {
+            return NewObject<URyuCharacterSprintState>();
+            break;
+        }
+        default:
+            break;
+    }
+    return NewObject<URyuCharacterRunState>();
 }
 
 IRyuCharacterState* URyuCharacterIdleState::InputPressDown(ARyuBaseCharacter* Character)

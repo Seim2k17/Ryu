@@ -139,6 +139,11 @@ void ARyuBaseCharacter::OnSphereTracerCheckOverlap(AActor* OtherActor,
     }
 }
 
+void ARyuBaseCharacter::SetCharacterMovementState(ERyuMovementState MovementState)
+{
+    CharacterMovementState = MovementState;
+}
+
 void ARyuBaseCharacter::OnHandleCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent,
                                                     AActor* OtherActor,
                                                     UPrimitiveComponent* OtherComp,
@@ -308,8 +313,13 @@ ERYUClimbingMode ARyuBaseCharacter::GetClimbingMode()
 ERyuInteractionStatus ARyuBaseCharacter::GetInteractionStatus()
 {
     // TODO GetInteractionStatus resp. which Objects/Person is colliding; else return None
-	// if Movable Object: InteractionStatus = StartMoveObjects
+    // if Movable Object: InteractionStatus = StartMoveObjects
     return InteractionStatus;
+}
+
+ERyuMovementState ARyuBaseCharacter::GetCharacterMovementState()
+{
+    return CharacterMovementState;
 }
 
 ERyuLookDirection ARyuBaseCharacter::GetLookDirection()
@@ -321,6 +331,11 @@ ERyuLookDirection ARyuBaseCharacter::GetLookDirection()
 bool ARyuBaseCharacter::IsInCombat()
 {
     //TODO check if Character is in a Combat-Situation
+    return false;
+}
+
+bool ARyuBaseCharacter::EnemyInSight()
+{
     return false;
 }
 

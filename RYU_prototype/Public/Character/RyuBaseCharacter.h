@@ -7,6 +7,7 @@
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuInteractionStatus.h"
 #include "Enums/ERyuLookDirection.h"
+#include "Enums/ERyuMovementState.h"
 #include "RYU2DENUM_ClimbingMode.h"
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
@@ -65,9 +66,13 @@ public:
 
     ERyuInteractionStatus GetInteractionStatus();
 
+    ERyuMovementState GetCharacterMovementState();
+
     ERyuLookDirection GetLookDirection();
 
     bool IsInCombat();
+
+    bool EnemyInSight();
 
     /** Returns CameraBoom subobject **/
     FORCEINLINE class USpringArmComponent* GetCameraBoom() const
@@ -124,6 +129,8 @@ protected:
     void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
 
     virtual void HandleInput(ERyuInputState Input){};
+
+    void SetCharacterMovementState(ERyuMovementState MovementState);
 
 public:
     /** Camera boom positioning the camera beside the character */
@@ -183,6 +190,7 @@ private:
     ERyuLookDirection LookDirection;
 
     ERyuInteractionStatus InteractionStatus = ERyuInteractionStatus::None;
+    ERyuMovementState CharacterMovementState = ERyuMovementState::Standing;
 
     bool bSphereTracerOverlap;
 
