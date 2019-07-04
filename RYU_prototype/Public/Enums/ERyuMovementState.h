@@ -6,8 +6,8 @@ UENUM(BlueprintType)
 
 enum class ERyuMovementState : uint8
 {
-	Standing,
-	Sneaking,
-	Running,
-	Sprinting,
+    Standing,
+    Sneaking,
+    Running,
+    Sprinting,
 };

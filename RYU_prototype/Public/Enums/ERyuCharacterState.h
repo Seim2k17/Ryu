@@ -11,6 +11,7 @@ enum class ERyuCharacterState : uint8
     Sprint,
     Sneak,
     Duck,
+	DuckMove,
     JumpForward,
     JumpForwardFast,
     JumpBackward,
