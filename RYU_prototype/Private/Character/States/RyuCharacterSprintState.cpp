@@ -5,7 +5,10 @@
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterIdleState.h"
+#include "RyuCharacterJumpForwardState.h"
 #include "RyuCharacterOnGroundState.h"
+#include "RyuCharacterRollState.h"
+#include "RyuCharacterRunState.h"
 
 URyuCharacterSprintState::URyuCharacterSprintState()
 {
@@ -14,16 +17,34 @@ URyuCharacterSprintState::URyuCharacterSprintState()
 IRyuCharacterState* URyuCharacterSprintState::HandleInput(ARyuBaseCharacter* Character,
                                                           const ERyuInputState Input)
 {
-    if (Input == ERyuInputState::PressJump)
+    switch (Input)
     {
-		// if Back is pressed fast
-		//return NewObject<URyuCharacterJumpBackwardState>();
-        return NewObject<URyuCharacterJumpForwardState>();
-    }
-    else
-    {
-        // only make special call when Input occurs which is not handled in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
-        return Super::HandleInput(Character, Input);
+        case ERyuInputState::PressJump:
+        {
+            return NewObject<URyuCharacterJumpForwardState(ERyuMovementState::Sprinting)>();
+            break;
+        }
+        case ERyuInputState::ReleaseLeft:
+        case ERyuInputState::ReleaseRight:
+        {
+            return NewObject<URyuCharacterIdleState>();
+            break;
+        }
+        case ERyuInputState::ReleaseSprint:
+        {
+            return NewObject<URyuCharacterRunState>();
+            break;
+        }
+        case ERyuInputState::PressDown:
+        {
+            return NewObject<URyuCharacterRollState>();
+            break;
+        }
+        default:
+
+            // only make special call when Input occurs which is not handled in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
+            return Super::HandleInput(Character, Input);
+            break;
     }
 
     return nullptr;

@@ -6,7 +6,7 @@ UENUM(BlueprintType)
 
 enum class ERyuInputState : uint8
 {
-	None,
+    None,
     PressUp,
     ReleaseUp,
     PressRight,
@@ -25,8 +25,11 @@ enum class ERyuInputState : uint8
     ReleaseBackward,
     PressInteract,
     PressSneakLeft,
-	PressSneakRight,
+    PressSneakRight,
     ReleaseSneak,
+    PressSprintLeft,
+    PressSprintRight,
+    ReleaseSprint,
     PressAbility,
     ReleaseAbility,
     PressAttack,

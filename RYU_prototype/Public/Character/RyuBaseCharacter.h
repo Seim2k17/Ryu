@@ -4,6 +4,7 @@
 
 #include "Character/RYU2DENUM_AnimationState.h"
 #include "Enums/ERyuCharacterState.h"
+#include "Enums/ERyuCharacterStatus.h"
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuInteractionStatus.h"
 #include "Enums/ERyuLookDirection.h"
@@ -48,21 +49,24 @@ public:
 
     void Tick(float DeltaTime) override;
 
-    UFUNCTION(BlueprintCallable, Category = "Movement")
+    UFUNCTION(BlueprintCallable, Category = "RyuMovement")
     bool CheckOverlapClimbableActors();
 
     /*
 	* Sets the rotation of the Sprite so that the character faces his direction of travel.
 	*/
-    UFUNCTION(BlueprintCallable, Category = "Movement")
+    UFUNCTION(BlueprintCallable, Category = "RyuMovement")
     void FlipCharacter();
 
-    UFUNCTION(BlueprintCallable, Category = "CharacterState")
+    UFUNCTION(BlueprintCallable, Category = "RyuCharacterState")
     ERyuCharacterState GetCharacterState();
 
     // TODO Rethink after Implementing StateMachine */
-    UFUNCTION(BlueprintCallable, Category = "RYU Movement")
+    UFUNCTION(BlueprintCallable, Category = "RyuMovement")
     ERYUClimbingMode GetClimbingMode();
+
+    UFUNCTION(BlueprintCallable, Category = "RyuCharacterStatus")
+    float GetCharacterStatus(ERyuCharacterStatus Status);
 
     ERyuInteractionStatus GetInteractionStatus();
 

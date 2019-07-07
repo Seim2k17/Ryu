@@ -4,6 +4,7 @@
 #include "Enums/ERyuInputState.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
+#include "RyuCharacterDuckState.h"
 #include "RyuCharacterIdleState.h"
 #include "RyuCharacterOnGroundState.h"
 
@@ -14,14 +15,21 @@ URyuCharacterSneakState::URyuCharacterSneakState()
 IRyuCharacterState* URyuCharacterSneakState::HandleInput(ARyuBaseCharacter* Character,
                                                          const ERyuInputState Input)
 {
-    if (Input == ERyuInputState::ReleaseSneak)
+    switch (Input)
     {
-        return NewObject<URyuCharacterIdleState>();
-    }
-    else
-    {
-        // only make special call when Input occurs which is not handled in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
-        return Super::HandleInput(Character, Input);
+        case ERyuInputState::PressDown:
+        {
+            return NewObject<URyuCharacterDuckMoveState>();
+            break;
+        }
+        case ERyuInputState::ReleaseSneak:
+        {
+            return NewObject<URyuCharacterIdleState>();
+            break;
+        }
+        default:
+            return Super::HandleInput(Character, Input);
+            break;
     }
 
     return nullptr;

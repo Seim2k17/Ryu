@@ -12,6 +12,7 @@ enum class ERyuCharacterState : uint8
     Sneak,
     Duck,
 	DuckMove,
+	Roll,
     JumpForward,
     JumpForwardFast,
     JumpBackward,

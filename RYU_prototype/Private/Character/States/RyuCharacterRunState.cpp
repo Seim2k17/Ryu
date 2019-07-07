@@ -6,7 +6,9 @@
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterIdleState.h"
-#include "RyuCharacterOnGroundState.h"
+#include "RyuCharacterRollState.h"
+#include "RyuCharacterSneakState.h"
+#include "RyuCharacterSprintState.h"
 #include "RyuMainCharacter.h"
 
 URyuCharacterRunState::URyuCharacterRunState()
@@ -16,16 +18,42 @@ URyuCharacterRunState::URyuCharacterRunState()
 IRyuCharacterState* URyuCharacterRunState::HandleInput(ARyuBaseCharacter* Character,
                                                        const ERyuInputState Input)
 {
-    if (Input == ERyuInputState::PressJump) //|| JumpForward ?
+    switch (Input)
     {
-		// if other direction is pressed
-		//return NewObject<URyuCharacterJumpBackwardState>();
-        return NewObject<URyuCharacterJumpForwardState>(false);
-    }
-    else
-    {
-        // only make special call when Input occurs which is not handled in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
-        return Super::HandleInput(Character, Input);
+        case ERyuInputState::PressDown:
+        {
+            return NewObject<URyuCharacterRollState>();
+            break;
+        }
+        case ERyuInputState::PressJump:
+        {
+            return NewObject<URyuCharacterJumpForwardState>(false);
+            break;
+        }
+        case ERyuInputState::ReleaseLeft:
+        case ERyuInputState::ReleaseLeft:
+        {
+            return NewObject<URyuCharacterIdleState>();
+            break;
+        }
+        case ERyuInputState::PressSneakLeft:
+        case ERyuInputState::PressSneakRight:
+        {
+            return NewObject<URyuCharacterSneakState>();
+            break;
+        }
+        case ERyuInputState::PressSprintLeft:
+        case ERyuInputState::PressSprintRight:
+        {
+            if (Character->GetCharacterStatus(ERyuCharacterStatus::Stamina > 0.0f))
+            {
+                return NewObject<URyuCharacterSprintState>();
+                break;
+            }
+        }
+        default:
+            return Super::HandleInput(Character, Input);
+            break;
     }
 
     return nullptr;

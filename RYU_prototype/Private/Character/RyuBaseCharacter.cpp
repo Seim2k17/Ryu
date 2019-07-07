@@ -310,6 +310,22 @@ ERYUClimbingMode ARyuBaseCharacter::GetClimbingMode()
     return ERYUClimbingMode::NONE;
 }
 
+float ARyuBaseCharacter::GetCharacterStatus(ERyuCharacterStatus Status)
+{
+    switch (Status)
+    {
+        case ERyuCharacterStatus::Stamina:
+        {
+            // TODO Placeholder -> later ask another StatusComponent of CharacterStatus...
+            return 100.0f;
+            break;
+        }
+        default:
+            return 0.0f;
+            break;
+    }
+}
+
 ERyuInteractionStatus ARyuBaseCharacter::GetInteractionStatus()
 {
     // TODO GetInteractionStatus resp. which Objects/Person is colliding; else return None
