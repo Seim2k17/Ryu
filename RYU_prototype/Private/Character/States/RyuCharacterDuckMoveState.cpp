@@ -4,7 +4,7 @@
 #include "Enums/ERyuInputState.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
-#include "RyuCharacterDuckMove.h"
+#include "RyuCharacterDuckState.h"
 #include "RyuCharacterIdleState.h"
 
 URyuCharacterDuckMoveState::URyuCharacterDuckMoveState()
@@ -34,17 +34,18 @@ IRyuCharacterState* URyuCharacterDuckMoveState::HandleInput(ARyuBaseCharacter* C
             break;
         }
     }
+}
 
-    void URyuCharacterDuckMoveState::Update(ARyuBaseCharacter * Character)
-    {
-    }
+void URyuCharacterDuckMoveState::Update(ARyuBaseCharacter* Character)
+{
+}
 
-    void URyuCharacterDuckMoveState::Enter(ARyuBaseCharacter * Character)
-    {
-        CharacterState = ERyuCharacterState::DuckMove;
-        // Set IdleGraphics or other Asset related stuff
-    }
+void URyuCharacterDuckMoveState::Enter(ARyuBaseCharacter* Character)
+{
+    CharacterState = ERyuCharacterState::DuckMove;
+    // Set IdleGraphics or other Asset related stuff
+}
 
-    void URyuCharacterDuckMoveState::Exit(ARyuBaseCharacter * Character)
-    {
-    }
+void URyuCharacterDuckMoveState::Exit(ARyuBaseCharacter* Character)
+{
+}

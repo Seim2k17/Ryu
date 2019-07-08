@@ -17,6 +17,9 @@
 #include <Components/SphereComponent.h>
 #include <GameFramework/SpringArmComponent.h>
 #include <Math/Vector.h>
+#include <PaperZD/Public/AnimSequences/Players/PaperZDAnimPlayer.h>
+#include <PaperZD/Public/PaperZDAnimBP.h>
+#include <PaperZD/Public/PaperZDAnimInstance.h>
 
 ARyuBaseCharacter::ARyuBaseCharacter()
 {
@@ -59,6 +62,11 @@ ARyuBaseCharacter::ARyuBaseCharacter(const class FObjectInitializer& ObjectIniti
 void ARyuBaseCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+}
+
+void ARyuBaseCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence)
+{
+    // TODO CSM Ended stuff link here !
 }
 
 void ARyuBaseCharacter::PostInitializeComponents()
@@ -395,6 +403,15 @@ void ARyuBaseCharacter::BeginPlay()
         this, &ARyuBaseCharacter::OnHandleCapsuleBeginOverlap);
     GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(
         this, &ARyuBaseCharacter::OnHandleCapsuleEndOverlap);
+}
+
+void ARyuBaseCharacter::ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player)
+{
+    Super::ConfigurePlayer_Implementation(Player);
+
+    UPaperZDAnimInstance* AnimInstance2D = GetOrCreateAnimInstance();
+
+    Player->OnPlaybackSequenceComplete.AddDynamic(this, &ARyuBaseCharacter::AnimationSequenceEnded);
 }
 
 void ARyuBaseCharacter::Jump()

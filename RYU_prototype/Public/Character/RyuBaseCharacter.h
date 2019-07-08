@@ -23,6 +23,8 @@ class UPrimitiveComponent;
 class URyuClimbingComponent;
 class URyuMovementComponent;
 class IRyuCharacterState;
+class UPaperZDAnimPlayer;
+class UPaperZDAnimSequence;
 
 /**
 * This class is the default character for Paper2DIntro, and it is responsible for all
@@ -48,6 +50,13 @@ public:
     /** TO Climbing-Component-End*/
 
     void Tick(float DeltaTime) override;
+
+    // our own functionality gets called at the end of an animation, due its a delegate function we need to mark it as UFUNCTION() with InAnimSequence parmList
+    UFUNCTION()
+    void AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence);
+
+    // register paperZD Stuff override !
+    void ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player) override; //*copied
 
     UFUNCTION(BlueprintCallable, Category = "RyuMovement")
     bool CheckOverlapClimbableActors();

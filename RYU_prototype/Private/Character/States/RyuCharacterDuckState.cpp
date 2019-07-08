@@ -34,18 +34,19 @@ IRyuCharacterState* URyuCharacterDuckState::HandleInput(ARyuBaseCharacter* Chara
             break;
         }
     }
+}
 
-    void URyuCharacterDuckState::Update(ARyuBaseCharacter * Character)
-    {
-    }
+void URyuCharacterDuckState::Update(ARyuBaseCharacter* Character)
+{
+}
 
-    void URyuCharacterDuckState::Enter(ARyuBaseCharacter * Character)
-    {
-        CharacterState = ERyuCharacterState::Duck;
+void URyuCharacterDuckState::Enter(ARyuBaseCharacter* Character)
+{
+    CharacterState = ERyuCharacterState::Duck;
 
-        // Set IdleGraphics or other Asset related stuff
-    }
+    // Set IdleGraphics or other Asset related stuff
+}
 
-    void URyuCharacterDuckState::Exit(ARyuBaseCharacter * Character)
-    {
-    }
+void URyuCharacterDuckState::Exit(ARyuBaseCharacter* Character)
+{
+}

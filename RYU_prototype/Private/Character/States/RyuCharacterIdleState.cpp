@@ -17,9 +17,9 @@
 #include "RyuCharacterJumpForwardState.h"
 #include "RyuCharacterJumpUpwardState.h"
 #include "RyuCharacterOpenState.h"
+#include "RyuCharacterRunState.h"
 #include "RyuCharacterSneakState.h"
 #include "RyuCharacterSprintState.h"
-#include "RyuCharacterState.h"
 #include "RyuCharacterTalkState.h"
 
 URyuCharacterIdleState::URyuCharacterIdleState()

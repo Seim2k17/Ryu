@@ -31,7 +31,7 @@ IRyuCharacterState* URyuCharacterRunState::HandleInput(ARyuBaseCharacter* Charac
             break;
         }
         case ERyuInputState::ReleaseLeft:
-        case ERyuInputState::ReleaseLeft:
+        case ERyuInputState::ReleaseRight:
         {
             return NewObject<URyuCharacterIdleState>();
             break;
@@ -45,7 +45,7 @@ IRyuCharacterState* URyuCharacterRunState::HandleInput(ARyuBaseCharacter* Charac
         case ERyuInputState::PressSprintLeft:
         case ERyuInputState::PressSprintRight:
         {
-            if (Character->GetCharacterStatus(ERyuCharacterStatus::Stamina > 0.0f))
+            if (Character->GetCharacterStatus(ERyuCharacterStatus::Stamina) > 0.0f)
             {
                 return NewObject<URyuCharacterSprintState>();
                 break;

@@ -1287,11 +1287,12 @@ void ARYU2D_MainCharacterZD::DebugSomething()
 {
 }
 
+
 void ARYU2D_MainCharacterZD::ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player)
 {
     Super::ConfigurePlayer_Implementation(Player);
 
-    UPaperZDAnimInstance* AnimInstance = GetOrCreateAnimInstance();
+    UPaperZDAnimInstance* AnimInstance2D = GetOrCreateAnimInstance();
 
     Player->OnPlaybackSequenceComplete.AddDynamic(this,
                                                   &ARYU2D_MainCharacterZD::AnimationSequenceEnded);

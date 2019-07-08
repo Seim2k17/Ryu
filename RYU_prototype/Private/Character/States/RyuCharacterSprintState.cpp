@@ -2,6 +2,7 @@
 
 #include "RyuCharacterSprintState.h"
 #include "Enums/ERyuInputState.h"
+#include "Enums/ERyuMovementState.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterIdleState.h"
@@ -21,7 +22,10 @@ IRyuCharacterState* URyuCharacterSprintState::HandleInput(ARyuBaseCharacter* Cha
     {
         case ERyuInputState::PressJump:
         {
-            return NewObject<URyuCharacterJumpForwardState(ERyuMovementState::Sprinting)>();
+            //TODO how to create NewObject of class with OverloadConstructor ?
+            //return NewObject<URyuCharacterJumpForwardState>(ERyuMovementState::Sprinting)>();
+            //return NewObject<URyuCharacterJumpForwardState>(ERyuMovementState::Sprinting);
+			return NewObject<URyuCharacterJumpForwardState>();
             break;
         }
         case ERyuInputState::ReleaseLeft:

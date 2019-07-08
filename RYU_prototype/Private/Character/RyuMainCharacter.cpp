@@ -57,80 +57,6 @@ void ARyuMainCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 }
 #endif
 
-// TODO CSTM relevant
-void ARyuMainCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence)
-{
-    // UE_LOG(LogTemp, Warning, TEXT("Finally AnimEnded called from code."));
-
-    // ERYUClimbingMode RYUClimbingMode = RyuClimbingComponent->GetClimbingState();
-
-    /* Just for testing purpose until the StateMachine is fully implemented ! -> for removing finally the Notifier in ABP*/
-
-    /*
-    switch (PlayerMovement)
-    {
-        
-        // TODO: is this even needable, because we´ll integrate the start/end-Anis in the Transitions of the ABP! -> CHECK
-        case EPlayerMovement::STARTTURNRUN:
-            TurnRunFlipBookFinished();
-            break;
-                
-        break;
-        case EPlayerMovement::JUMPLOOP:
-            break;
-        case EPlayerMovement::JUMPEND:
-            CheckOverlapClimbableActors();
-            break;
-        case EPlayerMovement::JUMPUP:
-            break;
-        case EPlayerMovement::STARTFALLING:
-            break;
-        case EPlayerMovement::FALLING:
-            break;
-        case EPlayerMovement::CLIMBING:
-            switch (RYUClimbingMode)
-            {
-                case ERYUClimbingMode::NONE:
-                    break;
-                case ERYUClimbingMode::CANCLIMBUPLEDGE:
-                case ERYUClimbingMode::CANCLIMBDOWNLEDGE:
-                case ERYUClimbingMode::CANCLIMBUPANDDOWN:
-                case ERYUClimbingMode::CLIMBDOWNLEDGE:
-                    RyuClimbingComponent->SetClimbingState(ERYUClimbingMode::HANGONLEDGE);
-                    break;
-                case ERYUClimbingMode::JUMPTOLEDGE:
-                    break;
-                case ERYUClimbingMode::CLIMBUPLEDGE:
-                case ERYUClimbingMode::LETGOLEDGE:
-                    ClimbLedgeFlipBookFinished();
-                    break;
-                case ERYUClimbingMode::FALLDOWNLEDGE:
-                    break;
-                case ERYUClimbingMode::HANGONLEDGE:
-                    break;
-                case ERYUClimbingMode::CANENTERLADDER:
-                    break;
-                case ERYUClimbingMode::CLIMBLADDERUP:
-                    break;
-                case ERYUClimbingMode::CLIMBLADDERDOWN:
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case EPlayerMovement::CANGRABLEDGE:
-            break;
-        case EPlayerMovement::SNEAK:
-            break;
-        case EPlayerMovement::STANDUP:
-            break;
-        case EPlayerMovement::COMBAT:
-            break;
-        default:
-            break;
-    }
-	*/
-}
 
 void ARyuMainCharacter::InitializeCharacterValues()
 {
@@ -615,41 +541,33 @@ void ARyuMainCharacter::SneakPressed()
 {
     SneakMultiplierValue = RyuMovementComponent->GetSneakMultiplier();
     bSneakIsPressed = true;
-    CharacterMovementState = ERyuMovementState::Sneaking;
+    SetCharacterMovementState(ERyuMovementState::Sneaking);
 }
 
 void ARyuMainCharacter::SneakReleased()
 {
     SneakMultiplierValue = 1.0f;
     bSneakIsPressed = false;
-    CharacterMovementState = ERyuMovementState::Standing;
+    SetCharacterMovementState(ERyuMovementState::Standing);
 }
 
 void ARyuMainCharacter::SprintPressed()
 {
-    CharacterMovementState = ERyuMovementState::Sprinting;
+    SetCharacterMovementState(ERyuMovementState::Sprinting);
 }
 
 void ARyuMainCharacter::SprintReleased()
 {
     if (bSneakIsPressed)
     {
-        CharacterMovementState = ERyuMovementState::Sneaking;
+        SetCharacterMovementState(ERyuMovementState::Sneaking);
     }
     else
     {
-        CharacterMovementState = ERyuMovementState::Running;
+        SetCharacterMovementState(ERyuMovementState::Running);
     }
 }
 
-void ARyuMainCharacter::ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player)
-{
-    Super::ConfigurePlayer_Implementation(Player);
-
-    UPaperZDAnimInstance* AnimInstance = GetOrCreateAnimInstance();
-
-    Player->OnPlaybackSequenceComplete.AddDynamic(this, &ARyuMainCharacter::AnimationSequenceEnded);
-}
 
 /** CHaracter State Machine Prep 
 

@@ -25,9 +25,6 @@ public:
 
     bool CheckFlipOverlappedActor(UBoxComponent* ClimbingTrigger);
 
-    // register paperZD Stuff override !
-    void ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player) override;
-
     void Climb();
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
@@ -105,10 +102,6 @@ protected:
     URyuClimbingComponent* RyuClimbingComponent;
 
 private:
-    // our own functionality gets called at the end of an animation, due its a delegate function we need to mark it as UFUNCTION() with InAnimSequence parmList
-    UFUNCTION()
-    void AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence);
-
     void InitializeCharacterValues();
 
     float MoveRightKeyStatus();

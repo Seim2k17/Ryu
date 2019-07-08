@@ -20,7 +20,7 @@ IRyuCharacterState* URyuCharacterRollState::HandleInput(ARyuBaseCharacter* Chara
     {
         // TODO TEST IF THIS REALLY WORKS AS A CALLBACK IF WE CAME FROM RUNNING AND RELEASE MOVEMENTDIRECTION->IDLE
         case ERyuInputState::ReleaseLeft:
-        case ERyuInputState::ReleaseLeft:
+        case ERyuInputState::ReleaseRight:
         {
             return NewObject<URyuCharacterIdleState>();
             break;
