@@ -6,9 +6,11 @@
 #include "Components/RyuMovementComponent.h"
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
+#include "Utilities/RyuStaticFunctionLibrary.h"
 #include "ERyuLookDirection.h"
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
+#include "RYU_prototype.h"
 #include "RyuCharacterIdleState.h"
 #include "RyuCharacterState.h"
 #include <Camera/CameraComponent.h>
@@ -67,6 +69,8 @@ void ARyuBaseCharacter::Tick(float DeltaTime)
 void ARyuBaseCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence)
 {
     // TODO CSM Ended stuff link here !
+    UE_LOG(LogTemp, Warning, TEXT("Finally AnimEnded called from code."));
+    //HandleInput(ERyuInputState::AnimationEnded);
 }
 
 void ARyuBaseCharacter::PostInitializeComponents()
@@ -350,6 +354,32 @@ ERyuLookDirection ARyuBaseCharacter::GetLookDirection()
 {
     //return bLookRight;
     return LookDirection;
+}
+
+void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
+{
+    //Mainly due AnimationEndedInput this needs to be implemented here in the BaseClass
+    IRyuCharacterState* state = CharacterState->HandleInput(this, Input);
+
+    if (state != nullptr)
+    {
+        state->SetInputPressedState(Input);
+        UE_LOG(LogRyu, Warning, TEXT("GetCharState: %s"),
+               *URyuStaticFunctionLibrary::CharacterStateToString(CharacterState->GetState()));
+
+        // Call Exit-Action on the old state
+        CharacterState->Exit(this);
+        EquipmentState->Exit(this);
+
+        // delete old CharacterState;
+
+        CharacterState = state;
+        EquipmentState = state;
+
+        // Call the enter Action on the new State
+        CharacterState->Enter(this);
+        EquipmentState->Enter(this);
+    }
 }
 
 bool ARyuBaseCharacter::IsInCombat()

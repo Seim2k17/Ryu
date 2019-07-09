@@ -144,6 +144,7 @@ void ARyuMainCharacter::Tick(float DeltaTime)
     fDeltaSeconds = DeltaTime;
 
     //TODO implement it correct then call it / atm crash -> pure virtual function call !
+	//TODO TESTING here sometimes crash ? see screenshot #090719_StateUpdate
     if (CharacterState)
     {
         CharacterState->Update(this);
@@ -444,31 +445,12 @@ void ARyuMainCharacter::ClimbLedgeFlipBookFinished()
     }
 }
 
-void ARyuMainCharacter::HandleInput(ERyuInputState Input)
-{
-    // TODO: check if objects are created every frame !? /// HM DAMN it crashes sometimes ?
-    IRyuCharacterState* state = CharacterState->HandleInput(this, Input);
-
-    if (state != nullptr)
-    {
-        state->SetInputPressedState(Input);
-        UE_LOG(LogRyu, Warning, TEXT("GetCharState: %s"),
-               *URyuStaticFunctionLibrary::CharacterStateToString(CharacterState->GetState()));
-
-        // Call Exit-Action on the old state
-        CharacterState->Exit(this);
-        EquipmentState->Exit(this);
-
-        // delete old CharacterState;
-
-        CharacterState = state;
-        EquipmentState = state;
-
-        // Call the enter Action on the new State
-        CharacterState->Enter(this);
-        EquipmentState->Enter(this);
-    }
-}
+// now in baseclass
+// void ARyuMainCharacter::HandleInput(ERyuInputState Input)
+// {
+//     // TODO: check if objects are created every frame !? /// HM DAMN it crashes sometimes ?
+//    
+// }
 
 void ARyuMainCharacter::ResetCollisionAndGravity()
 {

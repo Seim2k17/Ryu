@@ -56,3 +56,8 @@ void URyuCharacterJumpForwardState::Enter(ARyuBaseCharacter* Character)
 void URyuCharacterJumpForwardState::Exit(ARyuBaseCharacter* Character)
 {
 }
+
+void URyuCharacterJumpForwardState::SetCharacterMovement(ERyuMovementState JumpMovementState)
+{
+    CharacterMovementState = JumpMovementState;
+}

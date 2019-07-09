@@ -120,7 +120,6 @@ void URYUCustomizeMovementComponent::OnMovementModeChanged(EMovementMode Previou
 	{
 	case MOVE_Flying:
 	{
-		ARYUCharacterBase* MyChar = Cast<ARYUCharacterBase>(CharacterOwner);
 		//	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
 		//UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
 		MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

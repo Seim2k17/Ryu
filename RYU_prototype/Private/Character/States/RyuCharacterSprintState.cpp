@@ -22,10 +22,11 @@ IRyuCharacterState* URyuCharacterSprintState::HandleInput(ARyuBaseCharacter* Cha
     {
         case ERyuInputState::PressJump:
         {
-            //TODO how to create NewObject of class with OverloadConstructor ?
-            //return NewObject<URyuCharacterJumpForwardState>(ERyuMovementState::Sprinting)>();
+            //TODO how to create NewObject of class with OverloadConstructor ? -> own StaticClass / "FactoryPattern"
             //return NewObject<URyuCharacterJumpForwardState>(ERyuMovementState::Sprinting);
-			return NewObject<URyuCharacterJumpForwardState>();
+			URyuCharacterJumpForwardState* JumpState = NewObject<URyuCharacterJumpForwardState>();
+			JumpState->SetCharacterMovement(ERyuMovementState::Sprinting);
+			return JumpState;
             break;
         }
         case ERyuInputState::ReleaseLeft:

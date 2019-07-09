@@ -141,7 +141,7 @@ protected:
     //CHECK ! is it used ANYMORE ?
     void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
 
-    virtual void HandleInput(ERyuInputState Input){};
+    virtual void HandleInput(ERyuInputState Input);
 
     void SetCharacterMovementState(ERyuMovementState MovementState);
 

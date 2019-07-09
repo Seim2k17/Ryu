@@ -30,7 +30,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void ClimbLedgeFlipBookFinished();
 
-    void HandleInput(ERyuInputState Input) override;
+    // void HandleInput(ERyuInputState Input) override;
 
     void Jump() override;
 

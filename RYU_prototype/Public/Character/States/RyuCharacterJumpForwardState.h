@@ -25,7 +25,9 @@ public:
     virtual void Enter(ARyuBaseCharacter* Character) override;
     virtual void Exit(ARyuBaseCharacter* Character) override;
 
+    void SetCharacterMovement(ERyuMovementState JumpMovementState);
+
 private:
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
-	ERyuMovementState CharacterMovementState = ERyuMovementState::Standing;
+    ERyuMovementState CharacterMovementState = ERyuMovementState::Standing;
 };
