@@ -34,5 +34,5 @@ enum class ERyuInputState : uint8
 	ReleaseAbility,
 	PressAttack,
 	ReleasAttack,
-	AnimationEnded,
+	StateEnded,
 };

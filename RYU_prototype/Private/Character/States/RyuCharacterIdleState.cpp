@@ -6,6 +6,7 @@
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuInteractionStatus.h"
 #include "Enums/ERyuLedgePosition.h"
+#include "Utilities/RyuStaticFunctionLibrary.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterAbilityState.h"
@@ -213,4 +214,17 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Char
 void URyuCharacterIdleState::Update(ARyuBaseCharacter* Character)
 {
     // LOG(LogRyu, Log, TEXT("Idle-State Updating."));
-}
+    // check if MoveRightLeft is still pressed, when entering this State:
+    if (auto MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
+    {
+        if (MainChar->GetMoveRightInput() < 0)
+        {
+            MainChar->HandleInput(ERyuInputState::PressLeft);
+            return;
+        }
+        if (MainChar->GetMoveRightInput() > 0)
+        {
+            MainChar->HandleInput(ERyuInputState::PressRight);
+            return;
+        }
+    }
