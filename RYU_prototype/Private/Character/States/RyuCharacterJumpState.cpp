@@ -40,7 +40,7 @@ void URyuCharacterJumpState::Update(ARyuBaseCharacter* Character)
     // Test if char is still n air otherwise change state back to idle
     if (!Character->GetCharacterMovement()->IsFalling())
     {
-        UE_LOG(LogRyu, Log, TEXT("Character gets back on the ground -> Back to Idle is triggered.");
+        UE_LOG(LogRyu, Log, TEXT("Character gets back on the ground -> Back to Idle is triggered."));
 		Character->HandleInput(ERyuInputState::StateEnded);
     }
 }

@@ -213,18 +213,19 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Char
 
 void URyuCharacterIdleState::Update(ARyuBaseCharacter* Character)
 {
-    // LOG(LogRyu, Log, TEXT("Idle-State Updating."));
-    // check if MoveRightLeft is still pressed, when entering this State:
-    if (auto MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
-    {
-        if (MainChar->GetMoveRightInput() < 0)
-        {
-            MainChar->HandleInput(ERyuInputState::PressLeft);
-            return;
-        }
-        if (MainChar->GetMoveRightInput() > 0)
-        {
-            MainChar->HandleInput(ERyuInputState::PressRight);
-            return;
-        }
-    }
+	// LOG(LogRyu, Log, TEXT("Idle-State Updating."));
+	// check if MoveRightLeft is still pressed, when entering this State:
+	if (auto MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
+	{
+		if (MainChar->GetMoveRightInput() < 0)
+		{
+			MainChar->HandleInput(ERyuInputState::PressLeft);
+			return;
+		}
+		if (MainChar->GetMoveRightInput() > 0)
+		{
+			MainChar->HandleInput(ERyuInputState::PressRight);
+			return;
+		}
+	}
+}

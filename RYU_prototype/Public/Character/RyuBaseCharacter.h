@@ -99,6 +99,8 @@ public:
         return SideViewCameraComponent;
     }
 
+	virtual void HandleInput(ERyuInputState Input);
+
     void Jump() override;
 
     UFUNCTION()
@@ -141,7 +143,7 @@ protected:
     //CHECK ! is it used ANYMORE ?
     void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
 
-    virtual void HandleInput(ERyuInputState Input);
+    
 
     void SetCharacterMovementState(ERyuMovementState MovementState);
 
