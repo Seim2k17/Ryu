@@ -1,6 +1,7 @@
 // Copyright 2019 80k Games, All Rights Reserved.
 
 #include "RyuDebugComponent.h"
+#include "Enums/ERyuCharacterState.h"
 #include "Character/RYU2DENUM_Movement.h"
 #include "Character/RyuMainCharacter.h"
 #include "Components/RyuClimbingComponent.h"
@@ -13,13 +14,14 @@ URyuDebugComponent::URyuDebugComponent()
 
 void URyuDebugComponent::BeginPlay()
 {
-    Super::BeginPlay();
+	Super::BeginPlay();
+	UE_LOG(LogRyu, Log, TEXT("Debug active."));
 }
 
 void URyuDebugComponent::DrawDebugInfosOnScreen()
 {
-    auto* CharOwner = GetMainCharOwner();
-    FVector currV = GetOwner()->GetVelocity();
+    auto* CharOwner = URyuStaticFunctionLibrary::GetMainCharOwner(this);
+    FVector currV = CharOwner->GetVelocity();
     FVector currA = CharOwner->GetCharacterMovement()->GetCurrentAcceleration();
 
     bool bLookRight = false;
@@ -56,64 +58,22 @@ void URyuDebugComponent::DrawDebugInfosOnScreen()
     {
         return;
     }
+	ERyuCharacterState CharState = CharOwner->GetCharacterState();
 
-	/*TODO CSM
-    EPlayerMovement PlayerMovement = CharOwner->PlayerMovement;
+	MoveMode = URyuStaticFunctionLibrary::CharacterStateToString(CharState);
 
-    switch (PlayerMovement)
-    {
-        case EPlayerMovement::BEGINRUN:
-            MoveMode = "BEGIN RUNNING";
-            break;
-        case EPlayerMovement::RUN:
-            MoveMode = "RUNNING";
-            break;
-        case EPlayerMovement::ENDRUN:
-            MoveMode = "END RUNNING";
-            break;
-        case EPlayerMovement::JUMPUP:
-            MoveMode = "JUMPING";
-            break;
-        case EPlayerMovement::CANGRABLEDGE:
-            MoveMode = "CanGrabLedge";
-            break;
-        case EPlayerMovement::CLIMBING:
-            MoveMode = "Climbing";
-            break;
-        case EPlayerMovement::STARTTURN:
-            MoveMode = "StartTurning";
-            break;
-        case EPlayerMovement::ENDTURN:
-            MoveMode = "EndTurning";
-            break;
-        case EPlayerMovement::STARTFALLING:
-            MoveMode = "StartFalling";
-            break;
-        case EPlayerMovement::FALLING:
-            MoveMode = "Falling";
-            break;
-        case EPlayerMovement::STANDUP:
-            MoveMode = "StandUp";
-            break;
-        case EPlayerMovement::JUMPSTART:
-            MoveMode = "StartJumpFwd";
-            break;
-        case EPlayerMovement::JUMPLOOP:
-            MoveMode = "LoopJumpFwd";
-            break;
-        case EPlayerMovement::JUMPEND:
-            MoveMode = "EndJump";
-            break;
-        default:
-            MoveMode = "STANDING";
-    }
-	*/
-    auto* ClimbingComp = GetOwner()->FindComponentByClass<URyuClimbingComponent>();
+	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red,
+		FString::Printf(TEXT("Movement: %s"), *MoveMode), false);
+
+	auto* ClimbingComp = GetOwner()->FindComponentByClass<URyuClimbingComponent>();
 
     if (ClimbingComp == nullptr)
     {
         return;
     }
+
+	/* TODO for Climbing
+	ClimbMode = URyuStaticFunctionLibrary::CharacterStateToString(CharState);
 
     switch (ClimbingComp->GetClimbingState())
     {
@@ -153,11 +113,10 @@ void URyuDebugComponent::DrawDebugInfosOnScreen()
         default:
             break;
     }
-
-//     GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red,
-//                                      FString::Printf(TEXT("Movement: %s"), *MoveMode), false);
+	     
     GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red,
                                      FString::Printf(TEXT("ClimbingMode: %s"), *ClimbMode), false);
+									 */
 }
 
 void URyuDebugComponent::OutputCapsuleOverlappedComponents(
@@ -172,11 +131,6 @@ void URyuDebugComponent::OutputCapsuleOverlappedComponents(
     }
 }
 
-// Move to a BaseClass or Static UtilityLibrary !
-ARyuMainCharacter* URyuDebugComponent::GetMainCharOwner()
-{
-    return Cast<ARyuMainCharacter>(GetOwner());
-}
 
 void URyuDebugComponent::InitDebugValues()
 {
@@ -199,5 +153,6 @@ void URyuDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void URyuDebugComponent::PostEditChangePropertyFromOwner()
 {
+	UE_LOG(LogRyu, Log, TEXT("Debug Values changed."));
     InitDebugValues();
 }
