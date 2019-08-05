@@ -12,12 +12,6 @@ URyuCharacterJumpForwardState::URyuCharacterJumpForwardState()
 {
 }
 
-URyuCharacterJumpForwardState::URyuCharacterJumpForwardState(ERyuMovementState MovementState)
-    : CharacterMovementState(MovementState)
-{
-    //when char is sprinting and JumpForward is pressed she will make a fast&far forwardjump
-}
-
 IRyuCharacterState* URyuCharacterJumpForwardState::HandleInput(ARyuBaseCharacter* Character,
                                                                const ERyuInputState Input)
 {
@@ -31,7 +25,7 @@ void URyuCharacterJumpForwardState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterJumpForwardState::Enter(ARyuBaseCharacter* Character)
 {
-    switch (CharacterMovementState)
+    switch (Character->GetCharacterMovementState())
     {
         case ERyuMovementState::Sprinting:
         {
@@ -55,9 +49,4 @@ void URyuCharacterJumpForwardState::Enter(ARyuBaseCharacter* Character)
 
 void URyuCharacterJumpForwardState::Exit(ARyuBaseCharacter* Character)
 {
-}
-
-void URyuCharacterJumpForwardState::SetCharacterMovement(ERyuMovementState JumpMovementState)
-{
-    CharacterMovementState = JumpMovementState;
 }

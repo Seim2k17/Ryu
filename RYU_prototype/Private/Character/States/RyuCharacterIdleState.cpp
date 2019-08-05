@@ -6,6 +6,7 @@
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuInteractionStatus.h"
 #include "Enums/ERyuLedgePosition.h"
+#include "Enums/ERyuMovementState.h"
 #include "Utilities/RyuStaticFunctionLibrary.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
@@ -30,6 +31,8 @@ URyuCharacterIdleState::URyuCharacterIdleState()
 void URyuCharacterIdleState::Enter(ARyuBaseCharacter* Character)
 {
     CharacterState = ERyuCharacterState::Idle;
+	//TODO: is it a bit reduntant (for JumpingForwardStates....) we can use the normal state instead or not ?
+    Character->SetCharacterMovementState(ERyuMovementState::Standing);
     // Set IdleGraphics or other Asset related stuff
 }
 
@@ -213,19 +216,19 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Char
 
 void URyuCharacterIdleState::Update(ARyuBaseCharacter* Character)
 {
-	// LOG(LogRyu, Log, TEXT("Idle-State Updating."));
-	// check if MoveRightLeft is still pressed, when entering this State:
-	if (auto MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
-	{
-		if (MainChar->GetMoveRightInput() < 0)
-		{
-			MainChar->HandleInput(ERyuInputState::PressLeft);
-			return;
-		}
-		if (MainChar->GetMoveRightInput() > 0)
-		{
-			MainChar->HandleInput(ERyuInputState::PressRight);
-			return;
-		}
-	}
+    // LOG(LogRyu, Log, TEXT("Idle-State Updating."));
+    // check if MoveRightLeft is still pressed, when entering this State:
+    if (auto MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
+    {
+        if (MainChar->GetMoveRightInput() < 0)
+        {
+            MainChar->HandleInput(ERyuInputState::PressLeft);
+            return;
+        }
+        if (MainChar->GetMoveRightInput() > 0)
+        {
+            MainChar->HandleInput(ERyuInputState::PressRight);
+            return;
+        }
+    }
 }

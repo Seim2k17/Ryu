@@ -2,10 +2,12 @@
 
 #include "RyuCharacterRunState.h"
 #include "Enums/ERyuInputState.h"
+#include "Enums/ERyuMovementState.h"
 #include "Utilities/RyuStaticFunctionLibrary.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterIdleState.h"
+#include "RyuCharacterJumpForwardState.h"
 #include "RyuCharacterRollState.h"
 #include "RyuCharacterSneakState.h"
 #include "RyuCharacterSprintState.h"
@@ -27,7 +29,7 @@ IRyuCharacterState* URyuCharacterRunState::HandleInput(ARyuBaseCharacter* Charac
         }
         case ERyuInputState::PressJump:
         {
-            return NewObject<URyuCharacterJumpForwardState>(false);
+            return NewObject<URyuCharacterJumpForwardState>(); // ERyuMovementState::Running
             break;
         }
         case ERyuInputState::ReleaseLeft:
@@ -82,7 +84,7 @@ void URyuCharacterRunState::Enter(ARyuBaseCharacter* Character)
     UE_LOG(LogRyu, Log, TEXT("InputState: %s"),
            *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
     Super::FlipCharacter(Character);
-
+	Character->SetCharacterMovementState(ERyuMovementState::Running);
     CharacterState = ERyuCharacterState::Run;
     // Set IdleGraphics or other Asset related stuff
 }

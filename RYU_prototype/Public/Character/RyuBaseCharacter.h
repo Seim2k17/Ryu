@@ -99,7 +99,7 @@ public:
         return SideViewCameraComponent;
     }
 
-	virtual void HandleInput(ERyuInputState Input);
+    virtual void HandleInput(ERyuInputState Input);
 
     void Jump() override;
 
@@ -135,6 +135,8 @@ public:
 
     void SetLookDirection(ERyuLookDirection Direction);
 
+    void SetCharacterMovementState(ERyuMovementState MovementState);
+
 protected:
     virtual void BeginPlay() override;
 
@@ -142,10 +144,6 @@ protected:
 
     //CHECK ! is it used ANYMORE ?
     void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
-
-    
-
-    void SetCharacterMovementState(ERyuMovementState MovementState);
 
 public:
     /** Camera boom positioning the camera beside the character */

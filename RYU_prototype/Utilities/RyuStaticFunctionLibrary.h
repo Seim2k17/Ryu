@@ -38,4 +38,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Debug")
     static FString InputStateToString(const ERyuInputState State);
+
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+    static FString MovementStateToString(const ERyuMovementState State);
 };

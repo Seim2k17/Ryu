@@ -228,7 +228,7 @@ void ARyuMainCharacter::MoveRight(float Val)
     // Bind to Press / Release Button Events ?
     if (MoveRightInput < 0)
     {
-        PressRight = false;
+		PressRight = false;
         if (MoveRightAxisState != ERyuMoveRightAxisInputState::PressRightAxisKey)
         {
             HandleInput(ERyuInputState::PressLeft);

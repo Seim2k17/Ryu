@@ -2,6 +2,7 @@
 
 #include "RyuCharacterSneakState.h"
 #include "Enums/ERyuInputState.h"
+#include "Enums/ERyuMovementState.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterDuckState.h"
@@ -44,6 +45,7 @@ void URyuCharacterSneakState::Enter(ARyuBaseCharacter* Character)
     Super::FlipCharacter(Character);
 
     CharacterState = ERyuCharacterState::Sneak;
+	Character->SetCharacterMovementState(ERyuMovementState::Sneaking);
     // Set IdleGraphics or other Asset related stuff
 }
 
