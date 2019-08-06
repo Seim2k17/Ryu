@@ -155,9 +155,13 @@ public:
 	* and there only will be ONE State To Rule them all (Animations and Logic)
 	*/
 
-    /** State of the Character Animation*/
+    // TODO: do we really need this after STM-Integration ?
+    /** State of the Character Animation */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     ERYU2DAnimationState CharAnimation2DState;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
+    FName JumpNodeName = TEXT("Jumping");
 
     /** Side view camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera,

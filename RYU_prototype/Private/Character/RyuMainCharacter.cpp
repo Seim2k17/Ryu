@@ -57,7 +57,6 @@ void ARyuMainCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
 }
 #endif
 
-
 void ARyuMainCharacter::InitializeCharacterValues()
 {
     // Use only Yaw from the controller and ignore the rest of the rotation.
@@ -144,7 +143,7 @@ void ARyuMainCharacter::Tick(float DeltaTime)
     fDeltaSeconds = DeltaTime;
 
     //TODO implement it correct then call it / atm crash -> pure virtual function call !
-	//TODO TESTING here sometimes crash ? see screenshot #090719_StateUpdate
+    //TODO TESTING here sometimes crash ? see screenshot #090719_StateUpdate
     if (CharacterState)
     {
         CharacterState->Update(this);
@@ -178,6 +177,8 @@ void ARyuMainCharacter::Jump()
     //          bPressedJump = true;
     //          bJumpJustStarted = true;
     HandleInput(ERyuInputState::PressJump);
+    auto* AnimationInstance = GetOrCreateAnimInstance();
+    AnimationInstance->JumpToNode(JumpNodeName);
 }
 
 void ARyuMainCharacter::HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -228,7 +229,7 @@ void ARyuMainCharacter::MoveRight(float Val)
     // Bind to Press / Release Button Events ?
     if (MoveRightInput < 0)
     {
-		PressRight = false;
+        PressRight = false;
         if (MoveRightAxisState != ERyuMoveRightAxisInputState::PressRightAxisKey)
         {
             HandleInput(ERyuInputState::PressLeft);
@@ -449,7 +450,7 @@ void ARyuMainCharacter::ClimbLedgeFlipBookFinished()
 // void ARyuMainCharacter::HandleInput(ERyuInputState Input)
 // {
 //     // TODO: check if objects are created every frame !? /// HM DAMN it crashes sometimes ?
-//    
+//
 // }
 
 void ARyuMainCharacter::ResetCollisionAndGravity()
@@ -549,7 +550,6 @@ void ARyuMainCharacter::SprintReleased()
         SetCharacterMovementState(ERyuMovementState::Running);
     }
 }
-
 
 /** CHaracter State Machine Prep 
 
