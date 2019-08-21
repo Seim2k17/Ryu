@@ -10,12 +10,6 @@ URyuCharacterJumpBackwardState::URyuCharacterJumpBackwardState()
 {
 }
 
-URyuCharacterJumpBackwardState::URyuCharacterJumpBackwardState(ERyuMovementState MovementState)
-    : CharacterMovementState(MovementState)
-{
-    //when char is sprinting and JumpBack is pressed she will make st like a double backjump to balance the fast movement
-}
-
 IRyuCharacterState* URyuCharacterJumpBackwardState::HandleInput(ARyuBaseCharacter* Character,
                                                                 const ERyuInputState Input)
 {
@@ -29,7 +23,7 @@ void URyuCharacterJumpBackwardState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterJumpBackwardState::Enter(ARyuBaseCharacter* Character)
 {
-    switch (CharacterMovementState)
+    switch (Character->GetCharacterMovementState())
     {
         case ERyuMovementState::Sprinting:
         {
@@ -49,9 +43,4 @@ void URyuCharacterJumpBackwardState::Enter(ARyuBaseCharacter* Character)
 
 void URyuCharacterJumpBackwardState::Exit(ARyuBaseCharacter* Character)
 {
-}
-
-void URyuCharacterJumpBackwardState::SetCharacterMovement(ERyuMovementState JumpMovementState)
-{
-	CharacterMovementState = JumpMovementState;
 }

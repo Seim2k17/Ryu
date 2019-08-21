@@ -31,7 +31,7 @@ URyuCharacterIdleState::URyuCharacterIdleState()
 void URyuCharacterIdleState::Enter(ARyuBaseCharacter* Character)
 {
     CharacterState = ERyuCharacterState::Idle;
-	//TODO: is it a bit reduntant (for JumpingForwardStates....) we can use the normal state instead or not ?
+    //TODO: is it a bit reduntant (for JumpingForwardStates....) we can use the normal state instead or not ?
     Character->SetCharacterMovementState(ERyuMovementState::Standing);
     // Set IdleGraphics or other Asset related stuff
 }
@@ -182,15 +182,16 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressInteract(ARyuBaseCharacter
 
 IRyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Character)
 {
+    UE_LOG(LogRyu, Error, TEXT("FromCharIdleState: Inputpressed: %s"), *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
     switch (InputPressed)
     {
         case ERyuInputState::PressJump:
         case ERyuInputState::PressJumpUp:
             return NewObject<URyuCharacterJumpUpwardState>();
         case ERyuInputState::PressJumpBackward:
-            return NewObject<URyuCharacterJumpBackwardState>(false);
+            return NewObject<URyuCharacterJumpBackwardState>();
         case ERyuInputState::PressJumpForward:
-            return NewObject<URyuCharacterJumpForwardState>(false);
+            return NewObject<URyuCharacterJumpForwardState>();
         default:
             return nullptr;
             break;

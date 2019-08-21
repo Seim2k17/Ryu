@@ -54,9 +54,14 @@ public:
     {
         return CharacterState;
     }
+    // Used to get InputState not Just in the HandleInputMethod ! -> but we need to take care that it´s correctlý set !!!
     void SetInputPressedState(ERyuInputState Input)
     {
         InputPressed = Input;
+    }
+    ERyuInputState GetInputPressedState()
+    {
+        return InputPressed;
     }
 
 protected:

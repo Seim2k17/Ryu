@@ -160,8 +160,12 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     ERYU2DAnimationState CharAnimation2DState;
 
+    // TODO make a Map out of it
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
     FName JumpNodeName = TEXT("Jumping");
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
+    FName IdleNodeName = TEXT("ToIdle");
 
     /** Side view camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera,
@@ -184,6 +188,8 @@ public:
     TArray<UPrimitiveComponent*> CapsuleOverlappedComponents;
 
     TArray<AActor*> CapsuleOverlappedActors;
+
+    void JumpToAnimInstanceNode(FName Node);
 
 protected:
     AActor* SphereOverlappedActor;

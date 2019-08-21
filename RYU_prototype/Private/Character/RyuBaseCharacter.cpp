@@ -70,7 +70,7 @@ void ARyuBaseCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAni
 {
     // TODO CSM Ended stuff link here !
     UE_LOG(LogTemp, Warning, TEXT("Finally AnimEnded called from code."));
-    //HandleInput(ERyuInputState::AnimationEnded);
+    HandleInput(ERyuInputState::StateEnded);
 }
 
 void ARyuBaseCharacter::PostInitializeComponents()
@@ -149,6 +149,12 @@ void ARyuBaseCharacter::OnSphereTracerCheckOverlap(AActor* OtherActor,
 
 		*/
     }
+}
+
+void ARyuBaseCharacter::JumpToAnimInstanceNode(FName Node)
+{
+    auto* AnimationInstance = GetOrCreateAnimInstance();
+    AnimationInstance->JumpToNode(Node);
 }
 
 void ARyuBaseCharacter::SetCharacterMovementState(ERyuMovementState MovementState)
@@ -358,27 +364,47 @@ ERyuLookDirection ARyuBaseCharacter::GetLookDirection()
 
 void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
 {
-    //Mainly due AnimationEndedInput this needs to be implemented here in the BaseClass
-    IRyuCharacterState* state = CharacterState->HandleInput(this, Input);
+	// save the pressed Input of the current State for other Methods besides HandleIput
+	CharacterState->SetInputPressedState(Input);
 
+	// Mainly due AnimationEndedInput this needs to be implemented here in the BaseClass
+    IRyuCharacterState* state = CharacterState->HandleInput(this, Input);
+	
     if (state != nullptr)
     {
-        state->SetInputPressedState(Input);
-        UE_LOG(LogRyu, Warning, TEXT("GetCharState: %s"),
-               *URyuStaticFunctionLibrary::CharacterStateToString(CharacterState->GetState()));
+		switch (Input)
+        {
+            case ERyuInputState::StateEnded:
+            {
 
-        // Call Exit-Action on the old state
-        CharacterState->Exit(this);
-        EquipmentState->Exit(this);
+                break;
+            }
+            default:
+            {
+                //state->SetInputPressedState(Input);
+                UE_LOG(LogRyu, Warning, TEXT("GetCurrentCharState: %s"),
+                       *URyuStaticFunctionLibrary::CharacterStateToString(
+                           CharacterState->GetState()));
+				UE_LOG(LogRyu, Warning, TEXT("GetInputState: %s"),
+					*URyuStaticFunctionLibrary::InputStateToString(
+						CharacterState->GetInputPressedState()));
 
-        // delete old CharacterState;
+                // Call Exit-Action on the old state
+                CharacterState->Exit(this);
+                //EquipmentState->Exit(this);
 
-        CharacterState = state;
-        EquipmentState = state;
+                // delete old CharacterState;
 
-        // Call the enter Action on the new State
-        CharacterState->Enter(this);
-        EquipmentState->Enter(this);
+                CharacterState = state;
+                //EquipmentState = state;
+
+                // Call the enter Action on the new State
+                CharacterState->Enter(this);
+                //EquipmentState->Enter(this);
+
+                break;
+            }
+        }
     }
 }
 

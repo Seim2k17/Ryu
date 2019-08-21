@@ -14,6 +14,7 @@ URyuCharacterTalkState::URyuCharacterTalkState()
 IRyuCharacterState* URyuCharacterTalkState::HandleInput(ARyuBaseCharacter* Character,
 	const ERyuInputState Input)
 {
+
 	if (Input == ERyuInputState::ReleaseDown)
 	{
 		UE_LOG(LogRyu, Log, TEXT("Character stands up."));

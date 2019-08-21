@@ -143,7 +143,8 @@ void ARyuMainCharacter::Tick(float DeltaTime)
     fDeltaSeconds = DeltaTime;
 
     //TODO implement it correct then call it / atm crash -> pure virtual function call !
-    //TODO TESTING here sometimes crash ? see screenshot #090719_StateUpdate
+    //TODO TESTING here sometimes crash ? see screenshot #090719_StateUpdate / #060819_StateUpdate (FocusLost / ALT_TAB)
+	// PLEASE Check if InputPressed: ReleaseInputKey" overrides "StateEndedState!" -> e.g.: JumpPressed -> AniJump -> JumpAniEnded -> EndStateCalled but before when ReleaseJumpKey is triggered: InputPressed == None .... ???!!!???
     if (CharacterState)
     {
         CharacterState->Update(this);
@@ -174,11 +175,14 @@ void ARyuMainCharacter::Jump()
 {
     // TODO: is this even executed atm ? see SetupPlayerInputComponent
     // from CharacterClass
-    //          bPressedJump = true;
-    //          bJumpJustStarted = true;
-    HandleInput(ERyuInputState::PressJump);
-    auto* AnimationInstance = GetOrCreateAnimInstance();
-    AnimationInstance->JumpToNode(JumpNodeName);
+	if (!bJumpJustStarted)
+	{
+		//bPressedJump = true;
+		bJumpJustStarted = true;
+		HandleInput(ERyuInputState::PressJump);
+        JumpToAnimInstanceNode(JumpNodeName);
+    }
+              
 }
 
 void ARyuMainCharacter::HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent,

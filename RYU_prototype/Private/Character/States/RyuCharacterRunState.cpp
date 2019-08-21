@@ -20,6 +20,8 @@ URyuCharacterRunState::URyuCharacterRunState()
 IRyuCharacterState* URyuCharacterRunState::HandleInput(ARyuBaseCharacter* Character,
                                                        const ERyuInputState Input)
 {
+
+
     switch (Input)
     {
         case ERyuInputState::PressDown:
@@ -86,7 +88,7 @@ void URyuCharacterRunState::Enter(ARyuBaseCharacter* Character)
     Super::FlipCharacter(Character);
 	Character->SetCharacterMovementState(ERyuMovementState::Running);
     CharacterState = ERyuCharacterState::Run;
-    // Set IdleGraphics or other Asset related stuff
+	// Set IdleGraphics or other Asset related stuff
 }
 
 void URyuCharacterRunState::Exit(ARyuBaseCharacter* Character)
