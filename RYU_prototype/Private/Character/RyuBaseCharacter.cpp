@@ -372,15 +372,15 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
 	
     if (state != nullptr)
     {
-		switch (Input)
-        {
-            case ERyuInputState::StateEnded:
-            {
-
-                break;
-            }
-            default:
-            {
+// 		switch (Input)
+//         {
+//             case ERyuInputState::StateEnded:
+//             {
+// 
+//                 break;
+//             }
+//             default:
+//             {
                 //state->SetInputPressedState(Input);
                 UE_LOG(LogRyu, Warning, TEXT("GetCurrentCharState: %s"),
                        *URyuStaticFunctionLibrary::CharacterStateToString(
@@ -402,10 +402,10 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
                 CharacterState->Enter(this);
                 //EquipmentState->Enter(this);
 
-                break;
-            }
-        }
-    }
+//                 break;
+//             }
+//         }
+     }
 }
 
 bool ARyuBaseCharacter::IsInCombat()
