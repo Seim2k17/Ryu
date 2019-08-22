@@ -25,7 +25,6 @@ IRyuCharacterState* URyuCharacterJumpState::HandleInput(ARyuBaseCharacter* Chara
         }
         case ERyuInputState::StateEnded:
         {
-			Character->JumpToAnimInstanceNode(Character->IdleNodeName);
             return NewObject<URyuCharacterIdleState>();
         }
 

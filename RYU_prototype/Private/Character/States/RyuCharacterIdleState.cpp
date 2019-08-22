@@ -33,6 +33,7 @@ void URyuCharacterIdleState::Enter(ARyuBaseCharacter* Character)
     CharacterState = ERyuCharacterState::Idle;
     //TODO: is it a bit reduntant (for JumpingForwardStates....) we can use the normal state instead or not ?
     Character->SetCharacterMovementState(ERyuMovementState::Standing);
+	Character->JumpToAnimInstanceNode(Character->IdleNodeName);
     // Set IdleGraphics or other Asset related stuff
 }
 
