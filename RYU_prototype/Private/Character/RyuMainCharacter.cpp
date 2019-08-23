@@ -180,7 +180,6 @@ void ARyuMainCharacter::Jump()
 		//bPressedJump = true;
 		bJumpJustStarted = true;
 		HandleInput(ERyuInputState::PressJump);
-        JumpToAnimInstanceNode(JumpNodeName);
     }
               
 }

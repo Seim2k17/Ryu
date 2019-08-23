@@ -19,7 +19,7 @@ public:
     virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
                                             const ERyuInputState Input) override;
     virtual void Update(ARyuBaseCharacter* Character) override;
-    virtual void Enter(ARyuBaseCharacter* Character) override{};
+    virtual void Enter(ARyuBaseCharacter* Character) override;
     virtual void Exit(ARyuBaseCharacter* Character) override{};
 
 private:

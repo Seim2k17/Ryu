@@ -44,3 +44,8 @@ void URyuCharacterJumpState::Update(ARyuBaseCharacter* Character)
 		Character->HandleInput(ERyuInputState::StateEnded);
     }
 }
+
+void URyuCharacterJumpState::Enter(ARyuBaseCharacter* Character)
+{
+	Character->JumpToAnimInstanceNode(Character->JumpNodeName);
+}

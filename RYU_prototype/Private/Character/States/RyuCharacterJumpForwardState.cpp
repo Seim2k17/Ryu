@@ -25,6 +25,8 @@ void URyuCharacterJumpForwardState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterJumpForwardState::Enter(ARyuBaseCharacter* Character)
 {
+	Super::Enter(Character);
+
     switch (Character->GetCharacterMovementState())
     {
         case ERyuMovementState::Sprinting:
