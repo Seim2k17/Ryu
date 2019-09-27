@@ -27,7 +27,7 @@ IRyuCharacterState* URyuCharacterTalkState::HandleInput(ARyuBaseCharacter* Chara
 		return Super::HandleInput(Character, Input);
 	}
 
-	return nullptr;
+//	return nullptr;
 }
 
 void URyuCharacterTalkState::Update(ARyuBaseCharacter* Character)

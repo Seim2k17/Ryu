@@ -144,8 +144,10 @@ void ARyuMainCharacter::Tick(float DeltaTime)
 
     //TODO implement it correct then call it / atm crash -> pure virtual function call !
     //TODO TESTING here sometimes crash ? see screenshot #090719_StateUpdate / #060819_StateUpdate (FocusLost / ALT_TAB)
-	// PLEASE Check if InputPressed: ReleaseInputKey" overrides "StateEndedState!" -> e.g.: JumpPressed -> AniJump -> JumpAniEnded -> EndStateCalled but before when ReleaseJumpKey is triggered: InputPressed == None .... ???!!!???
-    if (CharacterState)
+    // PLEASE Check if InputPressed: ReleaseInputKey" overrides "StateEndedState!" -> e.g.: JumpPressed -> AniJump -> JumpAniEnded -> EndStateCalled but before when ReleaseJumpKey is triggered: InputPressed == None .... ???!!!???
+    // Unhandled exception
+    if ((CharacterState != nullptr)
+        && (CharacterState->GetInputPressedState() != ERyuInputState::None))
     {
         CharacterState->Update(this);
     }
@@ -175,13 +177,12 @@ void ARyuMainCharacter::Jump()
 {
     // TODO: is this even executed atm ? see SetupPlayerInputComponent
     // from CharacterClass
-	if (!bJumpJustStarted)
-	{
-		//bPressedJump = true;
-		bJumpJustStarted = true;
-		HandleInput(ERyuInputState::PressJump);
+    if (!bJumpJustStarted)
+    {
+        //bPressedJump = true;
+        bJumpJustStarted = true;
+        HandleInput(ERyuInputState::PressJump);
     }
-              
 }
 
 void ARyuMainCharacter::HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -215,7 +216,7 @@ void ARyuMainCharacter::MoveRight(float Val)
 {
     //for slow Movement , TODO: Clamp for ControllerInput (AxisValus...)
 
-    bool PressRight = false;
+    bool PressedRight = false;
 
     float SneakValue = 1.0f;
 
@@ -232,7 +233,7 @@ void ARyuMainCharacter::MoveRight(float Val)
     // Bind to Press / Release Button Events ?
     if (MoveRightInput < 0)
     {
-        PressRight = false;
+        PressedRight = false;
         if (MoveRightAxisState != ERyuMoveRightAxisInputState::PressRightAxisKey)
         {
             HandleInput(ERyuInputState::PressLeft);
@@ -241,7 +242,7 @@ void ARyuMainCharacter::MoveRight(float Val)
     }
     else if (MoveRightInput > 0)
     {
-        PressRight = true;
+        PressedRight = true;
         if (MoveRightAxisState != ERyuMoveRightAxisInputState::PressRightAxisKey)
         {
             HandleInput(ERyuInputState::PressRight);
@@ -250,18 +251,26 @@ void ARyuMainCharacter::MoveRight(float Val)
     }
     else
     {
+        // TODO: RECHECK: WHAT DOES IT MEAN quickly changeing direction ???
         if (MoveRightAxisState != ERyuMoveRightAxisInputState::Inactive)
         {
             // TODO: check is needable (ReleaseAxisKey .... / or only switch to inactive when release is done, is it executed in one frame ?
-            MoveRightAxisState = ERyuMoveRightAxisInputState::ReleaseRightAxisKey;
-            if (PressRight)
+            // MoveRightAxisState = ERyuMoveRightAxisInputState::ReleaseRightAxisKey;
+            if (PressedRight == true)
             {
-                HandleInput(ERyuInputState::ReleaseRight);
+                if (bAllowReleaseAxisKey)
+                {
+                    HandleInput(ERyuInputState::ReleaseRight);
+                }
             }
             else
             {
-                HandleInput(ERyuInputState::ReleaseLeft);
+                if (bAllowReleaseAxisKey)
+                {
+                    HandleInput(ERyuInputState::ReleaseLeft);
+                }
             }
+
             MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
         }
     }
@@ -449,13 +458,6 @@ void ARyuMainCharacter::ClimbLedgeFlipBookFinished()
     }
 }
 
-// now in baseclass
-// void ARyuMainCharacter::HandleInput(ERyuInputState Input)
-// {
-//     // TODO: check if objects are created every frame !? /// HM DAMN it crashes sometimes ?
-//
-// }
-
 void ARyuMainCharacter::ResetCollisionAndGravity()
 {
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -554,7 +556,7 @@ void ARyuMainCharacter::SprintReleased()
     }
 }
 
-/** CHaracter State Machine Prep 
+/** CHaracter State Machine Prep from Gollum
 
 void ARyuMainCharacter::TickStates(float DeltaTime)
 {

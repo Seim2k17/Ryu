@@ -29,6 +29,8 @@ public:
         InputPressed = ERyuInputState::None;
     };
 
+    IRyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character);
+
 protected:
     void FlipCharacter(ARyuBaseCharacter* Character);
 

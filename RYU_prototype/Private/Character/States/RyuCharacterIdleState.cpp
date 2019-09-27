@@ -33,7 +33,7 @@ void URyuCharacterIdleState::Enter(ARyuBaseCharacter* Character)
     CharacterState = ERyuCharacterState::Idle;
     //TODO: is it a bit reduntant (for JumpingForwardStates....) we can use the normal state instead or not ?
     Character->SetCharacterMovementState(ERyuMovementState::Standing);
-	Character->JumpToAnimInstanceNode(Character->IdleNodeName);
+    Character->JumpToAnimInstanceNode(Character->IdleNodeName);
     // Set IdleGraphics or other Asset related stuff
 }
 
@@ -84,6 +84,7 @@ IRyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Chara
         {
             return InputPressJump(Character);
         }
+
         default:
             return Super::HandleInput(Character, Input);
             break;
@@ -183,7 +184,8 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressInteract(ARyuBaseCharacter
 
 IRyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Character)
 {
-    UE_LOG(LogRyu, Error, TEXT("FromCharIdleState: Inputpressed: %s"), *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
+    UE_LOG(LogRyu, Error, TEXT("FromCharIdleState: Inputpressed: %s"),
+           *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
     switch (InputPressed)
     {
         case ERyuInputState::PressJump:
@@ -220,7 +222,8 @@ void URyuCharacterIdleState::Update(ARyuBaseCharacter* Character)
 {
     // LOG(LogRyu, Log, TEXT("Idle-State Updating."));
     // check if MoveRightLeft is still pressed, when entering this State:
-    if (auto MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
+    /* DO WE NEED TO CALL THIS IN UPDATE ??? -> everytime HandleInput os called A new State is created !!! -> unnecessa. StateDestroy & Creation (it´s the same State each frame!)
+	if (auto MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
     {
         if (MainChar->GetMoveRightInput() < 0)
         {
@@ -233,4 +236,5 @@ void URyuCharacterIdleState::Update(ARyuBaseCharacter* Character)
             return;
         }
     }
+	*/
 }

@@ -23,7 +23,20 @@ URyuCharacterOnGroundState::URyuCharacterOnGroundState()
 IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* Character,
                                                             const ERyuInputState Input)
 {
-	/** First we define the Action how described in GDD-CSM-Diagram !, then we´ll decide which states can go up to the BaseClasses /
+    switch (Input)
+    {
+        case ERyuInputState::AnimationEnded:
+        {
+            return InputAnimationEnded(Character); //InputAnimationEnde(Character);
+        }
+        default:
+        {
+            return nullptr;
+            break;
+        }
+    }
+
+    /** First we define the Action how described in GDD-CSM-Diagram !, then we´ll decide which states can go up to the BaseClasses /
     switch (Input)
     {
 		
@@ -78,8 +91,23 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
     }
 
 	*/
+}
 
-    return nullptr;
+IRyuCharacterState* URyuCharacterOnGroundState::InputAnimationEnded(ARyuBaseCharacter* Character)
+{
+    switch (Character->GetCharacterState())
+    {
+        case ERyuCharacterState::Roll:
+
+        {
+            UE_LOG(LogRyu, Log, TEXT("RollAniEnded"));
+			return nullptr;
+            break;
+        }
+        default:
+            return nullptr;
+            break;
+    }
 }
 
 void URyuCharacterOnGroundState::Update(ARyuBaseCharacter* Character)
@@ -111,6 +139,7 @@ void URyuCharacterOnGroundState::FlipCharacter(ARyuBaseCharacter* Character)
             break;
         }
         default:
+            UE_LOG(LogRyu, Log, TEXT("Hm. InputState is neither Left or Right."));
             break;
     }
 }

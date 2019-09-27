@@ -16,6 +16,11 @@ IRyuCharacterState* URyuCharacterClimbState::HandleInput(ARyuBaseCharacter* Char
 {
     switch (Input)
     {
+        case ERyuInputState::AnimationEnded:
+        {
+            return InputAnimationEnded(Character); //InputAnimationEnde(Character);
+        }
+
         case ERyuInputState::PressJump:
             return NewObject<URyuCharacterJumpBackwardState>();
         default:
@@ -31,4 +36,10 @@ void URyuCharacterClimbState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterClimbState::Exit(ARyuBaseCharacter* Character)
 {
+}
+
+IRyuCharacterState* URyuCharacterClimbState::InputAnimationEnded(ARyuBaseCharacter* Character)
+{
+    // TODO add app AnimationEndedKram
+    return nullptr;
 }

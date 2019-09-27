@@ -32,6 +32,7 @@ public:
                                             const ERyuInputState Input)
     {
         return nullptr;
+
     }; // = 0;
 
     virtual void Update(ARyuBaseCharacter* Character)
@@ -63,6 +64,8 @@ public:
     {
         return InputPressed;
     }
+
+    IRyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character);
 
 protected:
     ERyuCharacterState CharacterState = ERyuCharacterState::Idle;

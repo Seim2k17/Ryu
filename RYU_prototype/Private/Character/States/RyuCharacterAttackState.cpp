@@ -13,10 +13,26 @@ IRyuCharacterState* URyuCharacterAttackState::HandleInput(ARyuBaseCharacter* Cha
                                                           const ERyuInputState Input)
 {
     // TODO: Check which Attack and return appr. AttackState
-
-    return nullptr;
+    switch (Input)
+    {
+        case ERyuInputState::AnimationEnded:
+        {
+            return InputAnimationEnded(Character); //InputAnimationEnde(Character);
+        }
+        default:
+        {
+            return nullptr;
+            break;
+        }
+    }
 }
 
 void URyuCharacterAttackState::Update(ARyuBaseCharacter* Character)
 {
+}
+
+IRyuCharacterState* URyuCharacterAttackState::InputAnimationEnded(ARyuBaseCharacter* Character)
+{
+	// TODO add app AnimationEndedKram
+    return nullptr;
 }

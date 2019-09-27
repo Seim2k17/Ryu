@@ -24,6 +24,8 @@ public:
     virtual void Enter(ARyuBaseCharacter* Character) override{};
     virtual void Exit(ARyuBaseCharacter* Character) override{};
 
+	IRyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character);
+
 private:
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
 };

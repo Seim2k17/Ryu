@@ -13,16 +13,25 @@ URyuCharacterInAirState::URyuCharacterInAirState()
 IRyuCharacterState* URyuCharacterInAirState::HandleInput(ARyuBaseCharacter* Character,
                                                          const ERyuInputState Input)
 {
-//     if (Input == ERyuInputState::PressJump)
-//     {
-//         UE_LOG(LogRyu, Log, TEXT("Jump in Air is pressed"));
-//         // we need to return a JumpStateObject
-//         return NewObject<URyuCharacterJumpState>();
-//     }
-
-    return nullptr;
+    switch (Input)
+    {
+        case ERyuInputState::AnimationEnded:
+        {
+            return InputAnimationEnded(Character); //InputAnimationEnde(Character);
+        }
+        default:
+        {
+            return nullptr;
+            break;
+        }
+    }
 }
 
 void URyuCharacterInAirState::Update(ARyuBaseCharacter* Character)
 {
+}
+
+IRyuCharacterState* URyuCharacterInAirState::InputAnimationEnded(ARyuBaseCharacter* Character)
+{
+    return nullptr;
 }

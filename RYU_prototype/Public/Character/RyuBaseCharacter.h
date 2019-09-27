@@ -137,6 +137,8 @@ public:
 
     void SetCharacterMovementState(ERyuMovementState MovementState);
 
+    void SetAllowReleaseAxisKey(bool AllowState);
+
 protected:
     virtual void BeginPlay() override;
 
@@ -144,6 +146,10 @@ protected:
 
     //CHECK ! is it used ANYMORE ?
     void OnSphereTracerCheckOverlap(AActor* OtherActor, UPrimitiveComponent* OtherComp);
+
+    // Function which is executed after the AllowReleaseKeyTimer
+    UFUNCTION()
+    void AllowReleaseKey();
 
 public:
     /** Camera boom positioning the camera beside the character */
@@ -166,6 +172,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
     FName IdleNodeName = TEXT("ToIdle");
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
+    FName RunNodeName = TEXT("ToRun");
 
     /** Side view camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera,
@@ -207,10 +216,15 @@ protected:
     IRyuCharacterState* CharacterState;
     IRyuCharacterState* EquipmentState;
 
+    FTimerHandle AllowReleaseKeyTimerHandle;
+
+    // after which time we allow the ReleaseKeyEvent for a certain Axis (ReleaseKey is bad for quick directionChanges)
+    float AllowReleaseAxisKeyTime = 0.5f;
+    bool bAllowReleaseAxisKey = true;
+
 private:
     // UtilitySection
-
-    ERyuLookDirection LookDirection;
+    ERyuLookDirection LookDirection = ERyuLookDirection::Right;
 
     ERyuInteractionStatus InteractionStatus = ERyuInteractionStatus::None;
     ERyuMovementState CharacterMovementState = ERyuMovementState::Standing;
