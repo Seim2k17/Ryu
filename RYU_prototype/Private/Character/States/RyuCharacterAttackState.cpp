@@ -18,6 +18,7 @@ IRyuCharacterState* URyuCharacterAttackState::HandleInput(ARyuBaseCharacter* Cha
         case ERyuInputState::AnimationEnded:
         {
             return InputAnimationEnded(Character); //InputAnimationEnde(Character);
+			break;
         }
         default:
         {

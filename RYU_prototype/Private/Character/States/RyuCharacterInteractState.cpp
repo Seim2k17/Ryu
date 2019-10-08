@@ -15,7 +15,7 @@ IRyuCharacterState* URyuCharacterInteractState::HandleInput(ARyuBaseCharacter* C
                                                             const ERyuInputState Input)
 {
     // Stuff for every Interaction
-    return nullptr;
+    return Super::HandleInput(Character, Input);
 }
 
 void URyuCharacterInteractState::Update(ARyuBaseCharacter* Character)

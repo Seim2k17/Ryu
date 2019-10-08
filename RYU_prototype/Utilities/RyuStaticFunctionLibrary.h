@@ -41,4 +41,6 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Debug")
     static FString MovementStateToString(const ERyuMovementState State);
+
+
 };

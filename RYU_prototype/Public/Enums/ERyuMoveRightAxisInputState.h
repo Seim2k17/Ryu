@@ -9,4 +9,6 @@ enum class ERyuMoveRightAxisInputState : uint8
     Inactive,
     PressRightAxisKey,
     ReleaseRightAxisKey,
+	PressLeftAxisKey,
+	ReleaseLeftAxisKey,
 };

@@ -23,17 +23,18 @@ IRyuCharacterState* URyuCharacterSneakState::HandleInput(ARyuBaseCharacter* Char
             return NewObject<URyuCharacterDuckMoveState>();
             break;
         }
-        case ERyuInputState::ReleaseSneak:
+        case ERyuInputState::ReleaseSneakRight:
+        case ERyuInputState::ReleaseSneakLeft:
         {
             return NewObject<URyuCharacterIdleState>();
             break;
         }
         default:
+        {
             return Super::HandleInput(Character, Input);
             break;
+        }
     }
-
-    return nullptr;
 }
 
 void URyuCharacterSneakState::Update(ARyuBaseCharacter* Character)
@@ -45,7 +46,7 @@ void URyuCharacterSneakState::Enter(ARyuBaseCharacter* Character)
     Super::FlipCharacter(Character);
 
     CharacterState = ERyuCharacterState::Sneak;
-	Character->SetCharacterMovementState(ERyuMovementState::Sneaking);
+    Character->SetCharacterMovementState(ERyuMovementState::Sneaking);
     // Set IdleGraphics or other Asset related stuff
 }
 

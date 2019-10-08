@@ -179,9 +179,10 @@ void ARyuMainCharacter::Jump()
     // from CharacterClass
     if (!bJumpJustStarted)
     {
+        UE_LOG(LogRyu, Warning, TEXT("Jump from MainChar called."));
         //bPressedJump = true;
         bJumpJustStarted = true;
-        HandleInput(ERyuInputState::PressJump);
+        ARyuBaseCharacter::HandleInput(ERyuInputState::PressJump);
     }
 }
 
@@ -208,6 +209,8 @@ void ARyuMainCharacter::StopJumping()
 
     bJumpJustStarted = false;
 
+	// TODO: How To Hndle State ReleaseJump ? ARyuBaseCharacter::HandleInput(ERyuInputState::ReleaseJump);
+
     Super::ResetJumpState();
 }
 
@@ -229,15 +232,17 @@ void ARyuMainCharacter::MoveRight(float Val)
         //HandleInput(ERyuInputState::PressSneak);
     }
 
+    // UE_LOG(LogRyu, Log, TEXT("MoveRight: %f"), Val);
+
     //TODO we only need to "handleInput" once, otherwise we create new states every tick!
     // Bind to Press / Release Button Events ?
     if (MoveRightInput < 0)
     {
         PressedRight = false;
-        if (MoveRightAxisState != ERyuMoveRightAxisInputState::PressRightAxisKey)
+        if (MoveRightAxisState != ERyuMoveRightAxisInputState::PressLeftAxisKey)
         {
             HandleInput(ERyuInputState::PressLeft);
-            MoveRightAxisState = ERyuMoveRightAxisInputState::PressRightAxisKey;
+            MoveRightAxisState = ERyuMoveRightAxisInputState::PressLeftAxisKey;
         }
     }
     else if (MoveRightInput > 0)
@@ -256,14 +261,14 @@ void ARyuMainCharacter::MoveRight(float Val)
         {
             // TODO: check is needable (ReleaseAxisKey .... / or only switch to inactive when release is done, is it executed in one frame ?
             // MoveRightAxisState = ERyuMoveRightAxisInputState::ReleaseRightAxisKey;
-            if (PressedRight == true)
+            if (MoveRightAxisState == ERyuMoveRightAxisInputState::PressRightAxisKey)
             {
                 if (bAllowReleaseAxisKey)
                 {
                     HandleInput(ERyuInputState::ReleaseRight);
                 }
             }
-            else
+            else if (MoveRightAxisState == ERyuMoveRightAxisInputState::PressLeftAxisKey)
             {
                 if (bAllowReleaseAxisKey)
                 {
@@ -523,6 +528,11 @@ float ARyuMainCharacter::GetMoveUpInput()
 bool ARyuMainCharacter::GetSneakActive()
 {
     return bSneakIsPressed;
+}
+
+void ARyuMainCharacter::ResetMoveRightInput()
+{
+    MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
 }
 
 void ARyuMainCharacter::SneakPressed()

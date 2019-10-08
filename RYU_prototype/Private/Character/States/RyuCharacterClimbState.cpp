@@ -19,13 +19,20 @@ IRyuCharacterState* URyuCharacterClimbState::HandleInput(ARyuBaseCharacter* Char
         case ERyuInputState::AnimationEnded:
         {
             return InputAnimationEnded(Character); //InputAnimationEnde(Character);
+            break;
         }
 
         case ERyuInputState::PressJump:
+        {
             return NewObject<URyuCharacterJumpBackwardState>();
+            break;
+        }
+
         default:
+        {
             return nullptr;
             break;
+        }
     }
 }
 

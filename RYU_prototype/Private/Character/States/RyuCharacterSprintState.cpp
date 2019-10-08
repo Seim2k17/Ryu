@@ -33,7 +33,8 @@ IRyuCharacterState* URyuCharacterSprintState::HandleInput(ARyuBaseCharacter* Cha
             return NewObject<URyuCharacterIdleState>();
             break;
         }
-        case ERyuInputState::ReleaseSprint:
+        case ERyuInputState::ReleaseSprintRight:
+        case ERyuInputState::ReleaseSprintLeft:
         {
             return NewObject<URyuCharacterRunState>();
             break;
@@ -44,13 +45,12 @@ IRyuCharacterState* URyuCharacterSprintState::HandleInput(ARyuBaseCharacter* Cha
             break;
         }
         default:
-
+        {
             // only make special call when Input occurs which is not handled in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
             return Super::HandleInput(Character, Input);
             break;
+        }
     }
-
-    return nullptr;
 }
 
 void URyuCharacterSprintState::Update(ARyuBaseCharacter* Character)
@@ -60,7 +60,7 @@ void URyuCharacterSprintState::Update(ARyuBaseCharacter* Character)
 void URyuCharacterSprintState::Enter(ARyuBaseCharacter* Character)
 {
     CharacterState = ERyuCharacterState::Sprint;
-	Character->SetCharacterMovementState(ERyuMovementState::Sprinting);
+    Character->SetCharacterMovementState(ERyuMovementState::Sprinting);
     // Set IdleGraphics or other Asset related stuff
 }
 

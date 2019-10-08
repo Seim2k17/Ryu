@@ -10,11 +10,7 @@
 
 class URyuTimelineComponent;
 class URyuDebugComponent;
-/**
- * WIP - V2 MainCharacter
-DONE 1. Sort Methods and pack them to components
-2. Implement State Machine with GangOfFour StatePattern 
- */
+
 UCLASS()
 class RYU_PROTOTYPE_API ARyuMainCharacter : public ARyuBaseCharacter
 {
@@ -54,6 +50,9 @@ public:
     float GetMoveUpInput();
 
     bool GetSneakActive();
+
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    void ResetMoveRightInput();
 
 protected:
     // really protected ?
@@ -120,54 +119,3 @@ private:
 
     ERyuMoveRightAxisInputState MoveRightAxisState;
 };
-
-/*
-protected:
-    
-	 * Character FSM
-	 * Note: Do not define other members below this point, this protected block is reserved for CSM
-	 
-    virtual void TickStates(float DeltaTime); - called in Tick 
-
-    virtual void OnSpawningEnter();
-    virtual void OnSpawningTick(float DeltaTime);
-    virtual void OnSpawningExit();
-    virtual void TransitionSpawningToIdle();
-
-    virtual void OnIdleEnter();
-    virtual void OnIdleTick(float DeltaTime);
-    virtual void OnIdleExit();
-    virtual void TransitionIdleToWalking();
-    virtual void TransitionIdleToAttacking();
-    virtual void TransitionIdleToDying();
-
-    virtual void OnWalkingEnter();
-    virtual void OnWalkingTick(float DeltaTime);
-    virtual void OnWalkingExit();
-    virtual void TransitionWalkingToIdle();
-    virtual void TransitionWalkingToRunning();
-    virtual void TransitionWalkingToAttacking();
-    virtual void TransitionWalkingToDying();
-
-    virtual void OnRunningEnter();
-    virtual void OnRunningTick(float DeltaTime);
-    virtual void OnRunningExit();
-    virtual void TransitionRunningToWalking();
-    virtual void TransitionRunningToAttacking();
-    virtual void TransitionRunningToDying();
-
-    virtual void OnAttackingEnter();
-    virtual void OnAttackingTick(float DeltaTime);
-    virtual void OnAttackingExit();
-    virtual void TransitionAttackingToIdle();
-
-    virtual void OnDyingEnter();
-    virtual void OnDyingTick(float DeltaTime);
-    virtual void OnDyingExit();
-    virtual void TransitionDyingToDead();
-
-    virtual void OnDeadEnter();
-    virtual void OnDeadTick(float DeltaTime);
-
-
-*/

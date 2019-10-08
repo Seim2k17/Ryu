@@ -20,9 +20,14 @@ IRyuCharacterState* URyuCharacterCombatState::HandleInput(ARyuBaseCharacter* Cha
         case ERyuInputState::PressAttack:
         {
             return NewObject<URyuCharacterAttackState>();
+            break;
+        }
+        default:
+        {
+            return Super::HandleInput(Character, Input);
+            break;
         }
     }
-    return Super::HandleInput(Character, Input);
 }
 
 void URyuCharacterCombatState::Update(ARyuBaseCharacter* Character)

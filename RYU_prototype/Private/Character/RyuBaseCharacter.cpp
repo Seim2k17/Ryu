@@ -4,8 +4,21 @@
 #include "Components/RyuClimbingComponent.h"
 #include "Components/RyuDebugComponent.h"
 #include "Components/RyuMovementComponent.h"
+#include "Enums/ERyuButtonType.h"
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
+#include "IO/RyuAbilityCommand.h"
+#include "IO/RyuBlockCommand.h"
+#include "IO/RyuDuckCommand.h"
+#include "IO/RyuHighStrikeCommand.h"
+#include "IO/RyuInteractCommand.h"
+#include "IO/RyuItemSelectCommand.h"
+#include "IO/RyuJumpCommand.h"
+#include "IO/RyuLowStrikeCommand.h"
+#include "IO/RyuMoveRightCommand.h"
+#include "IO/RyuShardSelectCommand.h"
+#include "IO/RyuSneakCommand.h"
+#include "IO/RyuSprintCommand.h"
 #include "Utilities/RyuStaticFunctionLibrary.h"
 #include "ERyuLookDirection.h"
 #include "RYU2DENUM_Movement.h"
@@ -59,6 +72,8 @@ ARyuBaseCharacter::ARyuBaseCharacter(const class FObjectInitializer& ObjectIniti
     // PlayerMovement = EPlayerMovement::STAND;
     CharacterState = NewObject<URyuCharacterIdleState>();
     EquipmentState = NewObject<URyuCharacterIdleState>();
+
+    InitializeCommands();
 }
 
 void ARyuBaseCharacter::Tick(float DeltaTime)
@@ -66,10 +81,45 @@ void ARyuBaseCharacter::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
+void ARyuBaseCharacter::AddCurrentInputState(ERyuInputState InputStateToAdd)
+{
+    CurrentInputs.Add(InputStateToAdd);
+}
+
+void ARyuBaseCharacter::CheckCurrentInputState(
+    ERyuInputState InputState, ERyuButtonType ButtonType /* = ERyuButtonType::None */)
+{
+    // PressButton
+    if (URyuStaticFunctionLibrary::InputStateToString(InputState).Contains(TEXT("Press")))
+    {
+        AddCurrentInputState(InputState);
+    }
+    // ReleaseButton
+    else if (URyuStaticFunctionLibrary::InputStateToString(InputState).Contains(TEXT("Release")))
+    {
+        UE_LOG(LogRyu, Warning, TEXT("InpuState: %s"),
+               *URyuStaticFunctionLibrary::InputStateToString(InputState));
+        PressedState = KeyInputCounterpartMap.Find(InputState);
+        RemoveInputeState(PressedState->PressKeyState);
+
+        //         if (KeyInputCounterpartMap.Contains(InputState)
+        //             && KeyInputCounterpartMap[InputState].ButtonType
+        //                    == ERyuButtonType::Axis /* ButtonType */)
+        //         {
+        //             RemoveInputeState(InputState);
+        //         }
+    }
+}
+
+void ARyuBaseCharacter::RemoveInputeState(ERyuInputState InputStateToRemove)
+{
+    CurrentInputs.Remove(InputStateToRemove);
+}
+
 void ARyuBaseCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence)
 {
     UE_LOG(LogTemp, Warning, TEXT("Finally AnimEnded called from code."));
-	// Reactions to AnimationEnded are handled in the appr. States 
+    // Reactions to AnimationEnded are handled in the appr. States
     HandleInput(ERyuInputState::AnimationEnded);
 }
 
@@ -221,6 +271,12 @@ bool ARyuBaseCharacter::CheckOverlapClimbableActors()
         return false;
     }
 }
+
+bool ARyuBaseCharacter::FindCurrentInputState(ERyuInputState InputState)
+{
+    return CurrentInputs.Contains(InputState);
+}
+
 /*
 Atm this only function when max. 2 climbing trigger are in place. because we automatically want to choose the correct one (up/down, left/right)
 */
@@ -338,6 +394,11 @@ ERYUClimbingMode ARyuBaseCharacter::GetClimbingMode()
     return ERYUClimbingMode::NONE;
 }
 
+TArray<ERyuInputState> ARyuBaseCharacter::GetCurrentInputStates()
+{
+    return CurrentInputs;
+}
+
 float ARyuBaseCharacter::GetCharacterStatus(ERyuCharacterStatus Status)
 {
     switch (Status)
@@ -377,8 +438,15 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
     // save the pressed Input of the current State for other Methods besides HandleIput
     CharacterState->SetInputPressedState(Input);
 
+    // whether to add or remove ButtonCommand from CurrentInputs-Array
+    CheckCurrentInputState(Input);
+
     // Mainly due AnimationEndedInput this needs to be implemented here in the BaseClass
-    IRyuCharacterState* state = CharacterState->HandleInput(this, Input);
+    IRyuCharacterState* state = nullptr;
+    if (CharacterState)
+    {
+        state = CharacterState->HandleInput(this, Input);
+    }
 
     if (state != nullptr)
     {
@@ -395,12 +463,43 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
         //EquipmentState->Exit(this);
 
         // delete old CharacterState;
-		CharacterState = state;
+        CharacterState = state;
         //EquipmentState = state;
 
         // Call the enter Action on the new State
         CharacterState->Enter(this);
         //EquipmentState->Enter(this);
+    }
+}
+
+void ARyuBaseCharacter::InitializeCommands()
+{
+    // Pure Mapping from Input to Buttons
+    Commands.Add(TEXT("Ability"), NewObject<URyuAbilityCommand>());
+    Commands.Add(TEXT("Block"), NewObject<URyuBlockCommand>());
+    Commands.Add(TEXT("Duck"), NewObject<URyuDuckCommand>());
+    Commands.Add(TEXT("HighStrike"), NewObject<URyuHighStrikeCommand>());
+    Commands.Add(TEXT("Interact"), NewObject<URyuInteractCommand>());
+    Commands.Add(TEXT("ItemSelect"), NewObject<URyuItemSelectCommand>());
+    Commands.Add(TEXT("Jump"), NewObject<URyuJumpCommand>());
+    Commands.Add(TEXT("LowStrike"), NewObject<URyuLowStrikeCommand>());
+    Commands.Add(TEXT("MoveRight"), NewObject<URyuMoveRightCommand>());
+    Commands.Add(TEXT("ShardSelect"), NewObject<URyuShardSelectCommand>());
+    Commands.Add(TEXT("Sneak"), NewObject<URyuSneakCommand>());
+    Commands.Add(TEXT("Sprint"), NewObject<URyuSprintCommand>());
+}
+
+void ARyuBaseCharacter::InitInputCounterparts()
+{
+    if (KeyInputCounterpartTable)
+    {
+        // Make a Map (TMap:key=<ButtonPress>) from the DataTable to simply get Access to the given Release-Counterpart of the ButtonKeyPressAction
+        for (auto it : KeyInputCounterpartTable->GetRowMap())
+        {
+            // simply cast the Value to the StructType of the DataTable
+            FInputCounterparts* data = (FInputCounterparts*)(it.Value);
+            KeyInputCounterpartMap.Add(data->ReleaseKeyState, *data);
+        }
     }
 }
 
@@ -455,6 +554,8 @@ void ARyuBaseCharacter::BeginPlay()
         this, &ARyuBaseCharacter::OnHandleCapsuleBeginOverlap);
     GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(
         this, &ARyuBaseCharacter::OnHandleCapsuleEndOverlap);
+
+    InitInputCounterparts();
 }
 
 void ARyuBaseCharacter::ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player)

@@ -60,19 +60,31 @@ IRyuCharacterState* URyuCharacterJumpState::InputAnimationEnded(ARyuBaseCharacte
     {
         case ERyuCharacterState::JumpUpward:
         case ERyuCharacterState::JumpBackward:
+        case ERyuCharacterState::JumpForward:
         {
             //
             return NewObject<URyuCharacterIdleState>();
             break;
         }
-        case ERyuCharacterState::JumpForward:
+        case ERyuCharacterState::JumpForwardFast:
         {
-            return NewObject<URyuCharacterRunState>();
+            if ((Character->FindCurrentInputState(ERyuInputState::PressLeft) == true)
+                || (Character->FindCurrentInputState(ERyuInputState::PressRight)) == true)
+            {
+                return NewObject<URyuCharacterRunState>();
+            }
+            else
+            {
+                return NewObject<URyuCharacterIdleState>();
+            }
+
             break;
         }
 
         default:
+        {
             return nullptr;
             break;
+        }
     }
 }

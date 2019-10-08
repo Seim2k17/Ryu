@@ -3,12 +3,14 @@
 #pragma once
 
 #include "Character/RYU2DENUM_AnimationState.h"
+#include "Enums/ERyuButtonType.h"
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuCharacterStatus.h"
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuInteractionStatus.h"
 #include "Enums/ERyuLookDirection.h"
 #include "Enums/ERyuMovementState.h"
+#include "IO/RyuBaseCommand.h"
 #include "RYU2DENUM_ClimbingMode.h"
 #include "RYU2DENUM_Movement.h"
 #include "RYUClimbingActor.h"
@@ -16,6 +18,7 @@
 #include "RYUENUM_LedgeSideEntered.h"
 #include <CoreMinimal.h>
 #include <PaperZDCharacter.h>
+#include <Engine/DataTable.h>
 #include "RyuBaseCharacter.generated.h"
 
 class USphereComponent;
@@ -25,6 +28,36 @@ class URyuMovementComponent;
 class IRyuCharacterState;
 class UPaperZDAnimPlayer;
 class UPaperZDAnimSequence;
+
+// to remove inputs from the CurInput array when appr. press/release partas are pressed / released
+USTRUCT(BlueprintType)
+//USTRUCT()
+struct FInputCounterparts : public FTableRowBase
+{
+    GENERATED_USTRUCT_BODY()
+
+public:
+    UPROPERTY(VisibleAnywhere)
+    ERyuInputState PressKeyState;
+
+    UPROPERTY(VisibleAnywhere)
+    ERyuInputState ReleaseKeyState;
+
+    UPROPERTY(VisibleAnywhere)
+    ERyuButtonType ButtonType;
+
+    bool PressStateEqualInput(ERyuInputState Input)
+    {
+        return (PressKeyState == Input);
+    }
+
+    bool ReleaseStateEqualInput(ERyuInputState Input)
+    {
+        return (ReleaseKeyState == Input);
+    }
+
+    FInputCounterparts(){};
+};
 
 /**
 * This class is the default character for Paper2DIntro, and it is responsible for all
@@ -51,6 +84,16 @@ public:
 
     void Tick(float DeltaTime) override;
 
+    UFUNCTION()
+    void AddCurrentInputState(ERyuInputState InputStateToAdd);
+
+    UFUNCTION()
+    void CheckCurrentInputState(ERyuInputState InputStateToAdd,
+                                ERyuButtonType ButtonType = ERyuButtonType::None);
+
+    UFUNCTION()
+    void RemoveInputeState(ERyuInputState InputStateToRemove);
+
     // our own functionality gets called at the end of an animation, due its a delegate function we need to mark it as UFUNCTION() with InAnimSequence parmList
     UFUNCTION()
     void AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence);
@@ -61,6 +104,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "RyuMovement")
     bool CheckOverlapClimbableActors();
 
+    UFUNCTION()
+    bool FindCurrentInputState(ERyuInputState InputState);
+
     /*
 	* Sets the rotation of the Sprite so that the character faces his direction of travel.
 	*/
@@ -70,12 +116,15 @@ public:
     UFUNCTION(BlueprintCallable, Category = "RyuCharacterState")
     ERyuCharacterState GetCharacterState();
 
+    UFUNCTION(BlueprintCallable, Category = "RyuCharacterStatus")
+    float GetCharacterStatus(ERyuCharacterStatus Status);
+
     // TODO Rethink after Implementing StateMachine */
     UFUNCTION(BlueprintCallable, Category = "RyuMovement")
     ERYUClimbingMode GetClimbingMode();
 
-    UFUNCTION(BlueprintCallable, Category = "RyuCharacterStatus")
-    float GetCharacterStatus(ERyuCharacterStatus Status);
+    UFUNCTION()
+    TArray<ERyuInputState> GetCurrentInputStates();
 
     ERyuInteractionStatus GetInteractionStatus();
 
@@ -102,6 +151,8 @@ public:
     virtual void HandleInput(ERyuInputState Input);
 
     void Jump() override;
+
+    void JumpToAnimInstanceNode(FName Node);
 
     UFUNCTION()
     void OnHandleCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -151,6 +202,10 @@ protected:
     UFUNCTION()
     void AllowReleaseKey();
 
+    void InitializeCommands();
+
+    void InitInputCounterparts();
+
 public:
     /** Camera boom positioning the camera beside the character */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera,
@@ -198,8 +253,6 @@ public:
 
     TArray<AActor*> CapsuleOverlappedActors;
 
-    void JumpToAnimInstanceNode(FName Node);
-
 protected:
     AActor* SphereOverlappedActor;
 
@@ -218,6 +271,20 @@ protected:
 
     FTimerHandle AllowReleaseKeyTimerHandle;
 
+    // DataStructure for all CommandsButtons / 4CommandDesignPattern
+    UPROPERTY(VisibleAnywhere)
+    TMap<FString, URyuBaseCommand*> Commands;
+
+    UPROPERTY(VisibleAnywhere, Category = "Input")
+    TArray<ERyuInputState> CurrentInputs;
+
+    UPROPERTY(VisibleAnywhere, Category = "Input")
+    TMap<ERyuInputState, FInputCounterparts> KeyInputCounterpartMap;
+
+    // linked Datatable with KeyCounterparts
+    UPROPERTY(EditAnywhere, Category = "Input")
+    UDataTable* KeyInputCounterpartTable;
+
     // after which time we allow the ReleaseKeyEvent for a certain Axis (ReleaseKey is bad for quick directionChanges)
     float AllowReleaseAxisKeyTime = 0.5f;
     bool bAllowReleaseAxisKey = true;
@@ -235,4 +302,6 @@ private:
     bool bDoThingsOnce;
 
     float TreshholdYWalkRun;
+
+    FInputCounterparts* PressedState;
 };

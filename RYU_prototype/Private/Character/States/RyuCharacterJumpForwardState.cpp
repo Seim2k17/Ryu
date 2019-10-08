@@ -25,17 +25,17 @@ void URyuCharacterJumpForwardState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterJumpForwardState::Enter(ARyuBaseCharacter* Character)
 {
-	Super::Enter(Character);
+    Super::Enter(Character);
 
     switch (Character->GetCharacterMovementState())
     {
         case ERyuMovementState::Sprinting:
+        case ERyuMovementState::Running:
         {
             CharacterState = ERyuCharacterState::JumpForwardFast;
             break;
         }
-        case ERyuMovementState::Running:
-		case ERyuMovementState::Standing:
+        case ERyuMovementState::Standing:
         {
             CharacterState = ERyuCharacterState::JumpForward;
             break;
@@ -44,7 +44,7 @@ void URyuCharacterJumpForwardState::Enter(ARyuBaseCharacter* Character)
 
     if (auto* RyuMovementComponent = Character->FindComponentByClass<URyuMovementComponent>())
     {
-		UE_LOG(LogRyu, Warning, TEXT("Call JumpForward from MovementComponent."));
+        UE_LOG(LogRyu, Warning, TEXT("Call JumpForward from MovementComponent."));
         RyuMovementComponent->JumpForward();
     }
 

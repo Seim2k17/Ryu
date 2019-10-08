@@ -50,15 +50,16 @@ IRyuCharacterState* URyuCharacterRunState::HandleInput(ARyuBaseCharacter* Charac
             if (Character->GetCharacterStatus(ERyuCharacterStatus::Stamina) > 0.0f)
             {
                 return NewObject<URyuCharacterSprintState>();
-                break;
             }
-        }
-        default:
             return Super::HandleInput(Character, Input);
             break;
+        }
+        default:
+        {
+            return Super::HandleInput(Character, Input);
+            break;
+        }
     }
-
-    return nullptr;
 }
 
 void URyuCharacterRunState::Update(ARyuBaseCharacter* Character)
@@ -84,6 +85,12 @@ void URyuCharacterRunState::Enter(ARyuBaseCharacter* Character)
     UE_LOG(LogRyu, Log, TEXT("InputState: %s"),
            *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
     Super::FlipCharacter(Character);
+
+    if (auto* MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
+    {
+        MainChar->ResetMoveRightInput();
+    }
+
     Character->SetCharacterMovementState(ERyuMovementState::Running);
     CharacterState = ERyuCharacterState::Run;
     Character->JumpToAnimInstanceNode(Character->RunNodeName);

@@ -30,9 +30,12 @@ IRyuCharacterState* URyuCharacterRollState::HandleInput(ARyuBaseCharacter* Chara
             return NewObject<URyuCharacterJumpForwardState>(false);
             break;
         }
+        default:
+        {
+            return nullptr;
+            break;
+        }
     }
-
-    return nullptr;
 }
 
 void URyuCharacterRollState::Update(ARyuBaseCharacter* Character)

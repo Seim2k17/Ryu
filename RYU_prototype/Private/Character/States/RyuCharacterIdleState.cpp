@@ -68,14 +68,17 @@ IRyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Chara
         case ERyuInputState::PressInteract:
         {
             return InputPressInteract(Character);
+            break;
         }
         case ERyuInputState::PressAbility:
         {
             return InputPressAbility(Character);
+            break;
         }
         case ERyuInputState::PressAttack:
         {
             return InputPressAttack(Character);
+            break;
         }
         case ERyuInputState::PressJump:
         case ERyuInputState::PressJumpBackward:
@@ -83,11 +86,14 @@ IRyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Chara
         case ERyuInputState::PressJumpForward:
         {
             return InputPressJump(Character);
+            break;
         }
 
         default:
+        {
             return Super::HandleInput(Character, Input);
             break;
+        }
     }
 }
 
@@ -122,6 +128,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressLeftRight(ARyuBaseCharacte
             return NewObject<URyuCharacterSprintState>();
             break;
         }
+
         default:
             break;
     }
