@@ -39,5 +39,5 @@ private:
     ARyuMainCharacter* GetMainCharOwner();
 
     UPROPERTY(EditAnywhere, Category = "Preferences")
-    bool bActivated = false;
+    bool bActivated;
 };

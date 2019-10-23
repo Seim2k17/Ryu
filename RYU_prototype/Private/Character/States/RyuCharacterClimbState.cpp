@@ -30,7 +30,7 @@ IRyuCharacterState* URyuCharacterClimbState::HandleInput(ARyuBaseCharacter* Char
 
         default:
         {
-            return nullptr;
+            return Character->GetCharacterState();
             break;
         }
     }
@@ -48,5 +48,5 @@ void URyuCharacterClimbState::Exit(ARyuBaseCharacter* Character)
 IRyuCharacterState* URyuCharacterClimbState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
     // TODO add app AnimationEndedKram
-    return nullptr;
+    return Character->GetCharacterState();
 }

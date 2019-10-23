@@ -22,7 +22,7 @@ IRyuCharacterState* URyuCharacterJumpState::HandleInput(ARyuBaseCharacter* Chara
 
         {
             // double-Jump / Set Jump-Count or something
-            return nullptr;
+            return Character->GetCharacterState();
             break;
         }
         case ERyuInputState::AnimationEnded:
@@ -32,7 +32,7 @@ IRyuCharacterState* URyuCharacterJumpState::HandleInput(ARyuBaseCharacter* Chara
 
         default:
         {
-            return nullptr;
+            return Character->GetCharacterState();
             break;
         }
     }
@@ -56,7 +56,7 @@ void URyuCharacterJumpState::Enter(ARyuBaseCharacter* Character)
 
 IRyuCharacterState* URyuCharacterJumpState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
-    switch (Character->GetCharacterState())
+    switch (Character->GetCharacterStateEnum())
     {
         case ERyuCharacterState::JumpUpward:
         case ERyuCharacterState::JumpBackward:
@@ -83,7 +83,7 @@ IRyuCharacterState* URyuCharacterJumpState::InputAnimationEnded(ARyuBaseCharacte
 
         default:
         {
-            return nullptr;
+            return Character->GetCharacterState();
             break;
         }
     }

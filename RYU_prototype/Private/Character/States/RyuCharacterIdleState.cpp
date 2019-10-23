@@ -109,7 +109,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressAttack(ARyuBaseCharacter* 
     {
         return NewObject<URyuCharacterCombatState>();
     }
-    return nullptr;
+    return this;
 }
 
 IRyuCharacterState* URyuCharacterIdleState::InputPressLeftRight(ARyuBaseCharacter* Character,
@@ -203,7 +203,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Ch
         case ERyuInputState::PressJumpForward:
             return NewObject<URyuCharacterJumpForwardState>();
         default:
-            return nullptr;
+            return this;
             break;
     }
 }

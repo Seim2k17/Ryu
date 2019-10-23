@@ -25,8 +25,7 @@ IRyuCharacterState* URyuCharacterCloseState::HandleInput(ARyuBaseCharacter* Char
 		// only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
 		return Super::HandleInput(Character, Input);
 // 	}
-// 
-// 	return nullptr;
+
 }
 
 void URyuCharacterCloseState::Update(ARyuBaseCharacter* Character)

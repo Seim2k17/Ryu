@@ -146,11 +146,14 @@ void ARyuMainCharacter::Tick(float DeltaTime)
     //TODO TESTING here sometimes crash ? see screenshot #090719_StateUpdate / #060819_StateUpdate (FocusLost / ALT_TAB)
     // PLEASE Check if InputPressed: ReleaseInputKey" overrides "StateEndedState!" -> e.g.: JumpPressed -> AniJump -> JumpAniEnded -> EndStateCalled but before when ReleaseJumpKey is triggered: InputPressed == None .... ???!!!???
     // Unhandled exception
-    if ((CharacterState != nullptr)
-        && (CharacterState->GetInputPressedState() != ERyuInputState::None))
-    {
-        CharacterState->Update(this);
-    }
+
+    // UE_LOG(LogRyu, Log, TEXT("TickIntervall@MainChar: %f"), this->PrimaryActorTick.TickInterval);
+
+//     if ((CharacterState != nullptr) && (CharacterState->GetState())
+//         && (CharacterState->GetInputPressedState() != ERyuInputState::None))
+//     {
+//         CharacterState->Update(this);
+//     }
 
     //** due its better for complexicity AND clarity we do most of the ABP_Transition_Logic here in c++
     // TODO: integrate this stuff in the new CharacterStateMachine !
@@ -209,7 +212,7 @@ void ARyuMainCharacter::StopJumping()
 
     bJumpJustStarted = false;
 
-	// TODO: How To Hndle State ReleaseJump ? ARyuBaseCharacter::HandleInput(ERyuInputState::ReleaseJump);
+    // TODO: How To Hndle State ReleaseJump ? ARyuBaseCharacter::HandleInput(ERyuInputState::ReleaseJump);
 
     Super::ResetJumpState();
 }
@@ -239,44 +242,46 @@ void ARyuMainCharacter::MoveRight(float Val)
     if (MoveRightInput < 0)
     {
         PressedRight = false;
-        if (MoveRightAxisState != ERyuMoveRightAxisInputState::PressLeftAxisKey)
+        if (ARyuBaseCharacter::GetMoveRightAxisState()
+            != ERyuMoveRightAxisInputState::PressLeftAxisKey)
         {
-            HandleInput(ERyuInputState::PressLeft);
-            MoveRightAxisState = ERyuMoveRightAxisInputState::PressLeftAxisKey;
+            ARyuBaseCharacter::HandleInput(ERyuInputState::PressLeft);
+            //MoveRightAxisState = ERyuMoveRightAxisInputState::PressLeftAxisKey;
         }
     }
     else if (MoveRightInput > 0)
     {
         PressedRight = true;
-        if (MoveRightAxisState != ERyuMoveRightAxisInputState::PressRightAxisKey)
+        if (ARyuBaseCharacter::GetMoveRightAxisState()
+            != ERyuMoveRightAxisInputState::PressRightAxisKey)
         {
-            HandleInput(ERyuInputState::PressRight);
-            MoveRightAxisState = ERyuMoveRightAxisInputState::PressRightAxisKey;
+            ARyuBaseCharacter::HandleInput(ERyuInputState::PressRight);
+            // MoveRightAxisState = ERyuMoveRightAxisInputState::PressRightAxisKey;
         }
     }
     else
     {
         // TODO: RECHECK: WHAT DOES IT MEAN quickly changeing direction ???
-        if (MoveRightAxisState != ERyuMoveRightAxisInputState::Inactive)
+        if (ARyuBaseCharacter::GetMoveRightAxisState() != ERyuMoveRightAxisInputState::Inactive)
         {
             // TODO: check is needable (ReleaseAxisKey .... / or only switch to inactive when release is done, is it executed in one frame ?
             // MoveRightAxisState = ERyuMoveRightAxisInputState::ReleaseRightAxisKey;
-            if (MoveRightAxisState == ERyuMoveRightAxisInputState::PressRightAxisKey)
+            if (ARyuBaseCharacter::GetMoveRightAxisState()
+                == ERyuMoveRightAxisInputState::PressRightAxisKey)
             {
                 if (bAllowReleaseAxisKey)
                 {
-                    HandleInput(ERyuInputState::ReleaseRight);
+                    ARyuBaseCharacter::HandleInput(ERyuInputState::ReleaseRight);
                 }
             }
-            else if (MoveRightAxisState == ERyuMoveRightAxisInputState::PressLeftAxisKey)
+            else if (ARyuBaseCharacter::GetMoveRightAxisState()
+                     == ERyuMoveRightAxisInputState::PressLeftAxisKey)
             {
                 if (bAllowReleaseAxisKey)
                 {
-                    HandleInput(ERyuInputState::ReleaseLeft);
+                    ARyuBaseCharacter::HandleInput(ERyuInputState::ReleaseLeft);
                 }
             }
-
-            MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
         }
     }
 }
@@ -528,11 +533,6 @@ float ARyuMainCharacter::GetMoveUpInput()
 bool ARyuMainCharacter::GetSneakActive()
 {
     return bSneakIsPressed;
-}
-
-void ARyuMainCharacter::ResetMoveRightInput()
-{
-    MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
 }
 
 void ARyuMainCharacter::SneakPressed()

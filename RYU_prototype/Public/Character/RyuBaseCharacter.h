@@ -9,6 +9,7 @@
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuInteractionStatus.h"
 #include "Enums/ERyuLookDirection.h"
+#include "Enums/ERyuMoveRightAxisInputState.h"
 #include "Enums/ERyuMovementState.h"
 #include "IO/RyuBaseCommand.h"
 #include "RYU2DENUM_ClimbingMode.h"
@@ -114,7 +115,13 @@ public:
     void FlipCharacter();
 
     UFUNCTION(BlueprintCallable, Category = "RyuCharacterState")
-    ERyuCharacterState GetCharacterState();
+    ERyuCharacterState GetCharacterStateEnum();
+
+	IRyuCharacterState* GetCharacterState();
+
+    ERyuMoveRightAxisInputState GetMoveRightAxisState();
+
+    ERyuInputState GetInputState();
 
     UFUNCTION(BlueprintCallable, Category = "RyuCharacterStatus")
     float GetCharacterStatus(ERyuCharacterStatus Status);
@@ -176,11 +183,16 @@ public:
 
     void PostInitializeComponents() override;
 
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    void ResetMoveRightInput();
+
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     void SetClimbingMode(ERYUClimbingMode ClimbingModeToSet);
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void SetLookRight();
+
+    void SetMoveRightAxisState(ERyuMoveRightAxisInputState RightAxisState);
 
     void StopJumping() override;
 
@@ -205,6 +217,8 @@ protected:
     void InitializeCommands();
 
     void InitInputCounterparts();
+
+	bool CheckCharacterEnumValue();
 
 public:
     /** Camera boom positioning the camera beside the character */
@@ -304,4 +318,8 @@ private:
     float TreshholdYWalkRun;
 
     FInputCounterparts* PressedState;
+
+    ERyuMoveRightAxisInputState MoveRightAxisState;
+
+	bool bHandleInput = false;
 };

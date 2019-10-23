@@ -51,9 +51,7 @@ public:
 
     bool GetSneakActive();
 
-    UFUNCTION(BlueprintCallable, Category = "Movement")
-    void ResetMoveRightInput();
-
+    
 protected:
     // really protected ?
     void BeginPlay() override;
@@ -93,11 +91,6 @@ protected:
 
     void UpdateCharacter();
 
-    UPROPERTY(VisibleAnywhere, Category = "Components")
-    URyuTimelineComponent* RyuTimelineComponent;
-
-    URyuClimbingComponent* RyuClimbingComponent;
-
 private:
     void InitializeCharacterValues();
 
@@ -105,6 +98,12 @@ private:
 
 public:
     // most need to be moved in components
+
+protected:
+    UPROPERTY(VisibleAnywhere, Category = "Components")
+    URyuTimelineComponent* RyuTimelineComponent;
+
+    URyuClimbingComponent* RyuClimbingComponent;
 
 private:
     float fDeltaSeconds;
@@ -116,6 +115,4 @@ private:
     bool bSneakIsPressed;
 
     float SneakMultiplierValue;
-
-    ERyuMoveRightAxisInputState MoveRightAxisState;
 };

@@ -45,6 +45,7 @@ ARyuBaseCharacter::ARyuBaseCharacter(const class FObjectInitializer& ObjectIniti
         ACharacter::CharacterMovementComponentName))
 {
     PrimaryActorTick.bCanEverTick = true;
+    //PrimaryActorTick.TickInterval = 0.05f;
 
     // Create a camera boom attached to the root (capsule)
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -79,6 +80,14 @@ ARyuBaseCharacter::ARyuBaseCharacter(const class FObjectInitializer& ObjectIniti
 void ARyuBaseCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+
+    if ((CharacterState != nullptr) && (CheckCharacterEnumValue())
+        && (CharacterState->GetInputPressedState() != ERyuInputState::None))
+    {
+        CharacterState->Update(this);
+    }
+
+    // UE_LOG(LogRyu, Log, TEXT("TickIntervall@BaseChar: %f"), this->PrimaryActorTick.TickInterval);
 }
 
 void ARyuBaseCharacter::AddCurrentInputState(ERyuInputState InputStateToAdd)
@@ -89,7 +98,6 @@ void ARyuBaseCharacter::AddCurrentInputState(ERyuInputState InputStateToAdd)
 void ARyuBaseCharacter::CheckCurrentInputState(
     ERyuInputState InputState, ERyuButtonType ButtonType /* = ERyuButtonType::None */)
 {
-    // PressButton
     if (URyuStaticFunctionLibrary::InputStateToString(InputState).Contains(TEXT("Press")))
     {
         AddCurrentInputState(InputState);
@@ -97,10 +105,13 @@ void ARyuBaseCharacter::CheckCurrentInputState(
     // ReleaseButton
     else if (URyuStaticFunctionLibrary::InputStateToString(InputState).Contains(TEXT("Release")))
     {
-        UE_LOG(LogRyu, Warning, TEXT("InpuState: %s"),
-               *URyuStaticFunctionLibrary::InputStateToString(InputState));
-        PressedState = KeyInputCounterpartMap.Find(InputState);
-        RemoveInputeState(PressedState->PressKeyState);
+        if (KeyInputCounterpartMap[InputState].ButtonType == ERyuButtonType::Axis)
+        {
+            UE_LOG(LogRyu, Warning, TEXT("InpuState: %s"),
+                   *URyuStaticFunctionLibrary::InputStateToString(InputState));
+            PressedState = KeyInputCounterpartMap.Find(InputState);
+            RemoveInputeState(PressedState->PressKeyState);
+        }
 
         //         if (KeyInputCounterpartMap.Contains(InputState)
         //             && KeyInputCounterpartMap[InputState].ButtonType
@@ -114,6 +125,11 @@ void ARyuBaseCharacter::CheckCurrentInputState(
 void ARyuBaseCharacter::RemoveInputeState(ERyuInputState InputStateToRemove)
 {
     CurrentInputs.Remove(InputStateToRemove);
+}
+
+void ARyuBaseCharacter::ResetMoveRightInput()
+{
+    MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
 }
 
 void ARyuBaseCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence)
@@ -433,8 +449,35 @@ ERyuLookDirection ARyuBaseCharacter::GetLookDirection()
     return LookDirection;
 }
 
+ERyuMoveRightAxisInputState ARyuBaseCharacter::GetMoveRightAxisState()
+{
+    return MoveRightAxisState;
+}
+
 void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
 {
+    bHandleInput = true;
+
+    if (Input == ERyuInputState::PressLeft)
+    {
+        MoveRightAxisState = ERyuMoveRightAxisInputState::PressLeftAxisKey;
+    }
+
+    if (Input == ERyuInputState::PressRight)
+    {
+        MoveRightAxisState = ERyuMoveRightAxisInputState::PressRightAxisKey;
+    }
+
+    if ((Input == ERyuInputState::ReleaseLeft) || (Input == ERyuInputState::ReleaseRight))
+    {
+        MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
+    }
+
+    if ((CharacterState == nullptr) || (Input == ERyuInputState::None))
+    {
+        return;
+    }
+
     // save the pressed Input of the current State for other Methods besides HandleIput
     CharacterState->SetInputPressedState(Input);
 
@@ -443,33 +486,37 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
 
     // Mainly due AnimationEndedInput this needs to be implemented here in the BaseClass
     IRyuCharacterState* state = nullptr;
-    if (CharacterState)
+
+    UE_LOG(LogRyu, Error, TEXT("RYUBASE: HANDLEINPUT: %s"),
+           *URyuStaticFunctionLibrary::InputStateToString(Input));
+    //Possible fix for crash ?  Todo check if everyhandleInput returns a NEW State OR the current one! not nullptr !!!
+    state = CharacterState->HandleInput(this, Input);
+
+    if (state == nullptr)
     {
-        state = CharacterState->HandleInput(this, Input);
+        return;
     }
 
-    if (state != nullptr)
-    {
-        // save the pressed Input of the current State to the new state for other Methods besides HandleIput
-        state->SetInputPressedState(Input);
-        UE_LOG(LogRyu, Warning, TEXT("GetCurrentCharState: %s"),
-               *URyuStaticFunctionLibrary::CharacterStateToString(CharacterState->GetState()));
-        UE_LOG(LogRyu, Warning, TEXT("GetInputState: %s"),
-               *URyuStaticFunctionLibrary::InputStateToString(
-                   CharacterState->GetInputPressedState()));
+    // save the pressed Input of the current State to the new state for other Methods besides HandleIput
+    state->SetInputPressedState(Input);
+    UE_LOG(LogRyu, Warning, TEXT("GetCurrentCharState: %s"),
+           *URyuStaticFunctionLibrary::CharacterStateToString(CharacterState->GetState()));
+    UE_LOG(LogRyu, Warning, TEXT("GetInputState: %s"),
+           *URyuStaticFunctionLibrary::InputStateToString(CharacterState->GetInputPressedState()));
 
-        // Call Exit-Action on the old state
-        CharacterState->Exit(this);
-        //EquipmentState->Exit(this);
+    // Call Exit-Action on the old state
+    CharacterState->Exit(this);
+    //EquipmentState->Exit(this);
 
-        // delete old CharacterState;
-        CharacterState = state;
-        //EquipmentState = state;
+    // delete old CharacterState;
+    CharacterState = state;
+    //EquipmentState = state;
 
-        // Call the enter Action on the new State
-        CharacterState->Enter(this);
-        //EquipmentState->Enter(this);
-    }
+    // Call the enter Action on the new State
+    CharacterState->Enter(this);
+    //EquipmentState->Enter(this);
+
+    bHandleInput = false;
 }
 
 void ARyuBaseCharacter::InitializeCommands()
@@ -500,6 +547,22 @@ void ARyuBaseCharacter::InitInputCounterparts()
             FInputCounterparts* data = (FInputCounterparts*)(it.Value);
             KeyInputCounterpartMap.Add(data->ReleaseKeyState, *data);
         }
+    }
+}
+
+bool ARyuBaseCharacter::CheckCharacterEnumValue()
+{
+    if ((CharacterState->GetState() == ERyuCharacterState::Idle)
+        || (CharacterState->GetState() == ERyuCharacterState::JumpForward)
+        || (CharacterState->GetState() == ERyuCharacterState::JumpForwardFast)
+        || (CharacterState->GetState() == ERyuCharacterState::JumpUpward)
+        || (CharacterState->GetState() == ERyuCharacterState::Run))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
@@ -541,9 +604,19 @@ void ARyuBaseCharacter::FlipCharacter()
     CheckOverlapClimbableActors();
 }
 
-ERyuCharacterState ARyuBaseCharacter::GetCharacterState()
+ERyuCharacterState ARyuBaseCharacter::GetCharacterStateEnum()
 {
     return CharacterState->GetState();
+}
+
+IRyuCharacterState* ARyuBaseCharacter::GetCharacterState()
+{
+    return CharacterState;
+}
+
+ERyuInputState ARyuBaseCharacter::GetInputState()
+{
+    return CharacterState->GetInputPressedState();
 }
 
 void ARyuBaseCharacter::BeginPlay()

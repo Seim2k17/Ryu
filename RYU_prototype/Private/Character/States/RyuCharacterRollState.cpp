@@ -32,7 +32,7 @@ IRyuCharacterState* URyuCharacterRollState::HandleInput(ARyuBaseCharacter* Chara
         }
         default:
         {
-            return nullptr;
+            return this;
             break;
         }
     }

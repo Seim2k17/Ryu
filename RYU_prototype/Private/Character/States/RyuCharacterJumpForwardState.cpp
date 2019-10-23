@@ -32,7 +32,16 @@ void URyuCharacterJumpForwardState::Enter(ARyuBaseCharacter* Character)
         case ERyuMovementState::Sprinting:
         case ERyuMovementState::Running:
         {
-            CharacterState = ERyuCharacterState::JumpForwardFast;
+			// TODO Make it UPROPERTY() for Polish
+            if (FMath::Abs(Character->GetVelocity().X) > 500)
+            {
+                CharacterState = ERyuCharacterState::JumpForwardFast;
+            }
+            else
+            {
+                CharacterState = ERyuCharacterState::JumpForward;
+            }
+
             break;
         }
         case ERyuMovementState::Standing:

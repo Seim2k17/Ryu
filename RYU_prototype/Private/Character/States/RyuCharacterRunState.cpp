@@ -56,6 +56,7 @@ IRyuCharacterState* URyuCharacterRunState::HandleInput(ARyuBaseCharacter* Charac
         }
         default:
         {
+            UE_LOG(LogRyu, Log, TEXT("DEFAULT@RUNSTATE."));
             return Super::HandleInput(Character, Input);
             break;
         }
@@ -76,13 +77,14 @@ void URyuCharacterRunState::Update(ARyuBaseCharacter* Character)
     if (auto* MainChar = Cast<ARyuMainCharacter>(Character))
     {
         float MoveRightInput = MainChar->GetMoveRightInput();
+        UE_LOG(LogRyu, Log, TEXT("AddMovementInput: %f"), MoveRightInput);
         MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput);
     }
 }
 
 void URyuCharacterRunState::Enter(ARyuBaseCharacter* Character)
 {
-    UE_LOG(LogRyu, Log, TEXT("InputState: %s"),
+    UE_LOG(LogRyu, Log, TEXT("CharRunState::Enter() InputState: %s"),
            *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
     Super::FlipCharacter(Character);
 

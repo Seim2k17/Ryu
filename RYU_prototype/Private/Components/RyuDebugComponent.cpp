@@ -1,11 +1,15 @@
 // Copyright 2019 80k Games, All Rights Reserved.
 
 #include "RyuDebugComponent.h"
-#include "Enums/ERyuCharacterState.h"
 #include "Character/RYU2DENUM_Movement.h"
 #include "Character/RyuMainCharacter.h"
 #include "Components/RyuClimbingComponent.h"
+#include "Enums/ERyuCharacterState.h"
+#include "Enums/ERyuInputState.h"
+#include "Enums/ERyuMoveRightAxisInputState.h"
 #include "Utilities/RyuStaticFunctionLibrary.h"
+//#include <Runtime/Engine/Classes/Engine/Engine.h>
+#include <Engine/Engine.h>
 
 URyuDebugComponent::URyuDebugComponent()
 {
@@ -14,8 +18,8 @@ URyuDebugComponent::URyuDebugComponent()
 
 void URyuDebugComponent::BeginPlay()
 {
-	Super::BeginPlay();
-	UE_LOG(LogRyu, Log, TEXT("Debug active."));
+    Super::BeginPlay();
+    UE_LOG(LogRyu, Log, TEXT("Debug active."));
 }
 
 void URyuDebugComponent::DrawDebugInfosOnScreen()
@@ -51,28 +55,44 @@ void URyuDebugComponent::DrawDebugInfosOnScreen()
                             CharOwner->bJumpJustStarted ? TEXT("true") : TEXT("false"), false));
     }
 
-    FString MoveMode;
+    FString CharStateMode;
     FString ClimbMode;
 
     if (CharOwner == nullptr)
     {
         return;
     }
-	ERyuCharacterState CharState = CharOwner->GetCharacterState();
+    ERyuCharacterState CharState = CharOwner->GetCharacterStateEnum();
 
-	MoveMode = URyuStaticFunctionLibrary::CharacterStateToString(CharState);
+    CharStateMode = URyuStaticFunctionLibrary::CharacterStateToString(CharState);
 
-	GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red,
-		FString::Printf(TEXT("Movement: %s"), *MoveMode), false);
+    ERyuInputState LastInputpressed = CharOwner->GetInputState();
 
-	auto* ClimbingComp = GetOwner()->FindComponentByClass<URyuClimbingComponent>();
+    ERyuMoveRightAxisInputState RightAxisInput = CharOwner->GetMoveRightAxisState();
+
+    GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red,
+                                     FString::Printf(TEXT("CharStateMode: %s"), *CharStateMode), false);
+
+    auto* ClimbingComp = GetOwner()->FindComponentByClass<URyuClimbingComponent>();
+
+    GEngine->AddOnScreenDebugMessage(
+        -1, 0.0f, FColor::Red,
+        FString::Printf(TEXT("MoveRightAxisState: %s"),
+                        *URyuStaticFunctionLibrary::RightAxisInputStateToString(RightAxisInput)),
+        false);
+
+    GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red,
+                                     FString::Printf(TEXT("Inputpressed: %s"),
+                                                     *URyuStaticFunctionLibrary::InputStateToString(
+                                                         LastInputpressed)),
+                                     false);
 
     if (ClimbingComp == nullptr)
     {
         return;
     }
 
-	/* TODO for Climbing
+    /* TODO for Climbing
 	ClimbMode = URyuStaticFunctionLibrary::CharacterStateToString(CharState);
 
     switch (ClimbingComp->GetClimbingState())
@@ -131,17 +151,18 @@ void URyuDebugComponent::OutputCapsuleOverlappedComponents(
     }
 }
 
-
 void URyuDebugComponent::InitDebugValues()
 {
-    if (bActivated)
-    {
-        PrimaryComponentTick.bCanEverTick = true;
-    }
-    else
-    {
-        PrimaryComponentTick.bCanEverTick = false;
-    }
+    PrimaryComponentTick.bCanEverTick = true;
+
+    //     if (bActivated)
+    //     {
+    //         PrimaryComponentTick.bCanEverTick = true;
+    //     }
+    //     else
+    //     {
+    //         PrimaryComponentTick.bCanEverTick = false;
+    //     }
 }
 
 void URyuDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -153,6 +174,6 @@ void URyuDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void URyuDebugComponent::PostEditChangePropertyFromOwner()
 {
-	UE_LOG(LogRyu, Log, TEXT("Debug Values changed."));
+    UE_LOG(LogRyu, Log, TEXT("Debug Values changed."));
     InitDebugValues();
 }

@@ -28,11 +28,13 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
         case ERyuInputState::AnimationEnded:
         {
             return InputAnimationEnded(Character); //InputAnimationEnde(Character);
-			break;
+            break;
         }
         default:
         {
-            return nullptr;
+            // ueberall checken return this (for current state!) , toll dann bewegt sich der dude garnet und die Ani haengt
+            // TODO: bug here return Character->GetCharacterState(); // this;
+			return nullptr;
             break;
         }
     }
@@ -96,17 +98,19 @@ IRyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
 
 IRyuCharacterState* URyuCharacterOnGroundState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
-    switch (Character->GetCharacterState())
+    switch (Character->GetCharacterStateEnum())
     {
         case ERyuCharacterState::Roll:
 
         {
             UE_LOG(LogRyu, Log, TEXT("RollAniEnded"));
-			return nullptr;
+            return nullptr;
             break;
         }
         default:
-            return nullptr;
+            // alle überprüfen
+            return Character->GetCharacterState();
+            //return nullptr;
             break;
     }
 }

@@ -22,7 +22,8 @@ IRyuCharacterState* URyuCharacterAttackState::HandleInput(ARyuBaseCharacter* Cha
         }
         default:
         {
-            return nullptr;
+			// Character->GetCharacterState()
+            return this;
             break;
         }
     }
@@ -35,5 +36,7 @@ void URyuCharacterAttackState::Update(ARyuBaseCharacter* Character)
 IRyuCharacterState* URyuCharacterAttackState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
 	// TODO add app AnimationEndedKram
-    return nullptr;
+	// Character->GetCharacterState()
+	return this;
+    //return nullptr;
 }

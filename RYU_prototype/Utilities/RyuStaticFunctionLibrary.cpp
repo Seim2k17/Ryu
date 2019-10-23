@@ -3,6 +3,7 @@
 #include "RyuStaticFunctionLibrary.h"
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
+#include "Enums/ERyuMoveRightAxisInputState.h"
 #include "Enums/ERyuMovementState.h"
 #include "RyuMainCharacter.h"
 #include <Components/ActorComponent.h>
@@ -35,4 +36,11 @@ FString URyuStaticFunctionLibrary::InputStateToString(const ERyuInputState State
 FString URyuStaticFunctionLibrary::MovementStateToString(const ERyuMovementState State)
 {
     return EnumToString(TEXT("ERyuMovementState"), State, TEXT("ERyuMovementState::Invalid"));
+}
+
+FString URyuStaticFunctionLibrary::RightAxisInputStateToString(
+    const ERyuMoveRightAxisInputState State)
+{
+    return EnumToString(TEXT("ERyuMoveRightAxisInputState"), State,
+                        TEXT("ERyuMoveRightAxisInputState::Invalid"));
 }

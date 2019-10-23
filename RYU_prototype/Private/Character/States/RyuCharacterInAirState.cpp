@@ -22,7 +22,7 @@ IRyuCharacterState* URyuCharacterInAirState::HandleInput(ARyuBaseCharacter* Char
         }
         default:
         {
-            return nullptr;
+            return Character->GetCharacterState();
             break;
         }
     }
@@ -34,5 +34,5 @@ void URyuCharacterInAirState::Update(ARyuBaseCharacter* Character)
 
 IRyuCharacterState* URyuCharacterInAirState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
-    return nullptr;
+    return Character->GetCharacterState();
 }
