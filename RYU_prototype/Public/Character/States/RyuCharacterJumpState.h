@@ -24,6 +24,31 @@ public:
 
     IRyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character);
 
+    UFUNCTION()
+    virtual ERyuCharacterState GetState()
+    // ERyuCharacterState GetState_Implementation()
+    {
+        return CharacterState;
+    }
+    // Used to get InputState not Just in the HandleInputMethod ! -> but we need to take care that it´s correctlý set !!!
+    UFUNCTION()
+    virtual void SetInputPressedState(ERyuInputState Input)
+    {
+        InputPressed = Input;
+    }
+    UFUNCTION()
+    virtual ERyuInputState GetInputPressedState()
+    {
+        return InputPressed;
+    }
+
 private:
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
+
+protected:
+    UPROPERTY()
+    ERyuCharacterState CharacterState = ERyuCharacterState::JumpUpward;
+
+    UPROPERTY()
+    ERyuInputState InputPressed = ERyuInputState::None;
 };

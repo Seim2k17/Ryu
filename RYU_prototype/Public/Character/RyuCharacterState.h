@@ -50,24 +50,27 @@ public:
     //UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "CharacterState")
     //IRyuCharacterState* GetState();
     //UFUNCTION(BlueprintNati)
-    ERyuCharacterState GetState()
-    // ERyuCharacterState GetState_Implementation()
-    {
-        return CharacterState;
-    }
+	UFUNCTION()
+		virtual ERyuCharacterState GetState() = 0;
+//     {
+//         return ;
+//     }
+
     // Used to get InputState not Just in the HandleInputMethod ! -> but we need to take care that it´s correctlý set !!!
-    void SetInputPressedState(ERyuInputState Input)
+    UFUNCTION()
+    virtual void SetInputPressedState(ERyuInputState Input)
     {
-        InputPressed = Input;
-    }
-    ERyuInputState GetInputPressedState()
-    {
-        return InputPressed;
     }
 
-    IRyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character);
+	UFUNCTION()
+		virtual ERyuInputState GetInputPressedState() = 0;
+//     {
+//         return nullptr;
+//     }
 
-protected:
-    ERyuCharacterState CharacterState = ERyuCharacterState::Idle;
-    ERyuInputState InputPressed = ERyuInputState::None;
+    UFUNCTION()
+    virtual IRyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character)
+    {
+        return nullptr;
+    }
 };
