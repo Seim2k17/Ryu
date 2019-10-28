@@ -7,6 +7,7 @@
 #include "Components/RyuTimelineComponent.h"
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuMovementState.h"
+#include "States/RyuCharacterIdleState.h"
 #include "Utilities/RyuStaticFunctionLibrary.h"
 #include "RYUClimbingActor.h"
 #include "RYU_prototype.h"
@@ -133,6 +134,8 @@ void ARyuMainCharacter::BeginPlay()
         this, &ARyuMainCharacter::HandleSphereColliderBeginOverlap);
     SphereTracer->OnComponentEndOverlap.AddDynamic(
         this, &ARyuMainCharacter::HandleSphereColliderEndOverlap);
+
+    CharacterState = NewObject<URyuCharacterIdleState>();
 }
 
 void ARyuMainCharacter::Tick(float DeltaTime)
@@ -149,11 +152,11 @@ void ARyuMainCharacter::Tick(float DeltaTime)
 
     // UE_LOG(LogRyu, Log, TEXT("TickIntervall@MainChar: %f"), this->PrimaryActorTick.TickInterval);
 
-//     if ((CharacterState != nullptr) && (CharacterState->GetState())
-//         && (CharacterState->GetInputPressedState() != ERyuInputState::None))
-//     {
-//         CharacterState->Update(this);
-//     }
+    //     if ((CharacterState != nullptr) && (CharacterState->GetState())
+    //         && (CharacterState->GetInputPressedState() != ERyuInputState::None))
+    //     {
+    //         CharacterState->Update(this);
+    //     }
 
     //** due its better for complexicity AND clarity we do most of the ABP_Transition_Logic here in c++
     // TODO: integrate this stuff in the new CharacterStateMachine !
