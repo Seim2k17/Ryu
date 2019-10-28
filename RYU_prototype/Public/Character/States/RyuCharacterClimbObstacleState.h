@@ -14,7 +14,8 @@ class RYU_PROTOTYPE_API URyuCharacterClimbObstacleState : public URyuCharacterCl
 public:
     URyuCharacterClimbObstacleState();
 
-    virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
+	// virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
+	virtual URyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
                                             const ERyuInputState Input) override;
     virtual void Update(ARyuBaseCharacter* Character) override;
     virtual void Enter(ARyuBaseCharacter* Character) override;

@@ -4,12 +4,15 @@
 
 #include "Character/RYU2DENUM_ClimbingMode.h"
 #include "Character/RYU2DENUM_Movement.h"
+#include "Character/RYUENUM_LedgePosition.h"
 #include "Enums/ERyuLedgePosition.h"
+//#include "RYUClimbingActor.h"
 #include <CoreMinimal.h>
 #include <Components/ActorComponent.h>
 #include "RyuClimbingComponent.generated.h"
 
 class UBoxComponent;
+class ARYUClimbingActor;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class RYU_PROTOTYPE_API URyuClimbingComponent : public UActorComponent
@@ -43,6 +46,7 @@ public:
 
     void GetOverlappingBoxComponents();
 
+    //UBoxComponent* GetOverlappedClimbingComponent(ERyuLedgePosition LedgePosi);
     UBoxComponent* GetOverlappedClimbingComponent(ERYULedgePosition2D LedgePosi);
 
     UBoxComponent* GetOverlappedClimbingComponent(FName UpOrDown, FName LeftOrRight);

@@ -29,4 +29,5 @@ enum class ERyuCharacterState : uint8
     Close,
     Talk,
     Death,
+	None
 };

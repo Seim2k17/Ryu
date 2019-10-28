@@ -41,11 +41,11 @@ void URyuCharacterIdleState::Exit(ARyuBaseCharacter* Character)
 {
 }
 
-IRyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Character,
                                                         const ERyuInputState Input)
 {
     // only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
-    //     IRyuCharacterState* state = URyuCharacterOnGroundState::HandleInput(Character, Input);
+    //     URyuCharacterState* state = URyuCharacterOnGroundState::HandleInput(Character, Input);
     //     return state;
     switch (Input)
     {
@@ -97,13 +97,13 @@ IRyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Chara
     }
 }
 
-IRyuCharacterState* URyuCharacterIdleState::InputPressAbility(ARyuBaseCharacter* Character)
+URyuCharacterState* URyuCharacterIdleState::InputPressAbility(ARyuBaseCharacter* Character)
 {
     //TODO: which Ability is selected
     return NewObject<URyuCharacterAbilityState>();
 }
 
-IRyuCharacterState* URyuCharacterIdleState::InputPressAttack(ARyuBaseCharacter* Character)
+URyuCharacterState* URyuCharacterIdleState::InputPressAttack(ARyuBaseCharacter* Character)
 {
     if (Character->EnemyInSight())
     {
@@ -112,7 +112,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressAttack(ARyuBaseCharacter* 
     return this;
 }
 
-IRyuCharacterState* URyuCharacterIdleState::InputPressLeftRight(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterIdleState::InputPressLeftRight(ARyuBaseCharacter* Character,
                                                                 const ERyuInputState Input)
 {
     ERyuMovementState CharacterMovement = Character->GetCharacterMovementState();
@@ -135,7 +135,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressLeftRight(ARyuBaseCharacte
     return NewObject<URyuCharacterRunState>();
 }
 
-IRyuCharacterState* URyuCharacterIdleState::InputPressDown(ARyuBaseCharacter* Character)
+URyuCharacterState* URyuCharacterIdleState::InputPressDown(ARyuBaseCharacter* Character)
 {
     // if Climbing is possible we want to climb down
     if (auto* ClimbingComp = Character->FindComponentByClass<URyuClimbingComponent>())
@@ -156,7 +156,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressDown(ARyuBaseCharacter* Ch
     return NewObject<URyuCharacterDuckState>();
 }
 
-IRyuCharacterState* URyuCharacterIdleState::InputPressInteract(ARyuBaseCharacter* Character)
+URyuCharacterState* URyuCharacterIdleState::InputPressInteract(ARyuBaseCharacter* Character)
 {
     ERyuInteractionStatus InteractStatus = Character->GetInteractionStatus();
     switch (InteractStatus)
@@ -189,7 +189,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressInteract(ARyuBaseCharacter
     }
 }
 
-IRyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Character)
+URyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Character)
 {
     UE_LOG(LogRyu, Error, TEXT("FromCharIdleState: Inputpressed: %s"),
            *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
@@ -208,7 +208,7 @@ IRyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Ch
     }
 }
 
-IRyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Character)
+URyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Character)
 {
     // if Climbing is possible we want to climb up
     if (auto* ClimbingComp = Character->FindComponentByClass<URyuClimbingComponent>())

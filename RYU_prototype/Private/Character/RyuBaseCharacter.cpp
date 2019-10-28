@@ -485,7 +485,7 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
     CheckCurrentInputState(Input);
 
     // Mainly due AnimationEndedInput this needs to be implemented here in the BaseClass
-    IRyuCharacterState* state = nullptr;
+    URyuCharacterState* state = nullptr;
 
     UE_LOG(LogRyu, Error, TEXT("RYUBASE: HANDLEINPUT: %s"),
            *URyuStaticFunctionLibrary::InputStateToString(Input));
@@ -606,16 +606,26 @@ void ARyuBaseCharacter::FlipCharacter()
 
 ERyuCharacterState ARyuBaseCharacter::GetCharacterStateEnum()
 {
+    if (CharacterState == nullptr)
+    {
+        ERyuCharacterState state = ERyuCharacterState::None;
+        return state;
+    }
     return CharacterState->GetState();
 }
 
-IRyuCharacterState* ARyuBaseCharacter::GetCharacterState()
+URyuCharacterState* ARyuBaseCharacter::GetCharacterState()
 {
     return CharacterState;
 }
 
 ERyuInputState ARyuBaseCharacter::GetInputState()
 {
+    if (CharacterState == nullptr)
+    {
+        ERyuInputState state = ERyuInputState::None;
+        return state;
+    }
     return CharacterState->GetInputPressedState();
 }
 

@@ -19,20 +19,20 @@ public:
 
     // virtual void HandleInput(ARyuBaseCharacter& Character, const EInputEvent Input) override;
 
-    virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
+    virtual URyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
                                             const ERyuInputState Input) override;
     virtual void Update(ARyuBaseCharacter* Character) override;
     virtual void Enter(ARyuBaseCharacter* Character) override;
     virtual void Exit(ARyuBaseCharacter* Character) override;
 
 private:
-    IRyuCharacterState* InputPressLeftRight(ARyuBaseCharacter* Character,
+    URyuCharacterState* InputPressLeftRight(ARyuBaseCharacter* Character,
                                             const ERyuInputState Input);
-    IRyuCharacterState* InputPressDown(ARyuBaseCharacter* Character);
-    IRyuCharacterState* InputPressUp(ARyuBaseCharacter* Character);
-    IRyuCharacterState* InputPressInteract(ARyuBaseCharacter* Character);
-    IRyuCharacterState* InputPressAbility(ARyuBaseCharacter* Character);
-    IRyuCharacterState* InputPressAttack(ARyuBaseCharacter* Character);
-    IRyuCharacterState* InputPressJump(ARyuBaseCharacter* Character);
+    URyuCharacterState* InputPressDown(ARyuBaseCharacter* Character);
+    URyuCharacterState* InputPressUp(ARyuBaseCharacter* Character);
+    URyuCharacterState* InputPressInteract(ARyuBaseCharacter* Character);
+    URyuCharacterState* InputPressAbility(ARyuBaseCharacter* Character);
+    URyuCharacterState* InputPressAttack(ARyuBaseCharacter* Character);
+    URyuCharacterState* InputPressJump(ARyuBaseCharacter* Character);
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
 };

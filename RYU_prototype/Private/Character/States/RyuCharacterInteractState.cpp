@@ -11,7 +11,7 @@ URyuCharacterInteractState::URyuCharacterInteractState()
 {
 }
 
-IRyuCharacterState* URyuCharacterInteractState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterInteractState::HandleInput(ARyuBaseCharacter* Character,
                                                             const ERyuInputState Input)
 {
     // Stuff for every Interaction

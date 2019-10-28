@@ -14,9 +14,8 @@ class RYU_PROTOTYPE_API URyuCharacterCloseState : public URyuCharacterOnGroundSt
 public:
 	URyuCharacterCloseState();
 
-	// virtual void HandleInput(ARyuBaseCharacter& Character, const EInputEvent Input) override;
-
-	virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
+	//virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
+	virtual URyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
 		const ERyuInputState Input) override;
 	virtual void Update(ARyuBaseCharacter* Character) override;
 	virtual void Enter(ARyuBaseCharacter* Character) override;

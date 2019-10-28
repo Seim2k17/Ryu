@@ -11,7 +11,7 @@ URyuCharacterDuckMoveState::URyuCharacterDuckMoveState()
 {
 }
 
-IRyuCharacterState* URyuCharacterDuckMoveState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterDuckMoveState::HandleInput(ARyuBaseCharacter* Character,
                                                             const ERyuInputState Input)
 {
     switch (Input)

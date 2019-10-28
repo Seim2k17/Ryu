@@ -5,41 +5,46 @@
 #include "Character/RyuBaseCharacter.h"
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
-#include "RyuCharacterState.h"
+//#include "RyuCharacterState.h"
 #include "RyuCharacterAttackState.generated.h"
+
+class URyuCharacterState;
 
 UCLASS()
 class RYU_PROTOTYPE_API URyuCharacterAttackState
-    : public UObject
-    , public IRyuCharacterState
+    //: public UObject
+    //, public IRyuCharacterState
+	: public URyuCharacterState
 {
     GENERATED_BODY()
 public:
     URyuCharacterAttackState();
 
-    virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
+    //virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
+	virtual URyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
                                             const ERyuInputState Input) override;
     virtual void Update(ARyuBaseCharacter* Character) override;
 
     virtual void Enter(ARyuBaseCharacter* Character) override{};
     virtual void Exit(ARyuBaseCharacter* Character) override{};
 
-    IRyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character);
+    //IRyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character) override;
+	URyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character) override;
 
-    UFUNCTION()
-    virtual ERyuCharacterState GetState()
+    //UFUNCTION(BlueprintNativeEvent)
+    ERyuCharacterState GetState() override
     // ERyuCharacterState GetState_Implementation()
     {
         return CharacterState;
     }
     // Used to get InputState not Just in the HandleInputMethod ! -> but we need to take care that it´s correctlý set !!!
-    UFUNCTION()
-    virtual void SetInputPressedState(ERyuInputState Input)
+    //UFUNCTION(BlueprintNativeEvent)
+    void SetInputPressedState(ERyuInputState Input) override
     {
         InputPressed = Input;
     }
-    UFUNCTION()
-    virtual ERyuInputState GetInputPressedState()
+    //UFUNCTION(BlueprintNativeEvent)
+    ERyuInputState GetInputPressedState() override
     {
         return InputPressed;
     }

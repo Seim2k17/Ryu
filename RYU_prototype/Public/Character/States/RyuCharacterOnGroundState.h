@@ -10,8 +10,9 @@
 
 UCLASS()
 class RYU_PROTOTYPE_API URyuCharacterOnGroundState
-    : public UObject
-    , public IRyuCharacterState
+    //: public UObject
+    //, public IRyuCharacterState
+    : public URyuCharacterState
 {
     GENERATED_BODY()
 public:
@@ -19,7 +20,8 @@ public:
 
     // virtual void HandleInput(ARyuBaseCharacter& Character, const EInputEvent Input) override;
 
-    virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
+    //virtual URyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
+    virtual URyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
                                             const ERyuInputState Input) override;
     virtual void Update(ARyuBaseCharacter* Character) override;
 
@@ -29,23 +31,24 @@ public:
         InputPressed = ERyuInputState::None;
     };
 
-    UFUNCTION()
-    IRyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character);
+    //UFUNCTION(BlueprintNativeEvent)
+    //URyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character) override;
+    URyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character) override;
 
-    UFUNCTION()
-    virtual ERyuCharacterState GetState()
+    //UFUNCTION(BlueprintNativeEvent)
+    ERyuCharacterState GetState() override
     // ERyuCharacterState GetState_Implementation()
     {
         return CharacterState;
     }
     // Used to get InputState not Just in the HandleInputMethod ! -> but we need to take care that it´s correctlý set !!!
-    UFUNCTION()
-    virtual void SetInputPressedState(ERyuInputState Input)
+    //UFUNCTION(BlueprintNativeEvent)
+    void SetInputPressedState(ERyuInputState Input) override
     {
         InputPressed = Input;
     }
-    UFUNCTION()
-    virtual ERyuInputState GetInputPressedState()
+    //UFUNCTION(BlueprintNativeEvent)
+    ERyuInputState GetInputPressedState() override
     {
         return InputPressed;
     }

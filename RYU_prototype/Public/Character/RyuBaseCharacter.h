@@ -26,7 +26,8 @@ class USphereComponent;
 class UPrimitiveComponent;
 class URyuClimbingComponent;
 class URyuMovementComponent;
-class IRyuCharacterState;
+//class IRyuCharacterState;
+class URyuCharacterState;
 class UPaperZDAnimPlayer;
 class UPaperZDAnimSequence;
 
@@ -117,7 +118,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "RyuCharacterState")
     ERyuCharacterState GetCharacterStateEnum();
 
-	IRyuCharacterState* GetCharacterState();
+	//IRyuCharacterState* GetCharacterState();
+	URyuCharacterState* GetCharacterState();
 
     ERyuMoveRightAxisInputState GetMoveRightAxisState();
 
@@ -280,8 +282,13 @@ protected:
     // TODO make it BP ready for ABP
     // need to find out how to make all of this visible to UBP, guess due Interface reasen it´s not so obvious
     //  error : UPROPERTY pointers cannot be interfaces - did you mean TScriptInterface<IRyuCharacterState>?UPROPERTY(BlueprintReadOnly, Category = "CharacterState")
-    IRyuCharacterState* CharacterState;
-    IRyuCharacterState* EquipmentState;
+	UPROPERTY()
+    //IRyuCharacterState* CharacterState;
+	URyuCharacterState* CharacterState;
+
+	UPROPERTY()
+    //IRyuCharacterState* EquipmentState;
+	URyuCharacterState* EquipmentState;
 
     FTimerHandle AllowReleaseKeyTimerHandle;
 
@@ -323,3 +330,4 @@ private:
 
 	bool bHandleInput = false;
 };
+

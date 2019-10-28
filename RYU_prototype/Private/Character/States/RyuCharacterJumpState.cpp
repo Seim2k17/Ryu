@@ -13,7 +13,7 @@ URyuCharacterJumpState::URyuCharacterJumpState()
 {
 }
 
-IRyuCharacterState* URyuCharacterJumpState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterJumpState::HandleInput(ARyuBaseCharacter* Character,
                                                         const ERyuInputState Input)
 {
     switch (Input)
@@ -54,7 +54,7 @@ void URyuCharacterJumpState::Enter(ARyuBaseCharacter* Character)
     Character->JumpToAnimInstanceNode(Character->JumpNodeName);
 }
 
-IRyuCharacterState* URyuCharacterJumpState::InputAnimationEnded(ARyuBaseCharacter* Character)
+URyuCharacterState* URyuCharacterJumpState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
     switch (Character->GetCharacterStateEnum())
     {

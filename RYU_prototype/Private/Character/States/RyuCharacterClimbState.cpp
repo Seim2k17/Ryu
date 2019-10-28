@@ -11,7 +11,7 @@ URyuCharacterClimbState::URyuCharacterClimbState()
 {
 }
 
-IRyuCharacterState* URyuCharacterClimbState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterClimbState::HandleInput(ARyuBaseCharacter* Character,
                                                          const ERyuInputState Input)
 {
     switch (Input)
@@ -45,7 +45,7 @@ void URyuCharacterClimbState::Exit(ARyuBaseCharacter* Character)
 {
 }
 
-IRyuCharacterState* URyuCharacterClimbState::InputAnimationEnded(ARyuBaseCharacter* Character)
+URyuCharacterState* URyuCharacterClimbState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
     // TODO add app AnimationEndedKram
     return Character->GetCharacterState();

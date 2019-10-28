@@ -9,7 +9,7 @@ URyuCharacterAttackState::URyuCharacterAttackState()
 {
 }
 
-IRyuCharacterState* URyuCharacterAttackState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterAttackState::HandleInput(ARyuBaseCharacter* Character,
                                                           const ERyuInputState Input)
 {
     // TODO: Check which Attack and return appr. AttackState
@@ -33,7 +33,7 @@ void URyuCharacterAttackState::Update(ARyuBaseCharacter* Character)
 {
 }
 
-IRyuCharacterState* URyuCharacterAttackState::InputAnimationEnded(ARyuBaseCharacter* Character)
+URyuCharacterState* URyuCharacterAttackState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
 	// TODO add app AnimationEndedKram
 	// Character->GetCharacterState()

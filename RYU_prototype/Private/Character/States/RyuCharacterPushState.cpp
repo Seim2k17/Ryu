@@ -11,7 +11,7 @@ URyuCharacterPushState::URyuCharacterPushState()
 {
 }
 
-IRyuCharacterState* URyuCharacterPushState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterPushState::HandleInput(ARyuBaseCharacter* Character,
 	const ERyuInputState Input)
 {
 	if (Input == ERyuInputState::PressInteract)

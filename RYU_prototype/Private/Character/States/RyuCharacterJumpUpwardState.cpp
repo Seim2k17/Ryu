@@ -10,7 +10,7 @@ URyuCharacterJumpUpwardState::URyuCharacterJumpUpwardState()
 {
 }
 
-IRyuCharacterState* URyuCharacterJumpUpwardState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterJumpUpwardState::HandleInput(ARyuBaseCharacter* Character,
 	const ERyuInputState Input)
 {
 	// only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy

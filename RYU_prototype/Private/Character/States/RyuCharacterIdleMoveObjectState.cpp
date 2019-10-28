@@ -11,7 +11,7 @@ URyuCharacterIdleMoveObjectState::URyuCharacterIdleMoveObjectState()
 {
 }
 
-IRyuCharacterState* URyuCharacterIdleMoveObjectState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterIdleMoveObjectState::HandleInput(ARyuBaseCharacter* Character,
                                                                   const ERyuInputState Input)
 {
     if (Input == ERyuInputState::PressInteract)

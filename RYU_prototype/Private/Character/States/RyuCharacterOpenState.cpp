@@ -11,7 +11,7 @@ URyuCharacterOpenState::URyuCharacterOpenState()
 {
 }
 
-IRyuCharacterState* URyuCharacterOpenState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterOpenState::HandleInput(ARyuBaseCharacter* Character,
                                                         const ERyuInputState Input)
 {
     if (Input == ERyuInputState::ReleaseDown)

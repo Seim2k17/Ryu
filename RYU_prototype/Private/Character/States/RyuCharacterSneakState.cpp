@@ -13,7 +13,7 @@ URyuCharacterSneakState::URyuCharacterSneakState()
 {
 }
 
-IRyuCharacterState* URyuCharacterSneakState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterSneakState::HandleInput(ARyuBaseCharacter* Character,
                                                          const ERyuInputState Input)
 {
     switch (Input)

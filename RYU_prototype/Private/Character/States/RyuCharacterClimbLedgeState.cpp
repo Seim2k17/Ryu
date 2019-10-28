@@ -9,7 +9,7 @@ URyuCharacterClimbLedgeState::URyuCharacterClimbLedgeState()
 {
 }
 
-IRyuCharacterState* URyuCharacterClimbLedgeState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterClimbLedgeState::HandleInput(ARyuBaseCharacter* Character,
                                                               const ERyuInputState Input)
 {
     // 	switch (Input)

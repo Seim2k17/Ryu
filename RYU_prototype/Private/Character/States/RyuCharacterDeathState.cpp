@@ -11,7 +11,7 @@ URyuCharacterDeathState::URyuCharacterDeathState()
 {
 }
 
-IRyuCharacterState* URyuCharacterDeathState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterDeathState::HandleInput(ARyuBaseCharacter* Character,
 	const ERyuInputState Input)
 {
 // 	if (Input == ERyuInputState::ReleaseDown)

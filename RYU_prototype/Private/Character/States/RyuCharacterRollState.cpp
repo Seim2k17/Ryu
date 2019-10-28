@@ -13,7 +13,7 @@ URyuCharacterRollState::URyuCharacterRollState()
 {
 }
 
-IRyuCharacterState* URyuCharacterRollState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterRollState::HandleInput(ARyuBaseCharacter* Character,
                                                         const ERyuInputState Input)
 {
     switch (Input)

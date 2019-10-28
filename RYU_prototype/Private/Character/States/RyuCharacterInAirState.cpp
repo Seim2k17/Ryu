@@ -10,7 +10,7 @@ URyuCharacterInAirState::URyuCharacterInAirState()
 {
 }
 
-IRyuCharacterState* URyuCharacterInAirState::HandleInput(ARyuBaseCharacter* Character,
+URyuCharacterState* URyuCharacterInAirState::HandleInput(ARyuBaseCharacter* Character,
                                                          const ERyuInputState Input)
 {
     switch (Input)
@@ -32,7 +32,7 @@ void URyuCharacterInAirState::Update(ARyuBaseCharacter* Character)
 {
 }
 
-IRyuCharacterState* URyuCharacterInAirState::InputAnimationEnded(ARyuBaseCharacter* Character)
+URyuCharacterState* URyuCharacterInAirState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
     return Character->GetCharacterState();
 }
