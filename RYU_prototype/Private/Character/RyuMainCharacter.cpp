@@ -186,7 +186,7 @@ void ARyuMainCharacter::Jump()
     if (!bJumpJustStarted)
     {
         UE_LOG(LogRyu, Warning, TEXT("Jump from MainChar called."));
-        //bPressedJump = true;
+        bPressedJump = true;
         bJumpJustStarted = true;
         ARyuBaseCharacter::HandleInput(ERyuInputState::PressJump);
     }
