@@ -51,7 +51,9 @@ public:
 
     bool GetSneakActive();
 
-    
+	UFUNCTION()
+	FHitResult GetHitResult();
+
 protected:
     // really protected ?
     void BeginPlay() override;
@@ -96,8 +98,22 @@ private:
 
     float MoveRightKeyStatus();
 
+    void SetDebuggedCharacter();
+
+	// everyLineTracing Activity from MainChar will be gathered here
+    void StartLineTracing();
+
 public:
     // most need to be moved in components
+
+    UPROPERTY(EditAnywhere, Category = "Debug")
+    bool bLineTracingActive = true;
+
+    UPROPERTY(EditAnywhere, Category = "Debug")
+    bool bLineTracingVisible = true;
+
+    UPROPERTY(EditAnywhere, Category = "Debug")
+    float LengthLineTrace = 100.0f;
 
 protected:
     UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -106,6 +122,15 @@ protected:
     URyuClimbingComponent* RyuClimbingComponent;
 
 private:
+    // LineTracing / DebbugingSection
+    FHitResult JumpHitResult;
+    FVector TraceStart;
+    FVector TraceEnd;
+    FCollisionQueryParams CollisionParams;
+    FName TraceTag;
+    TArray<AActor*> IgnoredActors;
+    UWorld* TheWorld;
+
     float fDeltaSeconds;
 
     float MoveRightInput;

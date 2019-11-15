@@ -12,6 +12,7 @@
 #include "RYUClimbingActor.h"
 #include "RYU_prototype.h"
 #include "RyuCharacterState.h"
+#include <DrawDebugHelpers.h>
 #include <PaperFlipbookComponent.h>
 #include <Camera/CameraComponent.h>
 #include <Components/ArrowComponent.h>
@@ -21,6 +22,7 @@
 #include <Curves/CurveVector.h>
 #include <GameFramework/Character.h>
 #include <GameFramework/SpringArmComponent.h>
+#include <Kismet/GameplayStatics.h>
 #include <PaperZD/Public/AnimSequences/Players/PaperZDAnimPlayer.h>
 #include <PaperZD/Public/PaperZDAnimBP.h>
 #include <PaperZD/Public/PaperZDAnimInstance.h>
@@ -54,6 +56,11 @@ void ARyuMainCharacter::PostEditChangeProperty(FPropertyChangedEvent& PropertyCh
     if (auto* DebugComp = FindComponentByClass<URyuDebugComponent>())
     {
         DebugComp->PostEditChangePropertyFromOwner();
+    }
+
+    if (bLineTracingActive)
+    {
+        SetDebuggedCharacter();
     }
 }
 #endif
@@ -123,6 +130,35 @@ float ARyuMainCharacter::MoveRightKeyStatus()
     return 0;
 }
 
+void ARyuMainCharacter::SetDebuggedCharacter()
+{
+    TraceStart = this->GetActorLocation();
+    TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
+    IgnoredActors.Add(this);
+    TraceTag = TEXT("Debug");
+    CollisionParams.AddIgnoredActors(IgnoredActors);
+    CollisionParams.bTraceComplex = true;
+    CollisionParams.TraceTag = TraceTag;
+
+    TheWorld = GetWorld();
+}
+
+void ARyuMainCharacter::StartLineTracing()
+{
+	
+    // DrawDebugSphere(TheWorld, GetActorLocation(), 10.0f, 10, FColor::Red, false, 1.f, 0, 2.f);
+    TraceStart = this->GetActorLocation();
+    TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
+
+    TheWorld->LineTraceSingleByChannel(JumpHitResult, TraceStart, TraceEnd,
+                                       ECollisionChannel::ECC_Visibility, CollisionParams);
+
+    if (bLineTracingVisible)
+    {
+        DrawDebugLine(TheWorld, TraceStart, TraceEnd, FColor::Red, false, -1.f, 0, 2.0f);
+    }
+}
+
 void ARyuMainCharacter::BeginPlay()
 {
     Super::BeginPlay();
@@ -136,6 +172,11 @@ void ARyuMainCharacter::BeginPlay()
         this, &ARyuMainCharacter::HandleSphereColliderEndOverlap);
 
     CharacterState = NewObject<URyuCharacterIdleState>();
+
+    if (bLineTracingActive)
+    {
+        SetDebuggedCharacter();
+    }
 }
 
 void ARyuMainCharacter::Tick(float DeltaTime)
@@ -162,6 +203,11 @@ void ARyuMainCharacter::Tick(float DeltaTime)
     // TODO: integrate this stuff in the new CharacterStateMachine !
 
     //UpdateCharacter();a
+
+    if (bLineTracingActive)
+    {
+        StartLineTracing();
+    }
 }
 
 //TODO Movecompletely to BaseCharacter when everythings works
@@ -536,6 +582,11 @@ float ARyuMainCharacter::GetMoveUpInput()
 bool ARyuMainCharacter::GetSneakActive()
 {
     return bSneakIsPressed;
+}
+
+FHitResult ARyuMainCharacter::GetHitResult()
+{
+	return JumpHitResult;
 }
 
 void ARyuMainCharacter::SneakPressed()

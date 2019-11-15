@@ -19,6 +19,7 @@ URyuCharacterState* URyuCharacterJumpUpwardState::HandleInput(ARyuBaseCharacter*
 
 void URyuCharacterJumpUpwardState::Update(ARyuBaseCharacter* Character)
 {
+	Super::Update(Character);
 }
 
 void URyuCharacterJumpUpwardState::Enter(ARyuBaseCharacter* Character)

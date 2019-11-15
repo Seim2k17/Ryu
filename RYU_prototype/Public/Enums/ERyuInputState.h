@@ -16,6 +16,7 @@ enum class ERyuInputState : uint8
     PressLeft,
     ReleaseLeft,
     PressJump,
+	InputEndJump,
     ReleaseJump,
     PressJumpUp,
     ReleaseJumpUp,

@@ -4,8 +4,8 @@
 
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
-#include "Enums/ERyuMovementState.h"
 #include "Enums/ERyuMoveRightAxisInputState.h"
+#include "Enums/ERyuMovementState.h"
 #include "RyuStaticFunctionLibrary.generated.h"
 
 class ARyuMainCharacter;

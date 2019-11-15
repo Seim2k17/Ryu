@@ -19,6 +19,7 @@ URyuCharacterState* URyuCharacterJumpBackwardState::HandleInput(ARyuBaseCharacte
 
 void URyuCharacterJumpBackwardState::Update(ARyuBaseCharacter* Character)
 {
+	Super::Update(Character);
 }
 
 void URyuCharacterJumpBackwardState::Enter(ARyuBaseCharacter* Character)
