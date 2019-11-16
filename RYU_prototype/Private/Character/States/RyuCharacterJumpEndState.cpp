@@ -6,6 +6,7 @@
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterIdleState.h"
 #include "RyuCharacterJumpEndState.h"
+#include "RyuMainCharacter.h"
 
 URyuCharacterJumpEndState::URyuCharacterJumpEndState()
 {
@@ -17,6 +18,7 @@ URyuCharacterState* URyuCharacterJumpEndState::HandleInput(ARyuBaseCharacter* Ch
     switch (Input)
     {
         case ERyuInputState::AnimationEnded:
+        case ERyuInputState::InputEndJump:
         {
             return NewObject<URyuCharacterIdleState>();
         }
@@ -34,7 +36,9 @@ void URyuCharacterJumpEndState::Enter(ARyuBaseCharacter* Character)
 {
     Super::Enter(Character);
     CharacterState = ERyuCharacterState::JumpEnd;
-    // Set JumpGraphics/Sound or other Asset related stuff / fire a event for the engine / although this is controlled by the UnrealPaperZDStateMachine (2DAssetChanges)
+
+    // start timer for fallback (make sure switching at the end of the JumpEnd back to IDLE)
+    Character->SetEndJumpTimer();
 }
 
 void URyuCharacterJumpEndState::Exit(ARyuBaseCharacter* Character)

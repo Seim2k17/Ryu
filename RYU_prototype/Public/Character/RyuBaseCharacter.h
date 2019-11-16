@@ -26,7 +26,6 @@ class USphereComponent;
 class UPrimitiveComponent;
 class URyuClimbingComponent;
 class URyuMovementComponent;
-//class IRyuCharacterState;
 class URyuCharacterState;
 class UPaperZDAnimPlayer;
 class UPaperZDAnimSequence;
@@ -118,8 +117,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "RyuCharacterState")
     ERyuCharacterState GetCharacterStateEnum();
 
-	//IRyuCharacterState* GetCharacterState();
-	URyuCharacterState* GetCharacterState();
+    //IRyuCharacterState* GetCharacterState();
+    URyuCharacterState* GetCharacterState();
 
     ERyuMoveRightAxisInputState GetMoveRightAxisState();
 
@@ -188,6 +187,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void ResetMoveRightInput();
 
+    UFUNCTION()
+    void ResetEndJumpTimer();
+
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     void SetClimbingMode(ERYUClimbingMode ClimbingModeToSet);
 
@@ -203,6 +205,8 @@ public:
     void SetCharacterMovementState(ERyuMovementState MovementState);
 
     void SetAllowReleaseAxisKey(bool AllowState);
+
+    void SetEndJumpTimer();
 
 protected:
     virtual void BeginPlay() override;
@@ -220,7 +224,7 @@ protected:
 
     void InitInputCounterparts();
 
-	bool CheckCharacterEnumValue();
+    bool CheckCharacterEnumValue();
 
 public:
     /** Camera boom positioning the camera beside the character */
@@ -282,13 +286,13 @@ protected:
     // TODO make it BP ready for ABP
     // need to find out how to make all of this visible to UBP, guess due Interface reasen it´s not so obvious
     //  error : UPROPERTY pointers cannot be interfaces - did you mean TScriptInterface<IRyuCharacterState>?UPROPERTY(BlueprintReadOnly, Category = "CharacterState")
-	UPROPERTY()
+    UPROPERTY()
     //IRyuCharacterState* CharacterState;
-	URyuCharacterState* CharacterState;
+    URyuCharacterState* CharacterState;
 
-	UPROPERTY()
+    UPROPERTY()
     //IRyuCharacterState* EquipmentState;
-	URyuCharacterState* EquipmentState;
+    URyuCharacterState* EquipmentState;
 
     FTimerHandle AllowReleaseKeyTimerHandle;
 
@@ -305,6 +309,9 @@ protected:
     // linked Datatable with KeyCounterparts
     UPROPERTY(EditAnywhere, Category = "Input")
     UDataTable* KeyInputCounterpartTable;
+
+    UPROPERTY(EditAnywhere, Category = "Jumping")
+    float TimerEndJump = 0.8f;
 
     // after which time we allow the ReleaseKeyEvent for a certain Axis (ReleaseKey is bad for quick directionChanges)
     float AllowReleaseAxisKeyTime = 0.5f;
@@ -328,6 +335,7 @@ private:
 
     ERyuMoveRightAxisInputState MoveRightAxisState;
 
-	bool bHandleInput = false;
-};
+    bool bHandleInput = false;
 
+    FTimerHandle EndJumpTimerHandle;
+};

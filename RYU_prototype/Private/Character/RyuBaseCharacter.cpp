@@ -132,6 +132,14 @@ void ARyuBaseCharacter::ResetMoveRightInput()
     MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
 }
 
+void ARyuBaseCharacter::ResetEndJumpTimer()
+{
+    // pass in link to Character from Timer to reset State !!!
+    UE_LOG(LogRyu, Log, TEXT("TimerReset."));
+    HandleInput(ERyuInputState::InputEndJump);
+    GetWorld()->GetTimerManager().ClearTimer(EndJumpTimerHandle);
+}
+
 void ARyuBaseCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence)
 {
     UE_LOG(LogTemp, Warning, TEXT("Finally AnimEnded called from code."));
@@ -563,6 +571,16 @@ bool ARyuBaseCharacter::CheckCharacterEnumValue()
     else
     {
         return false;
+    }
+}
+
+void ARyuBaseCharacter::SetEndJumpTimer()
+{
+    if (GetWorld()->GetTimerManager().IsTimerActive(EndJumpTimerHandle) == false)
+    {
+        GetWorld()->GetTimerManager().SetTimer(EndJumpTimerHandle, this,
+                                               &ARyuBaseCharacter::ResetEndJumpTimer, TimerEndJump,
+                                               false);
     }
 }
 

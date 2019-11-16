@@ -10,18 +10,19 @@
 UCLASS()
 class RYU_PROTOTYPE_API URyuCharacterJumpEndState : public URyuCharacterJumpState
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 public:
-	URyuCharacterJumpEndState();
+    URyuCharacterJumpEndState();
 
-	// virtual void HandleInput(ARyuBaseCharacter& Character, const EInputEvent Input) override;
+    // virtual void HandleInput(ARyuBaseCharacter& Character, const EInputEvent Input) override;
 
-	virtual URyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
-		const ERyuInputState Input) override;
-	virtual void Update(ARyuBaseCharacter* Character) override;
-	virtual void Enter(ARyuBaseCharacter* Character) override;
-	virtual void Exit(ARyuBaseCharacter* Character) override;
+    virtual URyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
+                                            const ERyuInputState Input) override;
+    virtual void Update(ARyuBaseCharacter* Character) override;
+    virtual void Enter(ARyuBaseCharacter* Character) override;
+    virtual void Exit(ARyuBaseCharacter* Character) override;
 
 private:
-	// TODO here we can include Stuff which is only related to this state (e.g. charging Times)
+    // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
+
 };
