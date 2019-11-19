@@ -20,7 +20,7 @@ URyuCharacterState* URyuCharacterJumpEndState::HandleInput(ARyuBaseCharacter* Ch
         case ERyuInputState::AnimationEnded:
         case ERyuInputState::InputEndJump:
         {
-            return NewObject<URyuCharacterIdleState>();
+			return NewObject<URyuCharacterIdleState>();
         }
     }
     // only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
@@ -43,4 +43,6 @@ void URyuCharacterJumpEndState::Enter(ARyuBaseCharacter* Character)
 
 void URyuCharacterJumpEndState::Exit(ARyuBaseCharacter* Character)
 {
+	 Super::Exit(Character);
+	 //CharacterState = ERyuCharacterState::None;
 }

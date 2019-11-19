@@ -76,40 +76,40 @@ void URyuCharacterJumpState::Enter(ARyuBaseCharacter* Character)
 
 URyuCharacterState* URyuCharacterJumpState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
-    if (!Character->GetCharacterMovement()->IsFalling())
-    {
-        switch (Character->GetCharacterStateEnum())
-        {
-            case ERyuCharacterState::JumpUpward:
-            case ERyuCharacterState::JumpBackward:
-            case ERyuCharacterState::JumpForward:
-            {
-                //
-                return NewObject<URyuCharacterIdleState>();
-                break;
-            }
-            case ERyuCharacterState::JumpForwardFast:
-            {
-                if ((Character->FindCurrentInputState(ERyuInputState::PressLeft) == true)
-                    || (Character->FindCurrentInputState(ERyuInputState::PressRight)) == true)
-                {
-                    return NewObject<URyuCharacterRunState>();
-                }
-                else
-                {
-                    return NewObject<URyuCharacterIdleState>();
-                }
-
-                break;
-            }
-
-            default:
-            {
-                return Character->GetCharacterState();
-                break;
-            }
-        }
-    }
+    //     if (!Character->GetCharacterMovement()->IsFalling())
+    //     {
+    //         switch (Character->GetCharacterStateEnum())
+    //         {
+    //             case ERyuCharacterState::JumpUpward:
+    //             case ERyuCharacterState::JumpBackward:
+    //             case ERyuCharacterState::JumpForward:
+    //             {
+    //                 //
+    //                 return NewObject<URyuCharacterIdleState>();
+    //                 break;
+    //             }
+    //             case ERyuCharacterState::JumpForwardFast:
+    //             {
+    //                 if ((Character->FindCurrentInputState(ERyuInputState::PressLeft) == true)
+    //                     || (Character->FindCurrentInputState(ERyuInputState::PressRight)) == true)
+    //                 {
+    //                     return NewObject<URyuCharacterRunState>();
+    //                 }
+    //                 else
+    //                 {
+    //                     return NewObject<URyuCharacterIdleState>();
+    //                 }
+    //
+    //                 break;
+    //             }
+    //
+    //             default:
+    //             {
+    //                 return Character->GetCharacterState();
+    //                 break;
+    //             }
+    //         }
+    //     }
 
     return Character->GetCharacterState();
 }

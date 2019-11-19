@@ -55,7 +55,7 @@ void URyuCharacterJumpForwardState::Enter(ARyuBaseCharacter* Character)
     if (auto* RyuMovementComponent = Character->FindComponentByClass<URyuMovementComponent>())
     {
         UE_LOG(LogRyu, Warning, TEXT("Call JumpForward from MovementComponent."));
-        RyuMovementComponent->JumpForward();
+        //RyuMovementComponent->JumpForward();
     }
 
     // Set JumpGraphics/Sound or other Asset related stuff / fire a event for the engine / although this is controlled by the UnrealPaperZDStateMachine (2DAssetChanges)

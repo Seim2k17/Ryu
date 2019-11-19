@@ -516,7 +516,8 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
     CharacterState->Exit(this);
     //EquipmentState->Exit(this);
 
-    // delete old CharacterState;
+	// we really need to delete NewObjects<OLDSTATE> or mark for GC, otherwise MemoryLeak ?
+	// delete old CharacterState;
     CharacterState = state;
     //EquipmentState = state;
 

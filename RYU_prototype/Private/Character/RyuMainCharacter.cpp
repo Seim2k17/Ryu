@@ -149,7 +149,9 @@ void ARyuMainCharacter::StartLineTracing()
     // DrawDebugSphere(TheWorld, GetActorLocation(), 10.0f, 10, FColor::Red, false, 1.f, 0, 2.f);
     TraceStart = this->GetActorLocation();
     TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
+	//TraceEnd = TraceStart - (LengthLineTrace * (-1.f) * this->GetActorForwardVector());
 
+	// TODO: set own CollisionChannel to LineTrace! -> but BSPs can´t have one so for testing we NEED to See the the BSP-Geometry and tht the CollChannel to Visibility !
     TheWorld->LineTraceSingleByChannel(JumpHitResult, TraceStart, TraceEnd,
                                        ECollisionChannel::ECC_Visibility, CollisionParams);
 
@@ -234,6 +236,7 @@ void ARyuMainCharacter::Jump()
         UE_LOG(LogRyu, Warning, TEXT("Jump from MainChar called."));
         bPressedJump = true;
         bJumpJustStarted = true;
+		// just for testing deactivate JumpCSM, to recheck if everything BASIC works!
         ARyuBaseCharacter::HandleInput(ERyuInputState::PressJump);
     }
 }

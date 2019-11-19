@@ -77,7 +77,7 @@ void URyuCharacterRunState::Update(ARyuBaseCharacter* Character)
     if (auto* MainChar = Cast<ARyuMainCharacter>(Character))
     {
         float MoveRightInput = MainChar->GetMoveRightInput();
-        UE_LOG(LogRyu, Log, TEXT("AddMovementInput: %f"), MoveRightInput);
+        // UE_LOG(LogRyu, Log, TEXT("AddMovementInput: %f"), MoveRightInput);
         MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput);
     }
 }
