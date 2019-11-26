@@ -24,31 +24,35 @@ public:
 
     URyuMovementComponent(const class FObjectInitializer& ObjectInitializer);
 
-    UFUNCTION(BlueprintCallable, Category = "CharacterMovement")
-    void SetGravityScaleMaximum(float GravScale);
+    UFUNCTION(BlueprintCallable)
+    void ClimbDownLedgeFinished();
 
     bool DoJump(bool bReplayingMoves) override;
-
-    UFUNCTION(BlueprintCallable, Category = "Climbing")
-    void ResetClimbingState();
-
-    UFUNCTION()
-    void SetNormalMaxJumpCount(int32 MaxJumps);
 
     UFUNCTION()
     int32 GetNormalMaxJumpCount();
 
-    UFUNCTION(BlueprintCallable)
-    void ClimbDownLedgeFinished();
-
-    UFUNCTION(BlueprintCallable, Category = "Movement")
-    void SetNoCollisionCharacterPrefs();
-
     float GetSneakMultiplier();
+
+    void IncreaseFallingVelocity();
 
     void JumpForward();
 
     void JumpUp();
+
+    UFUNCTION(BlueprintCallable, Category = "Climbing")
+    void ResetClimbingState();
+
+    UFUNCTION(BlueprintCallable, Category = "CharacterMovement")
+    void SetGravityScaleMaximum(float GravScale);
+
+    UFUNCTION()
+    void SetNormalMaxJumpCount(int32 MaxJumps);
+
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    void SetNoCollisionCharacterPrefs();
+
+	void SetVelocityAfterJump(FJumpStartValues AfterJumpValues);
 
 protected:
     // Called when the game starts
@@ -73,7 +77,7 @@ protected:
     UFUNCTION()
     void SetAllowClimbUpFalse();
 
-    UFUNCTION(BlueprintCallable, Category = "Jumping")
+	UFUNCTION(BlueprintCallable, Category = "Jumping")
     void StartLaunchCharacter();
 
     void ResetDoOnceClimbInput();
@@ -84,7 +88,7 @@ protected:
 
     // TODO MovementData separate from InputData / take care to NOT mix them
 public:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Falling")
     float AddFallingMultiplierNumber;
 
     /**if 0 then Char->GravityMaximumStd (3) is used*/
@@ -92,17 +96,17 @@ public:
     float GravityScaleMaximum;
 
     /** Jump Force added when pressing Jump from Stand (V(y) == 0*/
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
+    UPROPERTY(VisibleAnywhere, Category = "Character Movement (Customization)")
     FVector JumpForce;
 
     /** Jump Force added when pressing Jump while Running*/
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
+    UPROPERTY(VisibleAnywhere, Category = "Character Movement (Customization)")
     FVector JumpForceRun;
 
-    UPROPERTY(EditAnywhere, Category = "Jumping")
+    UPROPERTY(VisibleAnywhere, Category = "Jumping")
     FVector JumpImpulse = FVector::ZeroVector;
 
-    UPROPERTY(EditAnywhere, Category = "Jumping")
+    UPROPERTY(VisibleAnywhere, Category = "Jumping")
     FVector JumpUpImpulse = FVector::ZeroVector;
 
     /**Treshhold to activate VelocityAfterJumping, Y: vertical Velocity, Z: Falling Treshold */
@@ -120,6 +124,21 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
     bool CoyoteTimeActive;
 
+    /*
+	Time after a complete Jump is resetted to IDLE-State, this is a Fallback and can also be used for a short pause after landing. The Timer Should not be shorter than the JumpEnd-Animation !
+	*/
+    UPROPERTY(EditAnywhere, Category = "Jumping")
+    float TimerEndJump = 0.3f;
+
+    /*
+	Time after which Velocity of the falling Character is increased by AddFallingMultiplierNumber * CurrentVelocity
+	*/
+    UPROPERTY(EditAnywhere, Category = "Falling")
+    float FallingVelocityTimer = 0.05;
+
+    UPROPERTY(EditAnywhere, Category = "Falling")
+    float MaximumVelocityZ = -1500.f;
+
     FTimerHandle Timerhandle_CoyoteTime;
 
     UPROPERTY(BlueprintAssignable, Category = "Climbing")
@@ -132,7 +151,7 @@ public:
     FVector ClimbDownStartPosition;
 
     // How far will the character jump?
-    UPROPERTY(EditAnywhere)
+    UPROPERTY(VisibleAnywhere)
     float JumpForwardDistance = 50.0f;
 
     UPROPERTY(EditAnywhere, Category = "Sneak")

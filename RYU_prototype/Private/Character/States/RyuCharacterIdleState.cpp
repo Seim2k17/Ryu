@@ -30,7 +30,7 @@ URyuCharacterIdleState::URyuCharacterIdleState()
 
 void URyuCharacterIdleState::Enter(ARyuBaseCharacter* Character)
 {
-	InputPressed = ERyuInputState::None;
+    InputPressed = ERyuInputState::None;
     CharacterState = ERyuCharacterState::Idle;
     //TODO: is it a bit reduntant (for JumpingForwardStates....) we can use the normal state instead or not ?
     Character->SetCharacterMovementState(ERyuMovementState::Standing);
@@ -230,9 +230,21 @@ void URyuCharacterIdleState::Update(ARyuBaseCharacter* Character)
 {
     // LOG(LogRyu, Log, TEXT("Idle-State Updating."));
     // check if MoveRightLeft is still pressed, when entering this State:
-    /* DO WE NEED TO CALL THIS IN UPDATE ??? -> everytime HandleInput os called A new State is created !!! -> unnecessa. StateDestroy & Creation (it´s the same State each frame!)
-	if (auto MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
+    // DO WE NEED TO CALL THIS IN UPDATE ??? -> everytime HandleInput os called A new State is created !!! -> unnecessa. StateDestroy & Creation (it´s the same State each frame!)
+    if (auto MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
     {
+        switch (MainChar->GetMoveRightAxisState())
+        {
+            case ERyuMoveRightAxisInputState::PressLeftAxisKey:
+            {
+                MainChar->HandleInput(ERyuInputState::PressLeft);
+            }
+            case ERyuMoveRightAxisInputState::PressRightAxisKey:
+            {
+                MainChar->HandleInput(ERyuInputState::PressRight);
+            }
+        }
+        /*
         if (MainChar->GetMoveRightInput() < 0)
         {
             MainChar->HandleInput(ERyuInputState::PressLeft);
@@ -243,6 +255,8 @@ void URyuCharacterIdleState::Update(ARyuBaseCharacter* Character)
             MainChar->HandleInput(ERyuInputState::PressRight);
             return;
         }
+		*/
     }
-	*/
+
+    //return InputPressLeftRight(Character, Input);
 }

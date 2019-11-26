@@ -144,7 +144,13 @@ void URyuCharacterOnGroundState::FlipCharacter(ARyuBaseCharacter* Character)
             break;
         }
         default:
-            UE_LOG(LogRyu, Log, TEXT("Hm. InputState is neither Left or Right."));
+            UE_LOG(LogRyu, Log, TEXT("Hm. InputState is neither Left or Right. Its: %s at speed: %s"),*URyuStaticFunctionLibrary::InputStateToString(InputPressed),*Character->GetCharacterMovement()->Velocity.ToString());
             break;
     }
+}
+
+void URyuCharacterOnGroundState::Enter(ARyuBaseCharacter* Character)
+{
+	UE_LOG(LogRyu, Log, TEXT("OnGround(SuperCall) | Enter: CharacterSpeed: %s "),
+		*Character->GetCharacterMovement()->Velocity.ToString());
 }

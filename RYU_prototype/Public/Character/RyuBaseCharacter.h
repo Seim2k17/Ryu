@@ -60,6 +60,19 @@ public:
     FInputCounterparts(){};
 };
 
+USTRUCT(BlueprintType)
+struct FJumpStartValues
+{
+    GENERATED_USTRUCT_BODY()
+
+public:
+    UPROPERTY(VisibleAnywhere, Category = "Debug")
+    FVector JumpStartAcceleration;
+
+    UPROPERTY(VisibleAnywhere, Category = "Debug")
+    FVector JumpStartVelocity;
+};
+
 /**
 * This class is the default character for Paper2DIntro, and it is responsible for all
 * physical interaction between the player and the world.
@@ -114,15 +127,17 @@ public:
     UFUNCTION(BlueprintCallable, Category = "RyuMovement")
     void FlipCharacter();
 
+    /** Returns CameraBoom subobject **/
+    FORCEINLINE class USpringArmComponent* GetCameraBoom() const
+    {
+        return CameraBoom;
+    }
+
     UFUNCTION(BlueprintCallable, Category = "RyuCharacterState")
     ERyuCharacterState GetCharacterStateEnum();
 
     //IRyuCharacterState* GetCharacterState();
     URyuCharacterState* GetCharacterState();
-
-    ERyuMoveRightAxisInputState GetMoveRightAxisState();
-
-    ERyuInputState GetInputState();
 
     UFUNCTION(BlueprintCallable, Category = "RyuCharacterStatus")
     float GetCharacterStatus(ERyuCharacterStatus Status);
@@ -134,27 +149,27 @@ public:
     UFUNCTION()
     TArray<ERyuInputState> GetCurrentInputStates();
 
+    ERyuMovementState GetCharacterMovementState();
+
+    ERyuInputState GetInputState();
+
     ERyuInteractionStatus GetInteractionStatus();
 
-    ERyuMovementState GetCharacterMovementState();
+    FJumpStartValues GetJumpStartValues();
 
     ERyuLookDirection GetLookDirection();
 
-    bool IsInCombat();
-
-    bool EnemyInSight();
-
-    /** Returns CameraBoom subobject **/
-    FORCEINLINE class USpringArmComponent* GetCameraBoom() const
-    {
-        return CameraBoom;
-    }
+    ERyuMoveRightAxisInputState GetMoveRightAxisState();
 
     /** Returns SideViewCameraComponent subobject **/
     FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const
     {
         return SideViewCameraComponent;
     }
+
+    bool IsInCombat();
+
+    bool EnemyInSight();
 
     virtual void HandleInput(ERyuInputState Input);
 
@@ -190,6 +205,13 @@ public:
     UFUNCTION()
     void ResetEndJumpTimer();
 
+    UFUNCTION()
+    void ResetFallingTimer();
+
+    void ResetJumpStartValues();
+
+    void SaveJumpValues();
+
     UFUNCTION(BlueprintCallable, Category = "RYU Movement")
     void SetClimbingMode(ERYUClimbingMode ClimbingModeToSet);
 
@@ -208,6 +230,10 @@ public:
 
     void SetEndJumpTimer();
 
+    void SetFallingTimer();
+
+    void SetVelocityAfterJump();
+
 protected:
     virtual void BeginPlay() override;
 
@@ -219,6 +245,9 @@ protected:
     // Function which is executed after the AllowReleaseKeyTimer
     UFUNCTION()
     void AllowReleaseKey();
+
+    UFUNCTION()
+    void IncreaseFallingVelocity();
 
     void InitializeCommands();
 
@@ -310,12 +339,12 @@ protected:
     UPROPERTY(EditAnywhere, Category = "Input")
     UDataTable* KeyInputCounterpartTable;
 
-    UPROPERTY(EditAnywhere, Category = "Jumping")
-    float TimerEndJump = 0.8f;
-
     // after which time we allow the ReleaseKeyEvent for a certain Axis (ReleaseKey is bad for quick directionChanges)
     float AllowReleaseAxisKeyTime = 0.5f;
     bool bAllowReleaseAxisKey = true;
+
+    UPROPERTY(VisibleAnywhere, Category = "Debug")
+    FJumpStartValues JumpStartValues;
 
 private:
     // UtilitySection
@@ -338,4 +367,6 @@ private:
     bool bHandleInput = false;
 
     FTimerHandle EndJumpTimerHandle;
+
+    FTimerHandle FallingTimerHandle;
 };

@@ -382,6 +382,15 @@ float URyuMovementComponent::GetSneakMultiplier()
     return SneakMultiplier;
 }
 
+void URyuMovementComponent::IncreaseFallingVelocity()
+{
+    UE_LOG(LogRyu, Warning, TEXT("Falling."));
+    if ((Velocity.Z < 0.0f) && (Velocity.Z >= MaximumVelocityZ))
+    {
+        Velocity.Z += (Velocity.Z * AddFallingMultiplierNumber);
+    }
+}
+
 void URyuMovementComponent::SetAllowClimbUpTrue()
 {
     UE_LOG(LogTemp, Log, TEXT("SetAllowClimbUpTrue(): bAlloClimbing = true"));
@@ -395,6 +404,14 @@ void URyuMovementComponent::SetAllowClimbUpFalse()
 {
     UE_LOG(LogTemp, Log, TEXT("SetAllowClimbUpTrue(): bAlloClimbing = false"));
     bClimbUpAllowed = false;
+}
+
+void URyuMovementComponent::SetVelocityAfterJump(FJumpStartValues AfterJumpValues)
+{
+	UE_LOG(LogRyu,Log,TEXT("SetVelocityAfterJump: %s Acc: %s"),*AfterJumpValues.JumpStartVelocity.ToString(),*AfterJumpValues.JumpStartAcceleration.ToString() )
+	//MaxWalkSpeed = AfterJumpValues.JumpStartVelocity.X;
+	//MaxAcceleration = AfterJumpValues.JumpStartAcceleration.X;
+	UE_LOG(LogRyu,Log,TEXT("VelocityMoveCompAfterJump: %s Acc: %s"),*Velocity.ToString(),*Acceleration.ToString() )
 }
 
 void URyuMovementComponent::ResetDoOnceClimbInput()

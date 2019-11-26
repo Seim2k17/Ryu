@@ -6,6 +6,7 @@
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterIdleState.h"
 #include "RyuCharacterJumpEndState.h"
+#include "RyuCharacterRunState.h"
 #include "RyuMainCharacter.h"
 
 URyuCharacterJumpEndState::URyuCharacterJumpEndState()
@@ -17,14 +18,42 @@ URyuCharacterState* URyuCharacterJumpEndState::HandleInput(ARyuBaseCharacter* Ch
 {
     switch (Input)
     {
+        // when comment animationendline: character stands after jumping
         case ERyuInputState::AnimationEnded:
         case ERyuInputState::InputEndJump:
         {
-			return NewObject<URyuCharacterIdleState>();
+            /*
+			if (Character->GetMoveRightAxisState() == ERyuMoveRightAxisInputState::PressLeftAxisKey)
+
+			{
+				InputPressed = ERyuInputState::PressLeft;
+			}
+
+			if (Character->GetMoveRightAxisState() == ERyuMoveRightAxisInputState::PressRightAxisKey)
+			{
+				InputPressed = ERyuInputState::PressRight;
+			}
+
+			*/
+
+            // character jumped off and is still in Progress of running
+            if (Character->GetJumpStartValues().JumpStartAcceleration.GetAbsMax() > 0.0f)
+            {
+                UE_LOG(LogRyu, Error, TEXT("CharacterShouldRunFurther."));
+                Character->SetVelocityAfterJump();
+                return NewObject<URyuCharacterRunState>();
+            }
+            else
+            {
+                UE_LOG(LogRyu, Error, TEXT("CharAnimationEnd."));
+                Character->ResetJumpStartValues();
+                return NewObject<URyuCharacterIdleState>();
+            }
         }
     }
     // only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
     return Super::HandleInput(Character, Input);
+    //	return this;
 }
 
 void URyuCharacterJumpEndState::Update(ARyuBaseCharacter* Character)
@@ -43,6 +72,17 @@ void URyuCharacterJumpEndState::Enter(ARyuBaseCharacter* Character)
 
 void URyuCharacterJumpEndState::Exit(ARyuBaseCharacter* Character)
 {
-	 Super::Exit(Character);
-	 //CharacterState = ERyuCharacterState::None;
+    Super::Exit(Character);
+    //CharacterState = ERyuCharacterState::None;
+    UE_LOG(LogRyu, Log, TEXT("SetInputpressedVar"));
+    if (Character->GetMoveRightAxisState() == ERyuMoveRightAxisInputState::PressLeftAxisKey)
+
+    {
+        InputPressed = ERyuInputState::PressLeft;
+    }
+
+    if (Character->GetMoveRightAxisState() == ERyuMoveRightAxisInputState::PressRightAxisKey)
+    {
+        InputPressed = ERyuInputState::PressRight;
+    }
 }

@@ -136,8 +136,27 @@ void ARyuBaseCharacter::ResetEndJumpTimer()
 {
     // pass in link to Character from Timer to reset State !!!
     UE_LOG(LogRyu, Log, TEXT("TimerReset."));
+
     HandleInput(ERyuInputState::InputEndJump);
     GetWorld()->GetTimerManager().ClearTimer(EndJumpTimerHandle);
+}
+
+void ARyuBaseCharacter::ResetFallingTimer()
+{
+    GetWorld()->GetTimerManager().ClearTimer(FallingTimerHandle);
+}
+
+void ARyuBaseCharacter::ResetJumpStartValues()
+{
+    JumpStartValues.JumpStartAcceleration = FVector::ZeroVector;
+    JumpStartValues.JumpStartVelocity = FVector::ZeroVector;
+}
+
+void ARyuBaseCharacter::SaveJumpValues()
+{
+    UE_LOG(LogRyu, Log, TEXT("BaseCharacter: SaveJumpValues."));
+    JumpStartValues.JumpStartVelocity = GetCharacterMovement()->Velocity;
+    JumpStartValues.JumpStartAcceleration = GetCharacterMovement()->GetCurrentAcceleration();
 }
 
 void ARyuBaseCharacter::AnimationSequenceEnded(const UPaperZDAnimSequence* InAnimSequence)
@@ -228,6 +247,15 @@ void ARyuBaseCharacter::PostInitializeComponents()
 void ARyuBaseCharacter::AllowReleaseKey()
 {
     SetAllowReleaseAxisKey(true);
+}
+
+void ARyuBaseCharacter::IncreaseFallingVelocity()
+{
+    if (auto* MoveComp = Cast<URyuMovementComponent>(GetCharacterMovement()))
+    {
+        UE_LOG(LogRyu, Log, TEXT("Speed(z): %f"), MoveComp->Velocity.Z);
+        MoveComp->IncreaseFallingVelocity();
+    }
 }
 
 void ARyuBaseCharacter::JumpToAnimInstanceNode(FName Node)
@@ -446,6 +474,11 @@ ERyuInteractionStatus ARyuBaseCharacter::GetInteractionStatus()
     return InteractionStatus;
 }
 
+FJumpStartValues ARyuBaseCharacter::GetJumpStartValues()
+{
+    return JumpStartValues;
+}
+
 ERyuMovementState ARyuBaseCharacter::GetCharacterMovementState()
 {
     return CharacterMovementState;
@@ -481,10 +514,10 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
         MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
     }
 
-    if ((CharacterState == nullptr) || (Input == ERyuInputState::None))
-    {
-        return;
-    }
+     if ((CharacterState == nullptr) || (Input == ERyuInputState::None))
+     {
+         return;
+     }
 
     // save the pressed Input of the current State for other Methods besides HandleIput
     CharacterState->SetInputPressedState(Input);
@@ -500,10 +533,15 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
     //Possible fix for crash ?  Todo check if everyhandleInput returns a NEW State OR the current one! not nullptr !!!
     state = CharacterState->HandleInput(this, Input);
 
+	UE_LOG(LogRyu, Log, TEXT("CharBase | ResetTimer: CharacterSpeed: %s "),
+		*this->GetCharacterMovement()->Velocity.ToString());
+
     if (state == nullptr)
     {
         return;
     }
+
+	
 
     // save the pressed Input of the current State to the new state for other Methods besides HandleIput
     state->SetInputPressedState(Input);
@@ -516,11 +554,13 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
     CharacterState->Exit(this);
     //EquipmentState->Exit(this);
 
-	// we really need to delete NewObjects<OLDSTATE> or mark for GC, otherwise MemoryLeak ?
-	// delete old CharacterState;
+    // we really need to delete NewObjects<OLDSTATE> or mark for GC, otherwise MemoryLeak ?
+    // delete old CharacterState;
     CharacterState = state;
     //EquipmentState = state;
-
+    UE_LOG(LogRyu, Log, TEXT("OldInputpressedState: %s"),
+           *URyuStaticFunctionLibrary::InputStateToString(state->GetInputPressedState()));
+    CharacterState->SetInputPressedState(state->GetInputPressedState());
     // Call the enter Action on the new State
     CharacterState->Enter(this);
     //EquipmentState->Enter(this);
@@ -579,9 +619,33 @@ void ARyuBaseCharacter::SetEndJumpTimer()
 {
     if (GetWorld()->GetTimerManager().IsTimerActive(EndJumpTimerHandle) == false)
     {
-        GetWorld()->GetTimerManager().SetTimer(EndJumpTimerHandle, this,
-                                               &ARyuBaseCharacter::ResetEndJumpTimer, TimerEndJump,
-                                               false);
+        auto* MoveComp = Cast<URyuMovementComponent>(GetCharacterMovement());
+        if (MoveComp)
+        {
+            GetWorld()->GetTimerManager().SetTimer(EndJumpTimerHandle, this,
+                                                   &ARyuBaseCharacter::ResetEndJumpTimer,
+                                                   MoveComp->TimerEndJump, false);
+        }
+    }
+}
+
+void ARyuBaseCharacter::SetFallingTimer()
+{
+    auto* MoveComp = Cast<URyuMovementComponent>(GetCharacterMovement());
+    if (MoveComp)
+    {
+        GetWorld()->GetTimerManager().SetTimer(FallingTimerHandle, this,
+                                               &ARyuBaseCharacter::IncreaseFallingVelocity,
+                                               MoveComp->FallingVelocityTimer, true);
+    }
+}
+
+void ARyuBaseCharacter::SetVelocityAfterJump()
+{
+    // TODO: set vel and acc after jump
+    if (auto* MoveComp = Cast<URyuMovementComponent>(GetCharacterMovement()))
+    {
+        MoveComp->SetVelocityAfterJump(JumpStartValues);
     }
 }
 

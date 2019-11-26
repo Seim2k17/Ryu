@@ -79,6 +79,8 @@ void URyuCharacterRunState::Update(ARyuBaseCharacter* Character)
         float MoveRightInput = MainChar->GetMoveRightInput();
         // UE_LOG(LogRyu, Log, TEXT("AddMovementInput: %f"), MoveRightInput);
         MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput);
+
+        //UE_LOG(LogRyu, Log, TEXT("Character runs with %s "), *Character->GetVelocity().ToString());
     }
 }
 
@@ -86,15 +88,28 @@ void URyuCharacterRunState::Enter(ARyuBaseCharacter* Character)
 {
     UE_LOG(LogRyu, Log, TEXT("CharRunState::Enter() InputState: %s"),
            *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
+    Super::Enter(Character);
     Super::FlipCharacter(Character);
 
     if (auto* MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
     {
-        MainChar->ResetMoveRightInput();
+        if (MainChar->GetMoveRightInput() == 0.0f)
+        {
+            MainChar->ResetMoveRightInput();
+        }
     }
 
     Character->SetCharacterMovementState(ERyuMovementState::Running);
     CharacterState = ERyuCharacterState::Run;
+    if (Character->GetMoveRightAxisState() == ERyuMoveRightAxisInputState::PressLeftAxisKey)
+    {
+        InputPressed = ERyuInputState::PressLeft;
+    }
+    else if (Character->GetMoveRightAxisState() == ERyuMoveRightAxisInputState::PressRightAxisKey)
+    {
+        InputPressed = ERyuInputState::PressRight;
+    }
+
     Character->JumpToAnimInstanceNode(Character->RunNodeName);
 }
 
