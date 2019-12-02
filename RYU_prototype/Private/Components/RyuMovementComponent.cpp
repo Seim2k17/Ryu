@@ -285,7 +285,7 @@ bool URyuMovementComponent::DoJump(bool bReplayingMoves)
 {
     //Test JumpInput
 
-    //UE_LOG(LogTemp, Warning, TEXT("DoJump(): JumpButton Pressed"));
+    UE_LOG(LogTemp, Warning, TEXT("DoJump(): JumpButton Pressed"));
 
     if (CharacterOwner && CharacterOwner->CanJump()
         || (GetOwner()->GetWorldTimerManager().GetTimerRemaining(Timerhandle_CoyoteTime) > 0.0f))
@@ -299,7 +299,7 @@ bool URyuMovementComponent::DoJump(bool bReplayingMoves)
         }
     }
 
-    //** Princespecific Stuff // use jumping for climbing up ? --> maybe NO
+    //TODO Princespecific Stuff // use jumping for climbing up ? --> maybe NO
     ARYU2D_CharacterPrince* MyChar = Cast<ARYU2D_CharacterPrince>(CharacterOwner);
     if (MyChar && (MyChar->RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPLEDGE))
     {
@@ -384,11 +384,13 @@ float URyuMovementComponent::GetSneakMultiplier()
 
 void URyuMovementComponent::IncreaseFallingVelocity()
 {
+	//TODO: when Jumping in JumpForwardFasterWay: increase VelocityZ even more !
     UE_LOG(LogRyu, Warning, TEXT("Falling."));
     if ((Velocity.Z < 0.0f) && (Velocity.Z >= MaximumVelocityZ))
     {
         Velocity.Z += (Velocity.Z * AddFallingMultiplierNumber);
     }
+	
 }
 
 void URyuMovementComponent::SetAllowClimbUpTrue()

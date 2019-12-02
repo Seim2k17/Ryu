@@ -75,10 +75,23 @@ public:
         return state;
     }
 
+    /* FOR DEBUG/DEV-PURPOSE ONLY*/
+    virtual void SetCharacterState(ERyuCharacterState ToCharacterState)
+    {
+        CharacterState = ToCharacterState;
+    }
+
     //UFUNCTION(BlueprintNativeEvent)
     //virtual IRyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character) = 0;
     virtual URyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character)
     {
         return nullptr;
     }
+
+protected:
+    UPROPERTY()
+    ERyuCharacterState CharacterState = ERyuCharacterState::Idle;
+
+    UPROPERTY()
+    ERyuInputState InputPressed = ERyuInputState::None;
 };

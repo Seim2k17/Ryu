@@ -145,13 +145,12 @@ void ARyuMainCharacter::SetDebuggedCharacter()
 
 void ARyuMainCharacter::StartLineTracing()
 {
-	
     // DrawDebugSphere(TheWorld, GetActorLocation(), 10.0f, 10, FColor::Red, false, 1.f, 0, 2.f);
     TraceStart = this->GetActorLocation();
     TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
-	//TraceEnd = TraceStart - (LengthLineTrace * (-1.f) * this->GetActorForwardVector());
+    //TraceEnd = TraceStart - (LengthLineTrace * (-1.f) * this->GetActorForwardVector());
 
-	// TODO: set own CollisionChannel to LineTrace! -> but BSPs can´t have one so for testing we NEED to See the the BSP-Geometry and tht the CollChannel to Visibility !
+    // TODO: set own CollisionChannel to LineTrace! -> but BSPs can´t have one so for testing we NEED to See the the BSP-Geometry and tht the CollChannel to Visibility !
     TheWorld->LineTraceSingleByChannel(JumpHitResult, TraceStart, TraceEnd,
                                        ECollisionChannel::ECC_Visibility, CollisionParams);
 
@@ -216,8 +215,10 @@ void ARyuMainCharacter::Tick(float DeltaTime)
 void ARyuMainCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
     // Note: the 'Jump' action and the 'MoveRight' axis are bound to actual keys/buttons/sticks in DefaultInput.ini (editable from Project Settings..Input)
-    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-    PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+    //PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+    //PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARyuMainCharacter::Jump);
+    PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARyuMainCharacter::StopJumping);
     PlayerInputComponent->BindAxis("MoveRight", this, &ARyuMainCharacter::MoveRight);
     PlayerInputComponent->BindAxis("Climb", this, &ARyuMainCharacter::MoveUp);
     PlayerInputComponent->BindAction("Sneak", IE_Pressed, this, &ARyuMainCharacter::SneakPressed);
@@ -236,7 +237,7 @@ void ARyuMainCharacter::Jump()
         UE_LOG(LogRyu, Warning, TEXT("Jump from MainChar called."));
         bPressedJump = true;
         bJumpJustStarted = true;
-		// just for testing deactivate JumpCSM, to recheck if everything BASIC works!
+        // just for testing deactivate JumpCSM, to recheck if everything BASIC works!
         ARyuBaseCharacter::HandleInput(ERyuInputState::PressJump);
     }
 }
@@ -286,11 +287,6 @@ void ARyuMainCharacter::MoveRight(float Val)
     {
         //HandleInput(ERyuInputState::PressSneak);
     }
-
-    // UE_LOG(LogRyu, Log, TEXT("MoveRight: %f"), Val);
-
-    //TODO we only need to "handleInput" once, otherwise we create new states every tick!
-    // Bind to Press / Release Button Events ?
     if (MoveRightInput < 0)
     {
         PressedRight = false;
@@ -298,17 +294,16 @@ void ARyuMainCharacter::MoveRight(float Val)
             != ERyuMoveRightAxisInputState::PressLeftAxisKey)
         {
             ARyuBaseCharacter::HandleInput(ERyuInputState::PressLeft);
-            //MoveRightAxisState = ERyuMoveRightAxisInputState::PressLeftAxisKey;
         }
     }
     else if (MoveRightInput > 0)
     {
         PressedRight = true;
+
         if (ARyuBaseCharacter::GetMoveRightAxisState()
             != ERyuMoveRightAxisInputState::PressRightAxisKey)
         {
             ARyuBaseCharacter::HandleInput(ERyuInputState::PressRight);
-            // MoveRightAxisState = ERyuMoveRightAxisInputState::PressRightAxisKey;
         }
     }
     else
@@ -589,7 +584,7 @@ bool ARyuMainCharacter::GetSneakActive()
 
 FHitResult ARyuMainCharacter::GetHitResult()
 {
-	return JumpHitResult;
+    return JumpHitResult;
 }
 
 void ARyuMainCharacter::SneakPressed()

@@ -30,7 +30,7 @@ URyuCharacterIdleState::URyuCharacterIdleState()
 
 void URyuCharacterIdleState::Enter(ARyuBaseCharacter* Character)
 {
-    InputPressed = ERyuInputState::None;
+    //InputPressed = ERyuInputState::None;
     CharacterState = ERyuCharacterState::Idle;
     //TODO: is it a bit reduntant (for JumpingForwardStates....) we can use the normal state instead or not ?
     Character->SetCharacterMovementState(ERyuMovementState::Standing);

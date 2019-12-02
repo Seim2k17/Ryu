@@ -25,6 +25,8 @@
 #include "RYUClimbingActor.h"
 #include "RYU_prototype.h"
 #include "RyuCharacterIdleState.h"
+#include "RyuCharacterJumpState.h"
+#include "RyuCharacterOnGroundState.h"
 #include "RyuCharacterState.h"
 #include <Camera/CameraComponent.h>
 #include <Components/BoxComponent.h>
@@ -86,7 +88,8 @@ void ARyuBaseCharacter::Tick(float DeltaTime)
     {
         CharacterState->Update(this);
     }
-
+	
+	
     // UE_LOG(LogRyu, Log, TEXT("TickIntervall@BaseChar: %f"), this->PrimaryActorTick.TickInterval);
 }
 
@@ -267,6 +270,66 @@ void ARyuBaseCharacter::JumpToAnimInstanceNode(FName Node)
 void ARyuBaseCharacter::SetCharacterMovementState(ERyuMovementState MovementState)
 {
     CharacterMovementState = MovementState;
+}
+
+/* ONLY FOR DEBUGGING*/
+void ARyuBaseCharacter::SwitchCharacterStateEnum(ERyuCharacterState InputState)
+{
+    if (CharacterState != nullptr)
+    {
+        ERyuCharacterState CharState = CharacterState->GetState();
+
+        switch (CharState)
+        {
+            case ERyuCharacterState::Idle:
+            {
+                URyuCharacterOnGroundState* OnGroundState =
+                    Cast<URyuCharacterOnGroundState>(CharacterState);
+                if (OnGroundState)
+                {
+                    OnGroundState->SetCharacterState(ERyuCharacterState::JumpForward);
+                }
+
+                break;
+            }
+            case ERyuCharacterState::Run:
+            {
+                URyuCharacterOnGroundState* OnGroundState =
+                    Cast<URyuCharacterOnGroundState>(CharacterState);
+                if (OnGroundState)
+                {
+                    OnGroundState->SetCharacterState(ERyuCharacterState::JumpEnd);
+                    //OnGroundState->SetCharacterState(ERyuCharacterState::JumpForwardFast);
+                }
+                break;
+            }
+            case ERyuCharacterState::JumpUpward:
+            case ERyuCharacterState::JumpForward:
+            case ERyuCharacterState::JumpForwardFast:
+            case ERyuCharacterState::JumpBackward:
+            case ERyuCharacterState::JumpBackwardFast:
+            {
+                URyuCharacterJumpState* JumpState = Cast<URyuCharacterJumpState>(CharacterState);
+                if (JumpState)
+                {
+                    JumpState->SetCharacterState(ERyuCharacterState::JumpEnd);
+                }
+                break;
+            }
+            case ERyuCharacterState::JumpEnd:
+            {
+                URyuCharacterJumpState* JumpState = Cast<URyuCharacterJumpState>(CharacterState);
+                if (JumpState)
+                {
+                    JumpState->SetCharacterState(ERyuCharacterState::Idle);
+                }
+                break;
+            }
+
+            default:
+                break;
+        }
+    }
 }
 
 void ARyuBaseCharacter::SetAllowReleaseAxisKey(bool AllowState)
@@ -514,10 +577,10 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
         MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
     }
 
-     if ((CharacterState == nullptr) || (Input == ERyuInputState::None))
-     {
-         return;
-     }
+    if ((CharacterState == nullptr) || (Input == ERyuInputState::None))
+    {
+        return;
+    }
 
     // save the pressed Input of the current State for other Methods besides HandleIput
     CharacterState->SetInputPressedState(Input);
@@ -526,22 +589,20 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
     CheckCurrentInputState(Input);
 
     // Mainly due AnimationEndedInput this needs to be implemented here in the BaseClass
-    URyuCharacterState* state = nullptr;
+    //URyuCharacterState* state = nullptr;
 
     UE_LOG(LogRyu, Error, TEXT("RYUBASE: HANDLEINPUT: %s"),
            *URyuStaticFunctionLibrary::InputStateToString(Input));
     //Possible fix for crash ?  Todo check if everyhandleInput returns a NEW State OR the current one! not nullptr !!!
-    state = CharacterState->HandleInput(this, Input);
+    URyuCharacterState* state = CharacterState->HandleInput(this, Input);
 
-	UE_LOG(LogRyu, Log, TEXT("CharBase | ResetTimer: CharacterSpeed: %s "),
-		*this->GetCharacterMovement()->Velocity.ToString());
+    UE_LOG(LogRyu, Log, TEXT("CharBase | ResetTimer: CharacterSpeed: %s "),
+           *this->GetCharacterMovement()->Velocity.ToString());
 
-    if (state == nullptr)
+    if ((state == nullptr) || (state == CharacterState))
     {
         return;
     }
-
-	
 
     // save the pressed Input of the current State to the new state for other Methods besides HandleIput
     state->SetInputPressedState(Input);
@@ -549,11 +610,9 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
            *URyuStaticFunctionLibrary::CharacterStateToString(CharacterState->GetState()));
     UE_LOG(LogRyu, Warning, TEXT("GetInputState: %s"),
            *URyuStaticFunctionLibrary::InputStateToString(CharacterState->GetInputPressedState()));
-
-    // Call Exit-Action on the old state
-    CharacterState->Exit(this);
-    //EquipmentState->Exit(this);
-
+        // Call Exit-Action on the old state
+        CharacterState->Exit(this);
+        //EquipmentState->Exit(this);
     // we really need to delete NewObjects<OLDSTATE> or mark for GC, otherwise MemoryLeak ?
     // delete old CharacterState;
     CharacterState = state;
@@ -562,9 +621,8 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
            *URyuStaticFunctionLibrary::InputStateToString(state->GetInputPressedState()));
     CharacterState->SetInputPressedState(state->GetInputPressedState());
     // Call the enter Action on the new State
-    CharacterState->Enter(this);
+        CharacterState->Enter(this);
     //EquipmentState->Enter(this);
-
     bHandleInput = false;
 }
 
@@ -605,6 +663,7 @@ bool ARyuBaseCharacter::CheckCharacterEnumValue()
         || (CharacterState->GetState() == ERyuCharacterState::JumpForward)
         || (CharacterState->GetState() == ERyuCharacterState::JumpForwardFast)
         || (CharacterState->GetState() == ERyuCharacterState::JumpUpward)
+		|| (CharacterState->GetState() == ERyuCharacterState::JumpEnd)
         || (CharacterState->GetState() == ERyuCharacterState::Run))
     {
         return true;
@@ -645,7 +704,7 @@ void ARyuBaseCharacter::SetVelocityAfterJump()
     // TODO: set vel and acc after jump
     if (auto* MoveComp = Cast<URyuMovementComponent>(GetCharacterMovement()))
     {
-        MoveComp->SetVelocityAfterJump(JumpStartValues);
+        //MoveComp->SetVelocityAfterJump(JumpStartValues);
     }
 }
 

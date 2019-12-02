@@ -48,5 +48,5 @@ void URyuCharacterClimbState::Exit(ARyuBaseCharacter* Character)
 URyuCharacterState* URyuCharacterClimbState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
     // TODO add app AnimationEndedKram
-    return Character->GetCharacterState();
+	return this;
 }

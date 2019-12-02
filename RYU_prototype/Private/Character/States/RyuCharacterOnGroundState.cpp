@@ -34,7 +34,7 @@ URyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
         {
             // ueberall checken return this (for current state!) , toll dann bewegt sich der dude garnet und die Ani haengt
             // TODO: bug here return Character->GetCharacterState(); // this;
-			return nullptr;
+            return nullptr;
             break;
         }
     }
@@ -104,19 +104,21 @@ URyuCharacterState* URyuCharacterOnGroundState::InputAnimationEnded(ARyuBaseChar
 
         {
             UE_LOG(LogRyu, Log, TEXT("RollAniEnded"));
-            return nullptr;
+            return this;
             break;
         }
         default:
-            // alle überprüfen
-            return Character->GetCharacterState();
-            //return nullptr;
+        {
+            return this;
             break;
+        }
     }
 }
 
 void URyuCharacterOnGroundState::Update(ARyuBaseCharacter* Character)
 {
+    UE_LOG(LogRyu, Log, TEXT("OnGround(SuperCall) | Update: CharacterSpeed: %s "),
+           *Character->GetCharacterMovement()->Velocity.ToString());
 }
 
 void URyuCharacterOnGroundState::FlipCharacter(ARyuBaseCharacter* Character)
@@ -144,13 +146,16 @@ void URyuCharacterOnGroundState::FlipCharacter(ARyuBaseCharacter* Character)
             break;
         }
         default:
-            UE_LOG(LogRyu, Log, TEXT("Hm. InputState is neither Left or Right. Its: %s at speed: %s"),*URyuStaticFunctionLibrary::InputStateToString(InputPressed),*Character->GetCharacterMovement()->Velocity.ToString());
+            UE_LOG(LogRyu, Log,
+                   TEXT("Hm. InputState is neither Left or Right. Its: %s at speed: %s"),
+                   *URyuStaticFunctionLibrary::InputStateToString(InputPressed),
+                   *Character->GetCharacterMovement()->Velocity.ToString());
             break;
     }
 }
 
 void URyuCharacterOnGroundState::Enter(ARyuBaseCharacter* Character)
 {
-	UE_LOG(LogRyu, Log, TEXT("OnGround(SuperCall) | Enter: CharacterSpeed: %s "),
-		*Character->GetCharacterMovement()->Velocity.ToString());
+    UE_LOG(LogRyu, Log, TEXT("OnGround(SuperCall) | Enter: CharacterSpeed: %s "),
+           *Character->GetCharacterMovement()->Velocity.ToString());
 }

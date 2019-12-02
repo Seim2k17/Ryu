@@ -34,5 +34,5 @@ void URyuCharacterInAirState::Update(ARyuBaseCharacter* Character)
 
 URyuCharacterState* URyuCharacterInAirState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
-    return Character->GetCharacterState();
+    return this;
 }

@@ -226,6 +226,10 @@ public:
 
     void SetCharacterMovementState(ERyuMovementState MovementState);
 
+	/*ONLY FOR DEBUG/DEVELOPMENT-PURPOSE*/
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+    void SwitchCharacterStateEnum(ERyuCharacterState InputState);
+
     void SetAllowReleaseAxisKey(bool AllowState);
 
     void SetEndJumpTimer();
