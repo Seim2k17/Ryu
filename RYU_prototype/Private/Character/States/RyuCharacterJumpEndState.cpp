@@ -91,4 +91,12 @@ void URyuCharacterJumpEndState::Exit(ARyuBaseCharacter* Character)
     {
         InputPressed = ERyuInputState::PressRight;
     }
+
+    if (auto* MoveComp = Character->GetRyuCharacterMovement())
+    {
+        MoveComp->EndJumpTime = UGameplayStatics::GetTimeSeconds(Character);
+        MoveComp->OverallJumpTime = MoveComp->EndJumpTime - MoveComp->StartJumpTime;
+        UE_LOG(LogRyu, Log, TEXT("JumpEndState:Exit(): OverallJumpTime: %f s"),
+               MoveComp->OverallJumpTime);
+    }
 }

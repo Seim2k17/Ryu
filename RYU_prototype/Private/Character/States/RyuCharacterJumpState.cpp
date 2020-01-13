@@ -91,6 +91,12 @@ void URyuCharacterJumpState::Enter(ARyuBaseCharacter* Character)
 {
     if (auto* MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
     {
+        if (auto* MoveComp = MainChar->GetRyuCharacterMovement())
+        {
+			// TODO Call correct ?
+            MoveComp->StartJumpTime = UGameplayStatics::GetTimeSeconds(Character);
+        }
+
         switch (InputPressed)
         {
             case ERyuInputState::PressJump:

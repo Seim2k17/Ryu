@@ -161,6 +161,8 @@ public:
 
     ERyuMoveRightAxisInputState GetMoveRightAxisState();
 
+	URyuMovementComponent* GetRyuCharacterMovement();
+
     /** Returns SideViewCameraComponent subobject **/
     FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const
     {

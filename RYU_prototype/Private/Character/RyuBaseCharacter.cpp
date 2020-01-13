@@ -88,8 +88,7 @@ void ARyuBaseCharacter::Tick(float DeltaTime)
     {
         CharacterState->Update(this);
     }
-	
-	
+
     // UE_LOG(LogRyu, Log, TEXT("TickIntervall@BaseChar: %f"), this->PrimaryActorTick.TickInterval);
 }
 
@@ -558,6 +557,18 @@ ERyuMoveRightAxisInputState ARyuBaseCharacter::GetMoveRightAxisState()
     return MoveRightAxisState;
 }
 
+URyuMovementComponent* ARyuBaseCharacter::GetRyuCharacterMovement()
+{
+    if (auto* MovementComp = Cast<URyuMovementComponent>(GetCharacterMovement()))
+    {
+        return MovementComp;
+    }
+    else
+    {
+        return nullptr;
+    }
+}
+
 void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
 {
     bHandleInput = true;
@@ -610,9 +621,9 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
            *URyuStaticFunctionLibrary::CharacterStateToString(CharacterState->GetState()));
     UE_LOG(LogRyu, Warning, TEXT("GetInputState: %s"),
            *URyuStaticFunctionLibrary::InputStateToString(CharacterState->GetInputPressedState()));
-        // Call Exit-Action on the old state
-        CharacterState->Exit(this);
-        //EquipmentState->Exit(this);
+    // Call Exit-Action on the old state
+    CharacterState->Exit(this);
+    //EquipmentState->Exit(this);
     // we really need to delete NewObjects<OLDSTATE> or mark for GC, otherwise MemoryLeak ?
     // delete old CharacterState;
     CharacterState = state;
@@ -621,7 +632,7 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
            *URyuStaticFunctionLibrary::InputStateToString(state->GetInputPressedState()));
     CharacterState->SetInputPressedState(state->GetInputPressedState());
     // Call the enter Action on the new State
-        CharacterState->Enter(this);
+    CharacterState->Enter(this);
     //EquipmentState->Enter(this);
     bHandleInput = false;
 }
@@ -663,7 +674,7 @@ bool ARyuBaseCharacter::CheckCharacterEnumValue()
         || (CharacterState->GetState() == ERyuCharacterState::JumpForward)
         || (CharacterState->GetState() == ERyuCharacterState::JumpForwardFast)
         || (CharacterState->GetState() == ERyuCharacterState::JumpUpward)
-		|| (CharacterState->GetState() == ERyuCharacterState::JumpEnd)
+        || (CharacterState->GetState() == ERyuCharacterState::JumpEnd)
         || (CharacterState->GetState() == ERyuCharacterState::Run))
     {
         return true;

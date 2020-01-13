@@ -52,7 +52,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void SetNoCollisionCharacterPrefs();
 
-	void SetVelocityAfterJump(FJumpStartValues AfterJumpValues);
+    void SetVelocityAfterJump(FJumpStartValues AfterJumpValues);
 
 protected:
     // Called when the game starts
@@ -77,7 +77,7 @@ protected:
     UFUNCTION()
     void SetAllowClimbUpFalse();
 
-	UFUNCTION(BlueprintCallable, Category = "Jumping")
+    UFUNCTION(BlueprintCallable, Category = "Jumping")
     void StartLaunchCharacter();
 
     void ResetDoOnceClimbInput();
@@ -150,9 +150,16 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Climbing")
     FVector ClimbDownStartPosition;
 
+    float EndJumpTime = 0.0f;
+
     // How far will the character jump?
     UPROPERTY(VisibleAnywhere)
     float JumpForwardDistance = 50.0f;
+
+    UPROPERTY(VisibleAnywhere, Category = "Jumping / Falling")
+    float OverallJumpTime = 0.0f;
+
+    float StartJumpTime = 0.0f;
 
     UPROPERTY(EditAnywhere, Category = "Sneak")
     float SneakMultiplier = 0.5f;
