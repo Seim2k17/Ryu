@@ -123,4 +123,5 @@ void URyuCharacterRunState::Enter(ARyuBaseCharacter* Character)
 void URyuCharacterRunState::Exit(ARyuBaseCharacter* Character)
 {
     Super::Exit(Character);
+//	this->ConditionalBeginDestroy();
 }

@@ -23,6 +23,8 @@ public:
 	virtual void Exit(ARyuBaseCharacter* Character) override
 	{
 		InputPressed = ERyuInputState::None;
+		//this->ConditionalBeginDestroy();
+		//this = nullptr;
 	}
 
     URyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character);

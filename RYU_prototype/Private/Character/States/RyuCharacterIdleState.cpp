@@ -40,6 +40,7 @@ void URyuCharacterIdleState::Enter(ARyuBaseCharacter* Character)
 
 void URyuCharacterIdleState::Exit(ARyuBaseCharacter* Character)
 {
+	this->ConditionalBeginDestroy();
 }
 
 URyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Character,
