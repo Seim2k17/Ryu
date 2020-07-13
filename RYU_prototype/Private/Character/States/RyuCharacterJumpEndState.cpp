@@ -6,7 +6,10 @@
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterIdleState.h"
+#include "RyuCharacterJumpBackwardState.h"
 #include "RyuCharacterJumpEndState.h"
+#include "RyuCharacterJumpForwardState.h"
+#include "RyuCharacterJumpUpwardState.h"
 #include "RyuCharacterRunState.h"
 #include "RyuMainCharacter.h"
 
@@ -41,6 +44,14 @@ URyuCharacterState* URyuCharacterJumpEndState::HandleInput(ARyuBaseCharacter* Ch
                 break;
             }
         }
+        // if we press Jump Again, before JumpEnd is finished
+        case ERyuInputState::PressJump:
+        case ERyuInputState::PressJumpUp:
+            return NewObject<URyuCharacterJumpUpwardState>();
+        case ERyuInputState::PressJumpBackward:
+            return NewObject<URyuCharacterJumpBackwardState>();
+        case ERyuInputState::PressJumpForward:
+            return NewObject<URyuCharacterJumpForwardState>();
         default:
         {
             // only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy

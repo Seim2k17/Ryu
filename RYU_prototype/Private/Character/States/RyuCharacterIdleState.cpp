@@ -196,8 +196,8 @@ URyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Ch
     UE_LOG(LogRyu, Error, TEXT("FromCharIdleState: Inputpressed: %s"),
            *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
     switch (InputPressed)
-    {
-        case ERyuInputState::PressJump:
+    {	// TODO: appr. dist. btw. jumpup/fwd/fwd_fast
+        //case ERyuInputState::PressJump:
         case ERyuInputState::PressJumpUp:
             return NewObject<URyuCharacterJumpUpwardState>();
         case ERyuInputState::PressJumpBackward:
