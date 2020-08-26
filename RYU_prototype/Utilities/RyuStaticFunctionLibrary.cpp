@@ -6,6 +6,7 @@
 #include "Enums/ERyuMoveRightAxisInputState.h"
 #include "Enums/ERyuMovementState.h"
 #include "RyuMainCharacter.h"
+#include "RYU_prototype.h"
 #include <Components/ActorComponent.h>
 
 URyuStaticFunctionLibrary::URyuStaticFunctionLibrary(const FObjectInitializer& Objectinitializer)
@@ -43,4 +44,11 @@ FString URyuStaticFunctionLibrary::RightAxisInputStateToString(
 {
     return EnumToString(TEXT("ERyuMoveRightAxisInputState"), State,
                         TEXT("ERyuMoveRightAxisInputState::Invalid"));
+}
+
+
+// TODO: StaticLog
+void URyuStaticFunctionLibrary::Log(FString Message, FName Category )
+{
+	UE_LOG(LogRyu, Log,  TEXT(""));
 }

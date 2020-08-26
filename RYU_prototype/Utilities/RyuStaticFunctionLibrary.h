@@ -6,6 +6,7 @@
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuMoveRightAxisInputState.h"
 #include "Enums/ERyuMovementState.h"
+#include "Enums/ERyuLogCategory.h"
 #include "RyuStaticFunctionLibrary.generated.h"
 
 class ARyuMainCharacter;
@@ -46,4 +47,6 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Debug")
     static FString RightAxisInputStateToString(const ERyuMoveRightAxisInputState State);
+
+	static void Log(FString Message, FName Category);
 };

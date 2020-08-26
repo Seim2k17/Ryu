@@ -230,7 +230,7 @@ void ARyuMainCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 void ARyuMainCharacter::Jump()
 {
-    // TODO: is this even executed atm ? see SetupPlayerInputComponent
+    // TODO: is this even executed atm ? see SetupPlayerInputComponent --> yes it is
     // from CharacterClass
     if (!bJumpJustStarted)
     {

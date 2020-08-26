@@ -197,7 +197,7 @@ URyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Ch
            *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
     switch (InputPressed)
     {	// TODO: appr. dist. btw. jumpup/fwd/fwd_fast
-        //case ERyuInputState::PressJump:
+        case ERyuInputState::PressJump:
         case ERyuInputState::PressJumpUp:
             return NewObject<URyuCharacterJumpUpwardState>();
         case ERyuInputState::PressJumpBackward:
