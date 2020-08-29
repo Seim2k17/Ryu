@@ -80,7 +80,7 @@ void ARYUHazardBaseActor::PainTimer()
 
 			for (AActor* const A : TouchingActors)
 			{
-				if (A && A->bCanBeDamaged && !A->IsPendingKill())
+				if (A && A->CanBeDamaged() && !A->IsPendingKill())
 				{
 					APawn* PawnA = Cast<APawn>(A);
 					if (PawnA)
@@ -101,7 +101,7 @@ void ARYUHazardBaseActor::PainTimer()
 void ARYUHazardBaseActor::CauseTimerPain(AActor* OtherActor)
 {
 	//UE_LOG(LogTemp, Log, TEXT("Entered Trigger"));
-	if (bPainCausing && OtherActor->bCanBeDamaged)
+	if (bPainCausing && OtherActor->CanBeDamaged())
 	{
 		CausePainTo(OtherActor);
 	}

@@ -137,7 +137,7 @@ public:
     float FallingVelocityTimer = 0.05;
 
     UPROPERTY(EditAnywhere, Category = "Falling")
-    float MaximumVelocityZ = -1500.f;
+    float MaxFallingVelocityZ = -1500.f;
 
     FTimerHandle Timerhandle_CoyoteTime;
 

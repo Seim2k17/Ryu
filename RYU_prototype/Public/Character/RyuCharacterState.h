@@ -9,8 +9,9 @@
 #include "RyuCharacterState.generated.h"
 
 /*
+This class acts like a interface, but interfaces in UEC++ are some kind of crap, so this is structured like a normal class, is this a problem ?
 For each state, we define a class that implements the interface. Its methods define the Character’s behavior when in that state.
-If otther data is related to only the specific state move it as a member in that Derived class. (e.g. ChargingTime for Firing)
+If other data is related to only the specific state move it as a member in that Derived class. (e.g. ChargingTime for Firing)
 */
 
 //UINTERFACE(BlueprintType)
@@ -87,6 +88,10 @@ public:
     {
         return nullptr;
     }
+
+protected:
+	virtual void FlipCharacter(ARyuBaseCharacter* Character);
+
 
 protected:
     UPROPERTY()

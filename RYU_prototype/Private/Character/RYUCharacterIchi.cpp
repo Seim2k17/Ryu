@@ -49,11 +49,11 @@ void ARYUCharacterIchi::InitializeCharacterValues()
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
 
-	CameraBoom->bAbsoluteRotation = true; // Rotation of the character should not affect rotation of boom
+	CameraBoom->SetUsingAbsoluteRotation(true); // Rotation of the character should not affect rotation of boom
 	CameraBoom->bDoCollisionTest = false;
 	CameraBoom->TargetArmLength = 500.f;
 	CameraBoom->SocketOffset = FVector(0.f, 0.f, 75.f);
-	CameraBoom->RelativeRotation = FRotator(0.f, 180.f, 0.f);
+	CameraBoom->SetRelativeRotation(FRotator(.0f, 180.f, 0.f));
 
 	SideViewCameraComponent->bUsePawnControlRotation = false; // We don't want the controller rotating the camera
 

@@ -45,10 +45,20 @@ void URyuCharacterJumpState::Update(ARyuBaseCharacter* Character)
 {
     if (auto* MainChar = Cast<ARyuMainCharacter>(Character))
     {
+        if ((Character->GetMoveRightAxisState() == ERyuMoveRightAxisInputState::PressLeftAxisKey)
+            || (Character->GetMoveRightAxisState()
+                == ERyuMoveRightAxisInputState::PressRightAxisKey))
+        {
+            UE_LOG(LogTemp, Log, TEXT("press left || right from JumpUpdate"));
+            // TODO: here we need to check if diorection changes then flip .... (and only once ...)
+            this->FlipCharacter(Character);
+            //InputPressed = ERyuInputState::PressLeft;
+        }
+
         float MoveRightInput = MainChar->GetMoveRightInput();
         MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput);
 
-        // TODO JumpeEnd / Jump wuith Velocity < 0 will become Falling and FallingEndstate / Edit the yEd !
+        // TODO: !!! JumpeEnd / Jump wuith Velocity < 0 will become Falling and FallingEndstate / Edit the yEd !
         // following lines needs to be moved to a new State (FallingState) because it´s not only jumprelated
         // the JumpEndState therefore will become a FallingEndState !!!
         // Test if char is still n air otherwise change state back to idle
@@ -74,9 +84,9 @@ void URyuCharacterJumpState::Update(ARyuBaseCharacter* Character)
             }
 
             // switch to JumpEndState
-            if (TraceHit.ImpactPoint.Z != 0.0f)
+            if (TraceHit.bBlockingHit)
             {
-                UE_LOG(LogRyu, Log, TEXT("JumpUpdate: ImpactPoinz.Z !=0."));
+                UE_LOG(LogRyu, Log, TEXT("JumpUpdate: ImpactPoinz: %s"),*TraceHit.ImpactPoint.ToString());
                 bCharacterStartFalling = false;
                 Character->ResetFallingTimer();
                 // TODO recheck Workflow: with HandleInput(InputEndJump character keeps walking --> backtrack why !
@@ -93,7 +103,7 @@ void URyuCharacterJumpState::Enter(ARyuBaseCharacter* Character)
     {
         if (auto* MoveComp = MainChar->GetRyuCharacterMovement())
         {
-			// TODO Call correct ?
+            // TODO Call correct ?
             MoveComp->StartJumpTime = UGameplayStatics::GetTimeSeconds(Character);
         }
 
@@ -123,4 +133,9 @@ void URyuCharacterJumpState::Enter(ARyuBaseCharacter* Character)
 URyuCharacterState* URyuCharacterJumpState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
     return this; // Character->GetCharacterState();
+}
+
+void URyuCharacterJumpState::FlipCharacter(ARyuBaseCharacter* Character)
+{
+    Super::FlipCharacter(Character);
 }

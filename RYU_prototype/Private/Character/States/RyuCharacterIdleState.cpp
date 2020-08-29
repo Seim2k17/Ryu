@@ -30,7 +30,6 @@ URyuCharacterIdleState::URyuCharacterIdleState()
 
 void URyuCharacterIdleState::Enter(ARyuBaseCharacter* Character)
 {
-    //InputPressed = ERyuInputState::None;
     CharacterState = ERyuCharacterState::Idle;
     //TODO: is it a bit reduntant (for JumpingForwardStates....) we can use the normal state instead or not ?
     Character->SetCharacterMovementState(ERyuMovementState::Standing);
@@ -46,9 +45,8 @@ void URyuCharacterIdleState::Exit(ARyuBaseCharacter* Character)
 URyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Character,
                                                         const ERyuInputState Input)
 {
-    // only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
-    //     URyuCharacterState* state = URyuCharacterOnGroundState::HandleInput(Character, Input);
-    //     return state;
+    // only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input, 
+	// just walk up in the hierarchy
     switch (Input)
     {
         case ERyuInputState::PressLeft:
@@ -193,8 +191,8 @@ URyuCharacterState* URyuCharacterIdleState::InputPressInteract(ARyuBaseCharacter
 
 URyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Character)
 {
-    UE_LOG(LogRyu, Error, TEXT("FromCharIdleState: Inputpressed: %s"),
-           *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
+//     UE_LOG(LogRyu, Error, TEXT("FromCharIdleState: Inputpressed: %s"),
+//            *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
     switch (InputPressed)
     {	// TODO: appr. dist. btw. jumpup/fwd/fwd_fast
         case ERyuInputState::PressJump:
@@ -231,7 +229,8 @@ void URyuCharacterIdleState::Update(ARyuBaseCharacter* Character)
 {
     // LOG(LogRyu, Log, TEXT("Idle-State Updating."));
     // check if MoveRightLeft is still pressed, when entering this State:
-    // DO WE NEED TO CALL THIS IN UPDATE ??? -> everytime HandleInput os called A new State is created !!! -> unnecessa. StateDestroy & Creation (it´s the same State each frame!)
+    // DO WE NEED TO CALL THIS IN UPDATE ??? -> everytime HandleInput os called A new State is created !!! 
+	// -> unnecessa. StateDestroy & Creation (it´s the same State each frame!)
     if (auto MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
     {
         switch (MainChar->GetMoveRightAxisState())

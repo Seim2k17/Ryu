@@ -386,7 +386,7 @@ void URyuMovementComponent::IncreaseFallingVelocity()
 {
 	//TODO: when Jumping in JumpForwardFasterWay: increase VelocityZ even more !
     UE_LOG(LogRyu, Warning, TEXT("Falling."));
-    if ((Velocity.Z < 0.0f) && (Velocity.Z >= MaximumVelocityZ))
+    if ((Velocity.Z <= 0.0f) && (Velocity.Z >= MaxFallingVelocityZ))
     {
         Velocity.Z += (Velocity.Z * AddFallingMultiplierNumber);
     }

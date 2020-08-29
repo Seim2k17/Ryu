@@ -123,35 +123,7 @@ void URyuCharacterOnGroundState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterOnGroundState::FlipCharacter(ARyuBaseCharacter* Character)
 {
-    UE_LOG(LogRyu, Log, TEXT("FlipCharacter is called"));
-    ERyuLookDirection LookDirection = Character->GetLookDirection();
-    switch (InputPressed)
-    {
-        case ERyuInputState::PressRight:
-        {
-            if (LookDirection == ERyuLookDirection::Left)
-            {
-                Character->FlipCharacter();
-            }
-            UE_LOG(LogRyu, Log, TEXT("Character is walking Right."));
-            break;
-        }
-        case ERyuInputState::PressLeft:
-        {
-            if (LookDirection == ERyuLookDirection::Right)
-            {
-                Character->FlipCharacter();
-            }
-            UE_LOG(LogRyu, Log, TEXT("Character is walking Left."));
-            break;
-        }
-        default:
-            UE_LOG(LogRyu, Log,
-                   TEXT("Hm. InputState is neither Left or Right. Its: %s at speed: %s"),
-                   *URyuStaticFunctionLibrary::InputStateToString(InputPressed),
-                   *Character->GetCharacterMovement()->Velocity.ToString());
-            break;
-    }
+	Super::FlipCharacter(Character);
 }
 
 void URyuCharacterOnGroundState::Enter(ARyuBaseCharacter* Character)

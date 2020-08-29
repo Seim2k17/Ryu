@@ -602,13 +602,13 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
     // Mainly due AnimationEndedInput this needs to be implemented here in the BaseClass
     //URyuCharacterState* state = nullptr;
 
-    UE_LOG(LogRyu, Error, TEXT("RYUBASE: HANDLEINPUT: %s"),
-           *URyuStaticFunctionLibrary::InputStateToString(Input));
-    //Possible fix for crash ?  Todo check if everyhandleInput returns a NEW State OR the current one! not nullptr !!!
+    //UE_LOG(LogRyu, Error, TEXT("RYUBASE: HANDLEINPUT: %s"),
+    //       *URyuStaticFunctionLibrary::InputStateToString(Input));
+    // TODO Possible fix for crash ?  check if everyhandleInput returns a NEW State OR the current one! not nullptr !!! --> memory leak
     URyuCharacterState* state = CharacterState->HandleInput(this, Input);
 
-    UE_LOG(LogRyu, Log, TEXT("CharBase | ResetTimer: CharacterSpeed: %s "),
-           *this->GetCharacterMovement()->Velocity.ToString());
+    //UE_LOG(LogRyu, Log, TEXT("CharBase | ResetTimer: CharacterSpeed: %s "),
+    //       *this->GetCharacterMovement()->Velocity.ToString());
 
     if ((state == nullptr) || (state == CharacterState))
     {
@@ -617,23 +617,26 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
 
     // save the pressed Input of the current State to the new state for other Methods besides HandleIput
     state->SetInputPressedState(Input);
-    UE_LOG(LogRyu, Warning, TEXT("GetCurrentCharState: %s"),
+    /*
+	UE_LOG(LogRyu, Warning, TEXT("GetCurrentCharState: %s"),
            *URyuStaticFunctionLibrary::CharacterStateToString(CharacterState->GetState()));
     UE_LOG(LogRyu, Warning, TEXT("GetInputState: %s"),
            *URyuStaticFunctionLibrary::InputStateToString(CharacterState->GetInputPressedState()));
+	*/
+
     // Call Exit-Action on the old state
     CharacterState->Exit(this);
 	// TODO: check if this really dealloc every state or  only the states which are changed by playerinput
-	UE_LOG(LogRyu, Log, TEXT("Destroying Old State..."));
+	// UE_LOG(LogRyu, Log, TEXT("Destroying Old State..."));
 	CharacterState->ConditionalBeginDestroy();
 	CharacterState = nullptr;
     //EquipmentState->Exit(this);
     // we really need to delete NewObjects<OLDSTATE> or mark for GC, otherwise MemoryLeak ?
     // delete old CharacterState;
     CharacterState = state;
-    //EquipmentState = state;
-    UE_LOG(LogRyu, Log, TEXT("OldInputpressedState: %s"),
-           *URyuStaticFunctionLibrary::InputStateToString(state->GetInputPressedState()));
+    // EquipmentState = state;
+    // UE_LOG(LogRyu, Log, TEXT("OldInputpressedState: %s"),
+    //       *URyuStaticFunctionLibrary::InputStateToString(state->GetInputPressedState()));
     CharacterState->SetInputPressedState(state->GetInputPressedState());
     // Call the enter Action on the new State
     CharacterState->Enter(this);

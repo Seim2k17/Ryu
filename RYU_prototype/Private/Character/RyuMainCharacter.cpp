@@ -100,12 +100,11 @@ void ARyuMainCharacter::InitializeCharacterValues()
     /* Hmm set Values only at initializing*/
     CameraBoom->TargetArmLength = 500.0f;
     CameraBoom->SocketOffset = FVector(0.0f, 0.0f, 75.0f);
-    CameraBoom->bAbsoluteRotation = true;
+    CameraBoom->SetUsingAbsoluteRotation(true);
     CameraBoom->bDoCollisionTest = false;
-    CameraBoom->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
+    CameraBoom->SetRelativeRotation(FRotator(.0f, -90.0f, 0.0f));
 
     // Prevent all automatic rotation behavior on the camera, character, and camera component
-    CameraBoom->bAbsoluteRotation = true;
     SideViewCameraComponent->bUsePawnControlRotation = false;
     SideViewCameraComponent->bAutoActivate = true;
     SideViewCameraComponent->ProjectionMode = ECameraProjectionMode::Orthographic;
@@ -353,125 +352,6 @@ void ARyuMainCharacter::UpdateCharacter()
     bIsinAir ? bla = "Char is in Air: true" : "false";
 
     UE_LOG(LogTemp, Log, TEXT("%s"), *bla);
-
-    //** ABP-TRANSITION-RULES *******//
-    //** TransitionRules for the ABP, moved it completely to c++ due clarity and complexicity reason
-    /* TODO CSMN
-    if (PlayerMovement == EPlayerMovement::JUMPLOOP && !bIsinAir)
-    {
-        PlayerMovement = EPlayerMovement::JUMPEND;
-    }
-
-    
-    if (currV.Z < -500)
-    {
-        if (PlayerMovement != EPlayerMovement::FALLING)
-        {
-            PlayerMovement = EPlayerMovement::STARTFALLING;
-        }
-    }
-    else
-    {
-        if (bSneakIsPressed)
-        {
-            PlayerMovement = EPlayerMovement::SNEAK;
-        }
-
-        //TODO curV.Z > 0 (was auch immer das heisst)
-
-        //Character can Turn around --> it playes the turnAnimation
-        if ((GetLookDirection() == ERyuLookDirection::Right && MoveRightInput < 0)
-            || (GetLookDirection() == ERyuLookDirection::Left && MoveRightInput > 0))
-        {
-            if (PlayerMovement == EPlayerMovement::RUN)
-            {
-                PlayerMovement = EPlayerMovement::STARTTURNRUN;
-                UE_LOG(LogTemp, Log, TEXT("UpdateCharacter(): Started Turn while Running"));
-            }
-            else
-            {
-                if ((PlayerMovement == EPlayerMovement::STAND)
-                    || (PlayerMovement == EPlayerMovement::CANGRABLEDGE))
-                    PlayerMovement = EPlayerMovement::STARTTURN;
-            }
-        }
-
-        //character IS Turning
-        if (PlayerMovement == EPlayerMovement::STARTTURNRUN)
-            return;
-
-        switch (PlayerMovement)
-        {
-            case EPlayerMovement::STAND:
-            {
-                if ((GetLookDirection() == ERyuLookDirection::Right && (currV.X > 0))
-                    || (GetLookDirection() == ERyuLookDirection::Left && (currV.X < 0)))
-                {
-                    PlayerMovement = EPlayerMovement::BEGINRUN;
-                    break;
-                }
-                //do we want to climb or JumpUp ?
-                RyuClimbingComponent->CheckMoveUpState(MoveUpInput);
-
-                //return;
-                break;
-            }
-            case EPlayerMovement::BEGINRUN:
-            {
-                //change State to stop walking or Running
-                if (MoveRightInput == 0)
-                {
-                    PlayerMovement = EPlayerMovement::ENDRUN;
-                }
-                else
-                {
-                    PlayerMovement = EPlayerMovement::RUN;
-                }
-                //return;
-                break;
-            }
-            case EPlayerMovement::RUN:
-            {
-                if (currV.X == 0)
-                {
-                    if (PlayerMovement != EPlayerMovement::STARTTURNRUN)
-                        PlayerMovement = EPlayerMovement::ENDRUN;
-                }
-
-                //return;
-                break;
-            }
-            case EPlayerMovement::ENDTURN:
-            {
-                PlayerMovement = EPlayerMovement::STAND;
-                //return;
-                break;
-            }
-            case EPlayerMovement::STARTFALLING:
-            {
-                PlayerMovement = EPlayerMovement::STANDUP;
-                break;
-            }
-            case EPlayerMovement::FALLING:
-            {
-                PlayerMovement = EPlayerMovement::STANDUP;
-                break;
-            }
-            case EPlayerMovement::CLIMBING:
-            {
-                RyuClimbingComponent->Climb(MoveUpInput);
-                break;
-            }
-            case EPlayerMovement::CANGRABLEDGE:
-            {
-                RyuClimbingComponent->CheckMoveUpState(MoveUpInput);
-                break;
-            }
-            default:
-                break;
-        }
-    }
-	*/
 }
 
 void ARyuMainCharacter::Climb()

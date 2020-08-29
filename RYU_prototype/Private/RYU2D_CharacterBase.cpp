@@ -357,13 +357,13 @@ void ARYU2D_CharacterBase::FlipCharacter()
         if (bLookRight)
         {
             Controller->SetControlRotation(FRotator(0.0, 180.0f, 0.0f));
-            CameraBoom->RelativeRotation = FRotator(0.0f, 90.0f, 0.0f);
+            CameraBoom->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
         }
         //else if (TravelDirection > 0.0f)
         else
         {
             Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
-            CameraBoom->RelativeRotation = FRotator(0.0f, -90.0f, 0.0f);
+            CameraBoom->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
         }
     }
 
