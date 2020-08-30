@@ -150,7 +150,7 @@ void ARyuMainCharacter::StartLineTracing()
     //TraceEnd = TraceStart - (LengthLineTrace * (-1.f) * this->GetActorForwardVector());
 
     // TODO: set own CollisionChannel to LineTrace! -> but BSPs can´t have one so for testing we NEED to See the the BSP-Geometry and tht the CollChannel to Visibility !
-    TheWorld->LineTraceSingleByChannel(JumpHitResult, TraceStart, TraceEnd,
+    TheWorld->LineTraceSingleByChannel(CharHitResult, TraceStart, TraceEnd,
                                        ECollisionChannel::ECC_Visibility, CollisionParams);
 
     if (bLineTracingVisible)
@@ -464,7 +464,7 @@ bool ARyuMainCharacter::GetSneakActive()
 
 FHitResult ARyuMainCharacter::GetHitResult()
 {
-    return JumpHitResult;
+    return CharHitResult;
 }
 
 void ARyuMainCharacter::SneakPressed()

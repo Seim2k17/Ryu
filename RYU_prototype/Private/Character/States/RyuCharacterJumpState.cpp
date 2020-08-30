@@ -5,6 +5,7 @@
 #include "Enums/ERyuInputState.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
+#include "RyuMainCharacter.h"
 #include "RyuCharacterIdleState.h"
 //#include "RyuCharacterJumpEndState.h"
 #include "RyuCharacterOnGroundState.h"
@@ -61,9 +62,11 @@ void URyuCharacterJumpState::Update(ARyuBaseCharacter* Character)
         // TODO: !!! JumpeEnd / Jump wuith Velocity < 0 will become Falling and FallingEndstate / Edit the yEd !
         // following lines needs to be moved to a new State (FallingState) because it´s not only jumprelated
         // the JumpEndState therefore will become a FallingEndState !!!
+        // we need to differ it !
         // Test if char is still n air otherwise change state back to idle
         //if (Character->GetCharacterMovement()->IsFalling() && Character->GetVelocity().Z < 0.0f)
-        if (Character->GetVelocity().Z < 0.0f)
+		auto FallDownSpeed = Character->GetVelocity();
+        if ( FallDownSpeed.Z < 0.0f)
         {
             if (bCharacterStartFalling == false)
             {
@@ -72,10 +75,6 @@ void URyuCharacterJumpState::Update(ARyuBaseCharacter* Character)
             }
 
             FHitResult TraceHit = MainChar->GetHitResult();
-            UE_LOG(LogRyu, Log,
-                   TEXT("Character gets back on the ground -> Back to Idle is triggered with at %s "
-                        "with %s"),
-                   *TraceHit.ImpactPoint.ToString(), *Character->GetVelocity().ToString());
 
             // KillVelocity when MoveRightButton isn´t pressed anymore
             if (MainChar->GetMoveRightAxisState() == ERyuMoveRightAxisInputState::Inactive)
@@ -83,16 +82,35 @@ void URyuCharacterJumpState::Update(ARyuBaseCharacter* Character)
                 MainChar->GetMovementComponent()->Velocity.X = 0.0f;
             }
 
-            // switch to JumpEndState
-            if (TraceHit.bBlockingHit)
-            {
-                UE_LOG(LogRyu, Log, TEXT("JumpUpdate: ImpactPoinz: %s"),*TraceHit.ImpactPoint.ToString());
-                bCharacterStartFalling = false;
-                Character->ResetFallingTimer();
-                // TODO recheck Workflow: with HandleInput(InputEndJump character keeps walking --> backtrack why !
-                //CharacterState = ERyuCharacterState::JumpEnd;
-                Character->HandleInput(ERyuInputState::InputEndJump);
-            }
+			if (FallDownSpeed.Z < Character->GetFallVelocityZFromJump())
+			{
+				bCharacterStartFalling = false;
+				Character->ResetFallingTimer();
+				// TODO: we need a possibility to change the Input WITHOUT using an Input !
+				Character->HandleInput(ERyuInputState::InputFalling);
+			}
+			else
+			{
+				// switch to JumpEndState
+				if (TraceHit.bBlockingHit)
+				{
+					UE_LOG(
+						LogRyu, Log,
+						TEXT(
+							"Character gets back on the ground -> Back to Idle is triggered with at %s "
+							"with %s"),
+						*TraceHit.ImpactPoint.ToString(), *Character->GetVelocity().ToString());
+
+					UE_LOG(LogRyu, Log, TEXT("JumpUpdate: ImpactPoinz: %s"),
+						*TraceHit.ImpactPoint.ToString());
+					bCharacterStartFalling = false;
+					Character->ResetFallingTimer();
+					// TODO recheck Workflow: with HandleInput(InputEndJump character keeps walking --> backtrack why !
+					//CharacterState = ERyuCharacterState::JumpEnd;
+					Character->HandleInput(ERyuInputState::InputEndJump);
+				}
+			}
+            
         }
     }
 }

@@ -123,7 +123,7 @@ protected:
 
 private:
     // LineTracing / DebbugingSection
-    FHitResult JumpHitResult;
+    FHitResult CharHitResult;
     FVector TraceStart;
     FVector TraceEnd;
     FCollisionQueryParams CollisionParams;

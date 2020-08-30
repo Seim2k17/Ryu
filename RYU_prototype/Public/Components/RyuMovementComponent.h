@@ -139,6 +139,15 @@ public:
     UPROPERTY(EditAnywhere, Category = "Falling")
     float MaxFallingVelocityZ = -1500.f;
 
+    UPROPERTY(EditAnywhere, Category = "Falling")
+    float JumpSwitchToFallVelocityZ = -2300.f;
+
+    UPROPERTY(EditAnywhere, Category = "Falling")
+    float FallDeepVelocityZ = -3000.f;
+
+    UPROPERTY(EditAnywhere, Category = "Falling")
+    float FallToDeathVelocityZ = -5000.f;
+
     FTimerHandle Timerhandle_CoyoteTime;
 
     UPROPERTY(BlueprintAssignable, Category = "Climbing")

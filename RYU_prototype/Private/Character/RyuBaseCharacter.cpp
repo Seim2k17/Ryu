@@ -569,6 +569,21 @@ URyuMovementComponent* ARyuBaseCharacter::GetRyuCharacterMovement()
     }
 }
 
+float ARyuBaseCharacter::GetFallVelocityZFromJump()
+{
+    return GetRyuCharacterMovement()->JumpSwitchToFallVelocityZ;
+}
+
+float ARyuBaseCharacter::GetFallDeepVelocityZ()
+{
+    return GetRyuCharacterMovement()->FallDeepVelocityZ;
+}
+
+float ARyuBaseCharacter::GetFallToDeathVelocityZ()
+{
+    return GetRyuCharacterMovement()->FallToDeathVelocityZ;
+}
+
 void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
 {
     bHandleInput = true;
@@ -626,10 +641,10 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
 
     // Call Exit-Action on the old state
     CharacterState->Exit(this);
-	// TODO: check if this really dealloc every state or  only the states which are changed by playerinput
-	// UE_LOG(LogRyu, Log, TEXT("Destroying Old State..."));
-	CharacterState->ConditionalBeginDestroy();
-	CharacterState = nullptr;
+    // TODO: check if this really dealloc every state or  only the states which are changed by playerinput
+    // UE_LOG(LogRyu, Log, TEXT("Destroying Old State..."));
+    CharacterState->ConditionalBeginDestroy();
+    CharacterState = nullptr;
     //EquipmentState->Exit(this);
     // we really need to delete NewObjects<OLDSTATE> or mark for GC, otherwise MemoryLeak ?
     // delete old CharacterState;

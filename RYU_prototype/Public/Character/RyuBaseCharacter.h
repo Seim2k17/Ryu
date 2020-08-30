@@ -161,7 +161,13 @@ public:
 
     ERyuMoveRightAxisInputState GetMoveRightAxisState();
 
-	URyuMovementComponent* GetRyuCharacterMovement();
+    URyuMovementComponent* GetRyuCharacterMovement();
+
+    float GetFallVelocityZFromJump();
+
+    float GetFallDeepVelocityZ();
+
+    float GetFallToDeathVelocityZ();
 
     /** Returns SideViewCameraComponent subobject **/
     FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const
@@ -228,7 +234,7 @@ public:
 
     void SetCharacterMovementState(ERyuMovementState MovementState);
 
-	/*ONLY FOR DEBUG/DEVELOPMENT-PURPOSE*/
+    /*ONLY FOR DEBUG/DEVELOPMENT-PURPOSE*/
     UFUNCTION(BlueprintCallable, Category = "Debug")
     void SwitchCharacterStateEnum(ERyuCharacterState InputState);
 
@@ -285,6 +291,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
     FName RunNodeName = TEXT("ToRun");
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
+    FName FallinghNodeName = TEXT("ToFalling");
 
     /** Side view camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera,
