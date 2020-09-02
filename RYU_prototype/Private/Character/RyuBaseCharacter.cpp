@@ -137,7 +137,7 @@ void ARyuBaseCharacter::ResetMoveRightInput()
 void ARyuBaseCharacter::ResetEndJumpTimer()
 {
     // pass in link to Character from Timer to reset State !!!
-    UE_LOG(LogRyu, Log, TEXT("TimerReset."));
+    UE_LOG(LogRyu, Log, TEXT("RyuBaseCharacter: TimerResetJumping."));
 
     HandleInput(ERyuInputState::InputEndJump);
     GetWorld()->GetTimerManager().ClearTimer(EndJumpTimerHandle);
@@ -145,6 +145,7 @@ void ARyuBaseCharacter::ResetEndJumpTimer()
 
 void ARyuBaseCharacter::ResetFallingTimer()
 {
+    UE_LOG(LogRyu, Log, TEXT("RyuBaseCharacter: TimerResetFalling."));
     GetWorld()->GetTimerManager().ClearTimer(FallingTimerHandle);
 }
 
@@ -255,7 +256,6 @@ void ARyuBaseCharacter::IncreaseFallingVelocity()
 {
     if (auto* MoveComp = Cast<URyuMovementComponent>(GetCharacterMovement()))
     {
-        UE_LOG(LogRyu, Log, TEXT("Speed(z): %f"), MoveComp->Velocity.Z);
         MoveComp->IncreaseFallingVelocity();
     }
 }
@@ -692,12 +692,17 @@ void ARyuBaseCharacter::InitInputCounterparts()
 
 bool ARyuBaseCharacter::CheckCharacterEnumValue()
 {
+    // TODO: why da hell is this here ? this prevent Update-Calls in CharacterStates which are note listed in the true section !
     if ((CharacterState->GetState() == ERyuCharacterState::Idle)
         || (CharacterState->GetState() == ERyuCharacterState::JumpForward)
         || (CharacterState->GetState() == ERyuCharacterState::JumpForwardFast)
         || (CharacterState->GetState() == ERyuCharacterState::JumpUpward)
         || (CharacterState->GetState() == ERyuCharacterState::JumpEnd)
-        || (CharacterState->GetState() == ERyuCharacterState::Run))
+        || (CharacterState->GetState() == ERyuCharacterState::Run)
+        || (CharacterState->GetState() == ERyuCharacterState::FallingNormal)
+        || (CharacterState->GetState() == ERyuCharacterState::FallingDeep)
+        || (CharacterState->GetState() == ERyuCharacterState::FallingNormalEnd)
+        || (CharacterState->GetState() == ERyuCharacterState::FallingDeepEnd))
     {
         return true;
     }
@@ -723,12 +728,14 @@ void ARyuBaseCharacter::SetEndJumpTimer()
 
 void ARyuBaseCharacter::SetFallingTimer()
 {
+    UE_LOG(LogTemp, Log, TEXT("SetFallingTimer."));
     auto* MoveComp = Cast<URyuMovementComponent>(GetCharacterMovement());
     if (MoveComp)
     {
-        GetWorld()->GetTimerManager().SetTimer(FallingTimerHandle, this,
+        /* GetWorld()->GetTimerManager().SetTimer(FallingTimerHandle, this,
                                                &ARyuBaseCharacter::IncreaseFallingVelocity,
                                                MoveComp->FallingVelocityTimer, true);
+											   */
     }
 }
 

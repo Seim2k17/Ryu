@@ -35,6 +35,7 @@ URyuCharacterState* URyuCharacterFallingState::HandleInput(ARyuBaseCharacter* Ch
 
 void URyuCharacterFallingState::Update(ARyuBaseCharacter* Character)
 {
+	UE_LOG(LogRyu, Warning, TEXT("RyuCharacterFallingState(Update):"));
     if (auto* MainChar = Cast<ARyuMainCharacter>(Character))
     {
         Super::Update(Character);
@@ -50,17 +51,18 @@ void URyuCharacterFallingState::Update(ARyuBaseCharacter* Character)
         }
 
         FHitResult TraceHit = MainChar->GetHitResult();
-		if (TraceHit.bBlockingHit)
-		{
-			// TODO: differ fallingendstate if falling normal/deep or DIE
-			Character->HandleInput(ERyuInputState::InputEndFalling);
-		}
+        UE_LOG(LogRyu, Warning, TEXT("RyuCharacterFallingState(Update): %s"), *TraceHit.ToString());
+        if (TraceHit.bBlockingHit)
+        {
+            // TODO: differ fallingendstate if falling normal/deep or DIE
+            Character->HandleInput(ERyuInputState::InputEndFalling);
+        }
     }
 }
 
 void URyuCharacterFallingState::Enter(ARyuBaseCharacter* Character)
 {
-	Character->JumpToAnimInstanceNode(Character->FallinghNodeName);
+    Character->JumpToAnimInstanceNode(Character->FallinghNodeName);
     CharacterState = ERyuCharacterState::FallingNormal;
     FallDownSpeed = Character->GetVelocity().Z;
 }

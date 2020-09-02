@@ -5,9 +5,10 @@
 #include "Enums/ERyuInputState.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
-#include "RyuMainCharacter.h"
 #include "RyuCharacterIdleState.h"
+#include "RyuMainCharacter.h"
 //#include "RyuCharacterJumpEndState.h"
+#include "RyuCharacterFallingState.h"
 #include "RyuCharacterOnGroundState.h"
 #include "RyuCharacterRunState.h"
 
@@ -32,6 +33,11 @@ URyuCharacterState* URyuCharacterJumpState::HandleInput(ARyuBaseCharacter* Chara
         {
             //CharacterState = ERyuCharacterState::JumpEnd;
             return NewObject<URyuCharacterJumpEndState>();
+        }
+        case ERyuInputState::InputFalling:
+        {
+            //CharacterState = ERyuCharacterState::JumpEnd;
+            return NewObject<URyuCharacterFallingState>();
         }
 
         default:
@@ -65,8 +71,8 @@ void URyuCharacterJumpState::Update(ARyuBaseCharacter* Character)
         // we need to differ it !
         // Test if char is still n air otherwise change state back to idle
         //if (Character->GetCharacterMovement()->IsFalling() && Character->GetVelocity().Z < 0.0f)
-		auto FallDownSpeed = Character->GetVelocity();
-        if ( FallDownSpeed.Z < 0.0f)
+        auto FallDownSpeed = Character->GetVelocity();
+        if (FallDownSpeed.Z < 0.0f)
         {
             if (bCharacterStartFalling == false)
             {
@@ -82,41 +88,37 @@ void URyuCharacterJumpState::Update(ARyuBaseCharacter* Character)
                 MainChar->GetMovementComponent()->Velocity.X = 0.0f;
             }
 
-			if (FallDownSpeed.Z < Character->GetFallVelocityZFromJump())
-			{
-				bCharacterStartFalling = false;
-				Character->ResetFallingTimer();
-				// TODO: we need a possibility to change the Input WITHOUT using an Input !
-				Character->HandleInput(ERyuInputState::InputFalling);
-			}
-			else
-			{
-				// switch to JumpEndState
-				if (TraceHit.bBlockingHit)
-				{
-					UE_LOG(
-						LogRyu, Log,
-						TEXT(
-							"Character gets back on the ground -> Back to Idle is triggered with at %s "
-							"with %s"),
-						*TraceHit.ImpactPoint.ToString(), *Character->GetVelocity().ToString());
+            if (FallDownSpeed.Z < Character->GetFallVelocityZFromJump())
+            {
+                // TODO: we need a possibility to change the Input WITHOUT using an Input ! do we really ?
+                Character->HandleInput(ERyuInputState::InputFalling);
+            }
+            else
+            {
+                // switch to JumpEndState
+                if (TraceHit.bBlockingHit)
+                {
+                    UE_LOG(LogRyu, Log,
+                           TEXT("Character gets back on the ground -> Back to Idle is triggered "
+                                "with at %s "
+                                "with %s"),
+                           *TraceHit.ImpactPoint.ToString(), *Character->GetVelocity().ToString());
 
-					UE_LOG(LogRyu, Log, TEXT("JumpUpdate: ImpactPoinz: %s"),
-						*TraceHit.ImpactPoint.ToString());
-					bCharacterStartFalling = false;
-					Character->ResetFallingTimer();
-					// TODO recheck Workflow: with HandleInput(InputEndJump character keeps walking --> backtrack why !
-					//CharacterState = ERyuCharacterState::JumpEnd;
-					Character->HandleInput(ERyuInputState::InputEndJump);
-				}
-			}
-            
+                    UE_LOG(LogRyu, Log, TEXT("JumpUpdate: ImpactPoinz: %s"),
+                           *TraceHit.ImpactPoint.ToString());
+
+                    // TODO recheck Workflow: with HandleInput(InputEndJump character keeps walking --> backtrack why !
+                    //CharacterState = ERyuCharacterState::JumpEnd;
+                    Character->HandleInput(ERyuInputState::InputEndJump);
+                }
+            }
         }
     }
 }
 
 void URyuCharacterJumpState::Enter(ARyuBaseCharacter* Character)
 {
+    bCharacterStartFalling = false;
     if (auto* MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
     {
         if (auto* MoveComp = MainChar->GetRyuCharacterMovement())
@@ -146,6 +148,16 @@ void URyuCharacterJumpState::Enter(ARyuBaseCharacter* Character)
                 break;
         }
     }
+}
+
+void URyuCharacterJumpState::Exit(ARyuBaseCharacter* Character)
+{
+    bCharacterStartFalling = false;
+    Character->ResetFallingTimer();
+    // TODO: check if this is a source of error:
+	InputPressed = ERyuInputState::None;
+    //this->ConditionalBeginDestroy();
+    //this = nullptr;
 }
 
 URyuCharacterState* URyuCharacterJumpState::InputAnimationEnded(ARyuBaseCharacter* Character)

@@ -384,13 +384,14 @@ float URyuMovementComponent::GetSneakMultiplier()
 
 void URyuMovementComponent::IncreaseFallingVelocity()
 {
-	//TODO: when Jumping in JumpForwardFasterWay: increase VelocityZ even more !
-    UE_LOG(LogRyu, Warning, TEXT("Falling."));
+    //TODO: when Jumping in JumpForwardFasterWay: increase VelocityZ even more !
+    UE_LOG(LogRyu, Warning,
+           TEXT("RyuMovementComponent(IncreaseFallingVelocity): Falling Speed(z): %f"),
+           this->Velocity.Z);
     if ((Velocity.Z <= 0.0f) && (Velocity.Z >= MaxFallingVelocityZ))
     {
         Velocity.Z += (Velocity.Z * AddFallingMultiplierNumber);
     }
-	
 }
 
 void URyuMovementComponent::SetAllowClimbUpTrue()
@@ -410,10 +411,13 @@ void URyuMovementComponent::SetAllowClimbUpFalse()
 
 void URyuMovementComponent::SetVelocityAfterJump(FJumpStartValues AfterJumpValues)
 {
-	UE_LOG(LogRyu,Log,TEXT("SetVelocityAfterJump: %s Acc: %s"),*AfterJumpValues.JumpStartVelocity.ToString(),*AfterJumpValues.JumpStartAcceleration.ToString() )
-	//MaxWalkSpeed = AfterJumpValues.JumpStartVelocity.X;
-	//MaxAcceleration = AfterJumpValues.JumpStartAcceleration.X;
-	UE_LOG(LogRyu,Log,TEXT("VelocityMoveCompAfterJump: %s Acc: %s"),*Velocity.ToString(),*Acceleration.ToString() )
+    UE_LOG(LogRyu, Log, TEXT("SetVelocityAfterJump: %s Acc: %s"),
+           *AfterJumpValues.JumpStartVelocity.ToString(),
+           *AfterJumpValues.JumpStartAcceleration.ToString())
+    //MaxWalkSpeed = AfterJumpValues.JumpStartVelocity.X;
+    //MaxAcceleration = AfterJumpValues.JumpStartAcceleration.X;
+    UE_LOG(LogRyu, Log, TEXT("VelocityMoveCompAfterJump: %s Acc: %s"), *Velocity.ToString(),
+           *Acceleration.ToString())
 }
 
 void URyuMovementComponent::ResetDoOnceClimbInput()
