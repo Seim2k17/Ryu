@@ -18,7 +18,7 @@ public:
                                             const ERyuInputState Input) override;
     virtual void Update(ARyuBaseCharacter* Character) override;
     virtual void Enter(ARyuBaseCharacter* Character) override{};
-    virtual void Exit(ARyuBaseCharacter* Character) override{};
+    virtual void Exit(ARyuBaseCharacter* Character) override;
 
     URyuCharacterState* InputAnimationEnded(ARyuBaseCharacter* Character) override;
 

@@ -33,7 +33,7 @@ URyuCharacterState* URyuCharacterFallingEndState::HandleInput(ARyuBaseCharacter*
             //}
         }
         default:
-			return nullptr;
+            return nullptr;
             break;
     }
 }
@@ -45,11 +45,31 @@ void URyuCharacterFallingEndState::Update(ARyuBaseCharacter* Character)
 void URyuCharacterFallingEndState::Enter(ARyuBaseCharacter* Character)
 {
     Character->ResetFallingTimer();
-	// how to differ here ?
-    CharacterState = ERyuCharacterState::FallingNormalEnd;
-	//CharacterState = ERyuCharacterState::FallingDeepEnd;
+    // how to differ here ?
+    switch (Character->GetLastCharacterState())
+    {
+        case ERyuCharacterState::FallingNormal:
+        {
+            CharacterState = ERyuCharacterState::FallingNormalEnd;
+            break;
+        }
+        case ERyuCharacterState::FallingDeep:
+        {
+            CharacterState = ERyuCharacterState::FallingDeepEnd;
+
+            break;
+        }
+        case ERyuCharacterState::FallingDeath:
+        {
+            CharacterState = ERyuCharacterState::FallingDeath;
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 void URyuCharacterFallingEndState::Exit(ARyuBaseCharacter* Character)
 {
+	Super::Exit(Character);
 }

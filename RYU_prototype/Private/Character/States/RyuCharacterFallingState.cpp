@@ -35,7 +35,7 @@ URyuCharacterState* URyuCharacterFallingState::HandleInput(ARyuBaseCharacter* Ch
 
 void URyuCharacterFallingState::Update(ARyuBaseCharacter* Character)
 {
-	UE_LOG(LogRyu, Warning, TEXT("RyuCharacterFallingState(Update):"));
+    UE_LOG(LogRyu, Warning, TEXT("RyuCharacterFallingState(Update):"));
     if (auto* MainChar = Cast<ARyuMainCharacter>(Character))
     {
         Super::Update(Character);
@@ -47,7 +47,7 @@ void URyuCharacterFallingState::Update(ARyuBaseCharacter* Character)
 
         if (FallDownSpeed <= Character->GetFallToDeathVelocityZ())
         {
-            //CharacterState = ERyuCharacterState::FallingDeath;
+            CharacterState = ERyuCharacterState::FallingDeath;
         }
 
         FHitResult TraceHit = MainChar->GetHitResult();
@@ -69,4 +69,5 @@ void URyuCharacterFallingState::Enter(ARyuBaseCharacter* Character)
 
 void URyuCharacterFallingState::Exit(ARyuBaseCharacter* Character)
 {
+    Super::Exit(Character);
 }

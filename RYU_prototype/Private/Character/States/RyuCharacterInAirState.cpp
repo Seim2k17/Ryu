@@ -33,6 +33,11 @@ void URyuCharacterInAirState::Update(ARyuBaseCharacter* Character)
 	UE_LOG(LogTemp, Warning, TEXT("InAirState: Char in Air"));
 }
 
+void URyuCharacterInAirState::Exit(ARyuBaseCharacter* Character)
+{
+	Character->SetLastCharacterState(GetState());
+}
+
 URyuCharacterState* URyuCharacterInAirState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
     return this;

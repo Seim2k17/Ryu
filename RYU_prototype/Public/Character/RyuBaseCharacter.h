@@ -56,7 +56,6 @@ public:
     {
         return (ReleaseKeyState == Input);
     }
-
     FInputCounterparts(){};
 };
 
@@ -155,6 +154,8 @@ public:
 
     ERyuInteractionStatus GetInteractionStatus();
 
+	ERyuCharacterState GetLastCharacterState();
+
     FJumpStartValues GetJumpStartValues();
 
     ERyuLookDirection GetLookDirection();
@@ -231,6 +232,8 @@ public:
     void StopJumping() override;
 
     void SetLookDirection(ERyuLookDirection Direction);
+
+	void SetLastCharacterState(ERyuCharacterState LastState);
 
     void SetCharacterMovementState(ERyuMovementState MovementState);
 
@@ -362,6 +365,9 @@ protected:
     FJumpStartValues JumpStartValues;
 
 private:
+
+	ERyuCharacterState LastCharacterState = ERyuCharacterState::None;
+
     // UtilitySection
     ERyuLookDirection LookDirection = ERyuLookDirection::Right;
 

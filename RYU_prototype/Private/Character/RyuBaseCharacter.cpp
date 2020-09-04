@@ -536,6 +536,11 @@ ERyuInteractionStatus ARyuBaseCharacter::GetInteractionStatus()
     return InteractionStatus;
 }
 
+ERyuCharacterState ARyuBaseCharacter::GetLastCharacterState()
+{
+	return LastCharacterState;
+}
+
 FJumpStartValues ARyuBaseCharacter::GetJumpStartValues()
 {
     return JumpStartValues;
@@ -843,4 +848,9 @@ void ARyuBaseCharacter::StopJumping()
 void ARyuBaseCharacter::SetLookDirection(ERyuLookDirection Direction)
 {
     LookDirection = LookDirection;
+}
+
+void ARyuBaseCharacter::SetLastCharacterState(ERyuCharacterState LastState)
+{
+	LastCharacterState = LastState;
 }
