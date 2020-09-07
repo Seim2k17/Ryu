@@ -39,22 +39,34 @@ void URyuCharacterFallingState::Update(ARyuBaseCharacter* Character)
     if (auto* MainChar = Cast<ARyuMainCharacter>(Character))
     {
         Super::Update(Character);
+
         FallDownSpeed = Character->GetVelocity().Z;
-        if (FallDownSpeed < Character->GetFallDeepVelocityZ())
+
+        if ((FallDownSpeed < Character->GetFallNormalVelocityZ())
+            && (FallDownSpeed > Character->GetFallDeepVelocityZ()))
+        {
+            CharacterState = ERyuCharacterState::FallingNormal;
+            Character->SetLastCharacterState(ERyuCharacterState::FallingNormal);
+        }
+
+        if ((FallDownSpeed < Character->GetFallDeepVelocityZ())
+            && (FallDownSpeed > Character->GetFallToDeathVelocityZ()))
         {
             CharacterState = ERyuCharacterState::FallingDeep;
+            Character->SetLastCharacterState(ERyuCharacterState::FallingDeep);
         }
 
         if (FallDownSpeed <= Character->GetFallToDeathVelocityZ())
         {
             CharacterState = ERyuCharacterState::FallingDeath;
+            Character->SetLastCharacterState(ERyuCharacterState::FallingDeath);
         }
 
         FHitResult TraceHit = MainChar->GetHitResult();
         UE_LOG(LogRyu, Warning, TEXT("RyuCharacterFallingState(Update): %s"), *TraceHit.ToString());
-        if (TraceHit.bBlockingHit)
+        if (!Character->IsFalling()) //TraceHit.bBlockingHit)
         {
-            // TODO: differ fallingendstate if falling normal/deep or DIE
+            UE_LOG(LogRyu, Error, TEXT("RyuCharacterFallingState(Update): FallDownSpeed >= 0"));
             Character->HandleInput(ERyuInputState::InputEndFalling);
         }
     }
@@ -62,9 +74,9 @@ void URyuCharacterFallingState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterFallingState::Enter(ARyuBaseCharacter* Character)
 {
-    Character->JumpToAnimInstanceNode(Character->FallinghNodeName);
-    CharacterState = ERyuCharacterState::FallingNormal;
+    CharacterState = ERyuCharacterState::JumpEnd;
     FallDownSpeed = Character->GetVelocity().Z;
+    Character->JumpToAnimInstanceNode(Character->FallinghNodeName);
 }
 
 void URyuCharacterFallingState::Exit(ARyuBaseCharacter* Character)

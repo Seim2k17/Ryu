@@ -154,7 +154,7 @@ public:
 
     ERyuInteractionStatus GetInteractionStatus();
 
-	ERyuCharacterState GetLastCharacterState();
+    ERyuCharacterState GetLastCharacterState();
 
     FJumpStartValues GetJumpStartValues();
 
@@ -165,6 +165,8 @@ public:
     URyuMovementComponent* GetRyuCharacterMovement();
 
     float GetFallVelocityZFromJump();
+
+    float GetFallNormalVelocityZ();
 
     float GetFallDeepVelocityZ();
 
@@ -177,6 +179,8 @@ public:
     }
 
     bool IsInCombat();
+
+    bool IsFalling();
 
     bool EnemyInSight();
 
@@ -233,7 +237,7 @@ public:
 
     void SetLookDirection(ERyuLookDirection Direction);
 
-	void SetLastCharacterState(ERyuCharacterState LastState);
+    void SetLastCharacterState(ERyuCharacterState LastState);
 
     void SetCharacterMovementState(ERyuMovementState MovementState);
 
@@ -246,6 +250,8 @@ public:
     void SetEndJumpTimer();
 
     void SetFallingTimer();
+
+    void SetJumpAllowed(bool JumpState);
 
     void SetVelocityAfterJump();
 
@@ -365,8 +371,7 @@ protected:
     FJumpStartValues JumpStartValues;
 
 private:
-
-	ERyuCharacterState LastCharacterState = ERyuCharacterState::None;
+    ERyuCharacterState LastCharacterState = ERyuCharacterState::None;
 
     // UtilitySection
     ERyuLookDirection LookDirection = ERyuLookDirection::Right;

@@ -65,26 +65,14 @@ URyuCharacterState* URyuCharacterRunState::HandleInput(ARyuBaseCharacter* Charac
 
 void URyuCharacterRunState::Update(ARyuBaseCharacter* Character)
 {
-    /* TODO check: Old Movement when Turning ! needable ?
-	if (PlayerMovement == EPlayerMovement::STARTTURNRUN)
-	{
-		AddMovementInput(FVector(1.0f, 0.0f, 0.0f), -0.1f * Val);
-		UE_LOG(LogTemp, Log, TEXT("MoveRight(): Turn while Running %s:"),
-			   *FString::SanitizeFloat((-0.1 * Val)));
-	}
+    Super::Update(Character);
 
-	*/
-    /*
-	Note: obwohl im Runstate sein sollte / update Run wird NICHT ausgefuehrt sobald CharacterState auf JumpEnd gesetzt wird !!!! -> test mit Press L in Level 
-	// check why and where abhaengig // in JumpState Ln 99: setCharstate vs HandleInput .... (wir brauchen aber SteStae damit die Ani correct gesetzt wird !!!
-
-	*/
     if (auto* MainChar = Cast<ARyuMainCharacter>(Character))
     {
         float MoveRightInput = MainChar->GetMoveRightInput();
         //UE_LOG(LogRyu, Log, TEXT("RunState: AddMovementInput: %f"), MoveRightInput);
         MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput);
-		//MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), 1.0f);
+        //MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), 1.0f);
 
         //UE_LOG(LogRyu, Log, TEXT("Character runs with %s "), *Character->GetVelocity().ToString());
     }
@@ -123,5 +111,5 @@ void URyuCharacterRunState::Enter(ARyuBaseCharacter* Character)
 void URyuCharacterRunState::Exit(ARyuBaseCharacter* Character)
 {
     Super::Exit(Character);
-//	this->ConditionalBeginDestroy();
+    //	this->ConditionalBeginDestroy();
 }

@@ -55,7 +55,9 @@ URyuCharacterState* URyuCharacterJumpEndState::HandleInput(ARyuBaseCharacter* Ch
         default:
         {
             // only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input, just walk up in the hierarchy
-            return this;
+			Character->JumpToAnimInstanceNode(Character->IdleNodeName);
+			return NewObject<URyuCharacterIdleState>();
+            //return this;
             //return Super::HandleInput(Character, Input);
             break;
             //

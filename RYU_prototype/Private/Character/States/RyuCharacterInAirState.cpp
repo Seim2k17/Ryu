@@ -30,15 +30,16 @@ URyuCharacterState* URyuCharacterInAirState::HandleInput(ARyuBaseCharacter* Char
 
 void URyuCharacterInAirState::Update(ARyuBaseCharacter* Character)
 {
-	UE_LOG(LogTemp, Warning, TEXT("InAirState: Char in Air"));
+	UE_LOG(LogTemp, Warning, TEXT("InAirState(Update): Char in Air"));
 }
 
 void URyuCharacterInAirState::Exit(ARyuBaseCharacter* Character)
 {
-	Character->SetLastCharacterState(GetState());
+	//Character->SetLastCharacterState(GetState());
 }
 
 URyuCharacterState* URyuCharacterInAirState::InputAnimationEnded(ARyuBaseCharacter* Character)
 {
+	UE_LOG(LogTemp, Warning, TEXT("InAirState(AnimationEnded): nth."));
     return this;
 }

@@ -227,6 +227,7 @@ URyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Char
 
 void URyuCharacterIdleState::Update(ARyuBaseCharacter* Character)
 {
+	Super::Update(Character);
     // LOG(LogRyu, Log, TEXT("Idle-State Updating."));
     // check if MoveRightLeft is still pressed, when entering this State:
     // DO WE NEED TO CALL THIS IN UPDATE ??? -> everytime HandleInput os called A new State is created !!! 

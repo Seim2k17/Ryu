@@ -538,7 +538,7 @@ ERyuInteractionStatus ARyuBaseCharacter::GetInteractionStatus()
 
 ERyuCharacterState ARyuBaseCharacter::GetLastCharacterState()
 {
-	return LastCharacterState;
+    return LastCharacterState;
 }
 
 FJumpStartValues ARyuBaseCharacter::GetJumpStartValues()
@@ -577,6 +577,11 @@ URyuMovementComponent* ARyuBaseCharacter::GetRyuCharacterMovement()
 float ARyuBaseCharacter::GetFallVelocityZFromJump()
 {
     return GetRyuCharacterMovement()->JumpSwitchToFallVelocityZ;
+}
+
+float ARyuBaseCharacter::GetFallNormalVelocityZ()
+{
+    return GetRyuCharacterMovement()->FallNormalVelocityZ;
 }
 
 float ARyuBaseCharacter::GetFallDeepVelocityZ()
@@ -706,8 +711,10 @@ bool ARyuBaseCharacter::CheckCharacterEnumValue()
         || (CharacterState->GetState() == ERyuCharacterState::Run)
         || (CharacterState->GetState() == ERyuCharacterState::FallingNormal)
         || (CharacterState->GetState() == ERyuCharacterState::FallingDeep)
+        || (CharacterState->GetState() == ERyuCharacterState::FallingEnd)
         || (CharacterState->GetState() == ERyuCharacterState::FallingNormalEnd)
-        || (CharacterState->GetState() == ERyuCharacterState::FallingDeepEnd))
+        || (CharacterState->GetState() == ERyuCharacterState::FallingDeepEnd)
+        || (CharacterState->GetState() == ERyuCharacterState::FallingDeath))
     {
         return true;
     }
@@ -757,6 +764,11 @@ bool ARyuBaseCharacter::IsInCombat()
 {
     //TODO check if Character is in a Combat-Situation
     return false;
+}
+
+bool ARyuBaseCharacter::IsFalling()
+{
+    return GetRyuCharacterMovement()->IsFalling();
 }
 
 bool ARyuBaseCharacter::EnemyInSight()
@@ -841,6 +853,11 @@ void ARyuBaseCharacter::Jump()
 {
 }
 
+void ARyuBaseCharacter::SetJumpAllowed(bool JumpState)
+{
+	GetRyuCharacterMovement()->SetJumpAllowedState(JumpState);
+}
+
 void ARyuBaseCharacter::StopJumping()
 {
 }
@@ -852,5 +869,5 @@ void ARyuBaseCharacter::SetLookDirection(ERyuLookDirection Direction)
 
 void ARyuBaseCharacter::SetLastCharacterState(ERyuCharacterState LastState)
 {
-	LastCharacterState = LastState;
+    LastCharacterState = LastState;
 }

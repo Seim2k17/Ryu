@@ -3,10 +3,12 @@
 #include "RyuCharacterOnGroundState.h"
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuLookDirection.h"
+#include "Utilities/RyuStaticFunctionLibrary.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterClimbState.h"
 #include "RyuCharacterDuckState.h"
+#include "RyuCharacterFallingState.h"
 #include "RyuCharacterIdleState.h"
 #include "RyuCharacterJumpBackwardState.h"
 #include "RyuCharacterJumpForwardState.h"
@@ -14,6 +16,7 @@
 #include "RyuCharacterRunState.h"
 #include "RyuCharacterSneakState.h"
 #include "RyuCharacterState.h"
+#include "RyuMainCharacter.h"
 
 URyuCharacterOnGroundState::URyuCharacterOnGroundState()
 {
@@ -28,6 +31,11 @@ URyuCharacterState* URyuCharacterOnGroundState::HandleInput(ARyuBaseCharacter* C
         case ERyuInputState::AnimationEnded:
         {
             return InputAnimationEnded(Character); //InputAnimationEnde(Character);
+            break;
+        }
+        case ERyuInputState::InputFalling:
+        {
+            return NewObject<URyuCharacterFallingState>();
             break;
         }
         default:
@@ -117,13 +125,43 @@ URyuCharacterState* URyuCharacterOnGroundState::InputAnimationEnded(ARyuBaseChar
 
 void URyuCharacterOnGroundState::Update(ARyuBaseCharacter* Character)
 {
-    UE_LOG(LogRyu, Log, TEXT("OnGround(SuperCall) | Update: CharacterSpeed: %s "),
-           *Character->GetCharacterMovement()->Velocity.ToString());
+    if (auto MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
+    {
+        auto FallDownSpeed = Character->GetVelocity();
+        if (FallDownSpeed.Z < 0.0f)
+        {
+            UE_LOG(LogRyu, Log, TEXT("OnGround(SuperCall) | Update: CharacterSpeed: %s "),
+                   *FallDownSpeed.ToString());
+
+            /* neeadable ?
+            if (bCharacterStartFalling == false)
+            {
+                Character->SetFallingTimer();
+                bCharacterStartFalling = true;
+            }
+			*/
+
+            FHitResult TraceHit = MainChar->GetHitResult();
+
+            // KillVelocity when MoveRightButton isn´t pressed anymore
+            if (MainChar->GetMoveRightAxisState() == ERyuMoveRightAxisInputState::Inactive)
+            {
+                MainChar->GetMovementComponent()->Velocity.X = 0.0f;
+            }
+
+            //if (FallDownSpeed.Z < Character->GetFallNormalVelocityZ())
+			if (FallDownSpeed.Z < 0.0f)
+            {
+                // TODO: we need a possibility to change the Input WITHOUT using an Input ! do we really ?
+                Character->HandleInput(ERyuInputState::InputFalling);
+            }
+        }
+    }
 }
 
 void URyuCharacterOnGroundState::FlipCharacter(ARyuBaseCharacter* Character)
 {
-	Super::FlipCharacter(Character);
+    Super::FlipCharacter(Character);
 }
 
 void URyuCharacterOnGroundState::Enter(ARyuBaseCharacter* Character)

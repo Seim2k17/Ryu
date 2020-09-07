@@ -21,6 +21,7 @@ enum class ERyuCharacterState : uint8
 	JumpEnd,
 	FallingNormal,
 	FallingDeep,
+	FallingEnd,
 	FallingNormalEnd,
 	FallingDeepEnd,
 	FallingDeath,

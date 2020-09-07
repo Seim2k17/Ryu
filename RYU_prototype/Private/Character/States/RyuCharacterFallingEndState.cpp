@@ -6,6 +6,7 @@
 #include "Utilities/RyuStaticFunctionLibrary.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
+#include "RyuCharacterDeathState.h"
 #include "RyuCharacterIdleState.h"
 #include "RyuMainCharacter.h"
 
@@ -21,16 +22,21 @@ URyuCharacterState* URyuCharacterFallingEndState::HandleInput(ARyuBaseCharacter*
             // when comment animationendline: character stands after jumping
         case ERyuInputState::AnimationEnded:
         {
-            UE_LOG(LogRyu, Error, TEXT("FallingEndState: CharAnimationEnd."));
+            //UE_LOG(LogRyu, Error, TEXT("FallingEndState: CharAnimationEnd."));
             // character jumped off and is still in Progress of running
             // 		if (Character->GetMoveRightAxisState() == ERyuMoveRightAxisInputState::Inactive)
             // 		{
             //Character->ResetJumpStartValues();
-            UE_LOG(LogRyu, Error, TEXT("FallingEndState: CharacterStops."));
+            //UE_LOG(LogRyu, Error, TEXT("FallingEndState: CharacterStops."));
             Character->JumpToAnimInstanceNode(Character->IdleNodeName);
             return NewObject<URyuCharacterIdleState>();
+
             break;
             //}
+        }
+        case ERyuInputState::InputFallingDeath:
+        {
+            return NewObject<URyuCharacterDeathState>();
         }
         default:
             return nullptr;
@@ -40,11 +46,6 @@ URyuCharacterState* URyuCharacterFallingEndState::HandleInput(ARyuBaseCharacter*
 
 void URyuCharacterFallingEndState::Update(ARyuBaseCharacter* Character)
 {
-}
-
-void URyuCharacterFallingEndState::Enter(ARyuBaseCharacter* Character)
-{
-    Character->ResetFallingTimer();
     // how to differ here ?
     switch (Character->GetLastCharacterState())
     {
@@ -56,20 +57,42 @@ void URyuCharacterFallingEndState::Enter(ARyuBaseCharacter* Character)
         case ERyuCharacterState::FallingDeep:
         {
             CharacterState = ERyuCharacterState::FallingDeepEnd;
-
             break;
         }
+
         case ERyuCharacterState::FallingDeath:
         {
-            CharacterState = ERyuCharacterState::FallingDeath;
+            Character->HandleInput(ERyuInputState::InputFallingDeath);
             break;
         }
+        case ERyuCharacterState::Run:
+        case ERyuCharacterState::Idle:
+        case ERyuCharacterState::JumpEnd:
+        case ERyuCharacterState::None:
+        {
+            //CharacterState = ERyuCharacterState::Death;
+            CharacterState = ERyuCharacterState::FallingEnd;
+            break;
+        }
+
         default:
+            //             UE_LOG(LogRyu, Warning, TEXT("LastCharState : %s"),
+            //                    *URyuStaticFunctionLibrary::CharacterStateToString(
+            //                        Character->GetLastCharacterState()))
+            //CharacterState = ERyuCharacterState::FallingEnd;
+            //Character->HandleInput(ERyuInputState::InputEndJump);
             break;
     }
 }
 
+void URyuCharacterFallingEndState::Enter(ARyuBaseCharacter* Character)
+{
+	Character->SetJumpAllowed(false);
+    Character->ResetFallingTimer();
+}
+
 void URyuCharacterFallingEndState::Exit(ARyuBaseCharacter* Character)
 {
-	Super::Exit(Character);
+    Super::Exit(Character);
+	Character->SetJumpAllowed(true);
 }

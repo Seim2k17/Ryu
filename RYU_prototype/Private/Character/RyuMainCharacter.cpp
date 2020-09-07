@@ -147,15 +147,21 @@ void ARyuMainCharacter::StartLineTracing()
     // DrawDebugSphere(TheWorld, GetActorLocation(), 10.0f, 10, FColor::Red, false, 1.f, 0, 2.f);
     TraceStart = this->GetActorLocation();
     TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
+    FCollisionShape HitSphere = FCollisionShape::MakeSphere(this->HitSphereRaduis);
+
     //TraceEnd = TraceStart - (LengthLineTrace * (-1.f) * this->GetActorForwardVector());
 
     // TODO: set own CollisionChannel to LineTrace! -> but BSPs can´t have one so for testing we NEED to See the the BSP-Geometry and tht the CollChannel to Visibility !
-    TheWorld->LineTraceSingleByChannel(CharHitResult, TraceStart, TraceEnd,
-                                       ECollisionChannel::ECC_Visibility, CollisionParams);
+    TheWorld->SweepSingleByChannel(CharHitResult, TraceStart, TraceEnd, FQuat::Identity,
+                                   ECollisionChannel::ECC_Visibility, HitSphere, CollisionParams);
+    //TheWorld->LineTraceSingleByChannel(CharHitResult, TraceStart, TraceEnd,
+    //                                   ECollisionChannel::ECC_Visibility, CollisionParams);
 
     if (bLineTracingVisible)
     {
-        DrawDebugLine(TheWorld, TraceStart, TraceEnd, FColor::Red, false, -1.f, 0, 2.0f);
+        DrawDebugSphere(TheWorld, TraceEnd, HitSphere.GetSphereRadius(), 10, FColor::Green, false,
+                        0.1f);
+        // DrawDebugLine(TheWorld, TraceStart, TraceEnd, FColor::Red, false, -1.f, 0, 2.0f);
     }
 }
 
@@ -229,15 +235,18 @@ void ARyuMainCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 void ARyuMainCharacter::Jump()
 {
-    // TODO: is this even executed atm ? see SetupPlayerInputComponent --> yes it is
-    // from CharacterClass
-    if (!bJumpJustStarted)
+    if (GetRyuCharacterMovement()->IsAllowedToJump())
     {
-        UE_LOG(LogRyu, Warning, TEXT("Jump from MainChar called."));
-        bPressedJump = true;
-        bJumpJustStarted = true;
-        // just for testing deactivate JumpCSM, to recheck if everything BASIC works!
-        ARyuBaseCharacter::HandleInput(ERyuInputState::PressJump);
+        // TODO: is this even executed atm ? see SetupPlayerInputComponent --> yes it is
+        // from CharacterClass
+        if (!bJumpJustStarted)
+        {
+            UE_LOG(LogRyu, Warning, TEXT("Jump from MainChar called."));
+            bPressedJump = true;
+            bJumpJustStarted = true;
+            // just for testing deactivate JumpCSM, to recheck if everything BASIC works!
+            ARyuBaseCharacter::HandleInput(ERyuInputState::PressJump);
+        }
     }
 }
 

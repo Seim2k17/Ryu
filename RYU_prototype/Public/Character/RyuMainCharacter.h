@@ -28,7 +28,7 @@ public:
 
     void Jump() override;
 
-    void PostInitializeComponents() override;
+	void PostInitializeComponents() override;
 
     void ResetCollisionAndGravity();
 
@@ -51,8 +51,8 @@ public:
 
     bool GetSneakActive();
 
-	UFUNCTION()
-	FHitResult GetHitResult();
+    UFUNCTION()
+    FHitResult GetHitResult();
 
 protected:
     // really protected ?
@@ -100,7 +100,7 @@ private:
 
     void SetDebuggedCharacter();
 
-	// everyLineTracing Activity from MainChar will be gathered here
+    // everyLineTracing Activity from MainChar will be gathered here
     void StartLineTracing();
 
 public:
@@ -112,8 +112,11 @@ public:
     UPROPERTY(EditAnywhere, Category = "Debug")
     bool bLineTracingVisible = true;
 
-    UPROPERTY(EditAnywhere, Category = "Debug")
-    float LengthLineTrace = 100.0f;
+    UPROPERTY(EditAnywhere, Category = "Falling")
+    float LengthLineTrace = 70.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Falling")
+    float HitSphereRaduis = 20.0f;
 
 protected:
     UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -139,5 +142,5 @@ private:
 
     bool bSneakIsPressed;
 
-    float SneakMultiplierValue;
+	float SneakMultiplierValue;
 };

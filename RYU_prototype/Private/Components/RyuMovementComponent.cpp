@@ -281,6 +281,11 @@ void URyuMovementComponent::SetGravityScaleMaximum(float GravScale)
 {
 }
 
+void URyuMovementComponent::SetJumpAllowedState(bool JumpState)
+{
+	MovementState.bCanJump = JumpState;
+}
+
 bool URyuMovementComponent::DoJump(bool bReplayingMoves)
 {
     //Test JumpInput
@@ -382,6 +387,11 @@ float URyuMovementComponent::GetSneakMultiplier()
     return SneakMultiplier;
 }
 
+FRyuMovementProperties URyuMovementComponent::GetRyuMovementState()
+{
+	return MovementState;
+}
+
 void URyuMovementComponent::IncreaseFallingVelocity()
 {
     //TODO: when Jumping in JumpForwardFasterWay: increase VelocityZ even more !
@@ -392,6 +402,11 @@ void URyuMovementComponent::IncreaseFallingVelocity()
     {
         Velocity.Z += (Velocity.Z * AddFallingMultiplierNumber);
     }
+}
+
+bool URyuMovementComponent::IsAllowedToJump()
+{
+	return MovementState.bCanJump;
 }
 
 void URyuMovementComponent::SetAllowClimbUpTrue()

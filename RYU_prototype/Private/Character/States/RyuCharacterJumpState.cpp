@@ -33,11 +33,13 @@ URyuCharacterState* URyuCharacterJumpState::HandleInput(ARyuBaseCharacter* Chara
         {
             //CharacterState = ERyuCharacterState::JumpEnd;
             return NewObject<URyuCharacterJumpEndState>();
+			break;
         }
         case ERyuInputState::InputFalling:
         {
             //CharacterState = ERyuCharacterState::JumpEnd;
             return NewObject<URyuCharacterFallingState>();
+			break;
         }
 
         default:
@@ -65,12 +67,10 @@ void URyuCharacterJumpState::Update(ARyuBaseCharacter* Character)
         float MoveRightInput = MainChar->GetMoveRightInput();
         MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput);
 
+		
         // TODO: !!! JumpeEnd / Jump wuith Velocity < 0 will become Falling and FallingEndstate / Edit the yEd !
         // following lines needs to be moved to a new State (FallingState) because it´s not only jumprelated
-        // the JumpEndState therefore will become a FallingEndState !!!
-        // we need to differ it !
         // Test if char is still n air otherwise change state back to idle
-        //if (Character->GetCharacterMovement()->IsFalling() && Character->GetVelocity().Z < 0.0f)
         auto FallDownSpeed = Character->GetVelocity();
         if (FallDownSpeed.Z < 0.0f)
         {
@@ -113,6 +113,8 @@ void URyuCharacterJumpState::Update(ARyuBaseCharacter* Character)
                 }
             }
         }
+		
+		
     }
 }
 
