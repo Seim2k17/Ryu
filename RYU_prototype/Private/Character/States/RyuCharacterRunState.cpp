@@ -84,6 +84,7 @@ void URyuCharacterRunState::Enter(ARyuBaseCharacter* Character)
            *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
     Super::Enter(Character);
     Super::FlipCharacter(Character);
+	Character->SetJumpAllowed(true);
 
     if (auto* MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
     {
