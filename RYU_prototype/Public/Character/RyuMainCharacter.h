@@ -49,6 +49,9 @@ public:
     UFUNCTION(BlueprintPure, Category = "Movement")
     float GetMoveUpInput();
 
+	UFUNCTION()
+	float GetFallingMoveRightMultiplier();
+
     bool GetSneakActive();
 
     UFUNCTION()

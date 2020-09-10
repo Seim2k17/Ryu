@@ -69,6 +69,11 @@ void URyuCharacterFallingState::Update(ARyuBaseCharacter* Character)
             UE_LOG(LogRyu, Error, TEXT("RyuCharacterFallingState(Update): FallDownSpeed >= 0"));
             Character->HandleInput(ERyuInputState::InputEndFalling);
         }
+
+        float MoveRightInput = MainChar->GetMoveRightInput();
+        MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f),
+                                   MoveRightInput * MainChar->GetFallingMoveRightMultiplier());
+		UE_LOG(LogRyu, Error, TEXT("RyuCharacterFallingState(Update): GetFallingMoveRightMultiplier %f"),MainChar->GetFallingMoveRightMultiplier());
     }
 }
 

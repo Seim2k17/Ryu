@@ -17,39 +17,38 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMoveModeChangedSignature, EPlayer
 USTRUCT(BlueprintType)
 struct FRyuMovementProperties
 {
-	GENERATED_USTRUCT_BODY()
+    GENERATED_USTRUCT_BODY()
 
 public:
-		/** If true, this Pawn is capable of crouching. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementProperties)
-	uint8 bCanCrouch : 1;
+    /** If true, this Pawn is capable of crouching. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementProperties)
+    uint8 bCanCrouch : 1;
 
-	/** If true, this Pawn is capable of jumping. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementProperties)
-	uint8 bCanJump : 1;
+    /** If true, this Pawn is capable of jumping. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementProperties)
+    uint8 bCanJump : 1;
 
-	/** If true, this Pawn is capable of walking or moving on the ground. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementProperties)
-	uint8 bCanWalk : 1;
+    /** If true, this Pawn is capable of walking or moving on the ground. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementProperties)
+    uint8 bCanWalk : 1;
 
-	/** If true, this Pawn is capable of swimming or moving through fluid volumes. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementProperties)
-	uint8 bCanSwim : 1;
+    /** If true, this Pawn is capable of swimming or moving through fluid volumes. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementProperties)
+    uint8 bCanSwim : 1;
 
-	/** If true, this Pawn is capable of flying. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementProperties)
-	uint8 bCanFly : 1;
+    /** If true, this Pawn is capable of flying. */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MovementProperties)
+    uint8 bCanFly : 1;
 
-	FRyuMovementProperties()
-		: bCanCrouch(false)
-		, bCanJump(false)
-		, bCanWalk(false)
-		, bCanSwim(false)
-		, bCanFly(false)
-	{
-	}
+    FRyuMovementProperties()
+        : bCanCrouch(false)
+        , bCanJump(false)
+        , bCanWalk(false)
+        , bCanSwim(false)
+        , bCanFly(false)
+    {
+    }
 };
-
 
 UCLASS()
 class RYU_PROTOTYPE_API URyuMovementComponent : public UCharacterMovementComponent
@@ -71,11 +70,11 @@ public:
 
     float GetSneakMultiplier();
 
-	FRyuMovementProperties GetRyuMovementState();
+    FRyuMovementProperties GetRyuMovementState();
 
     void IncreaseFallingVelocity();
 
-	bool IsAllowedToJump();
+    bool IsAllowedToJump();
 
     void JumpForward();
 
@@ -87,7 +86,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "CharacterMovement")
     void SetGravityScaleMaximum(float GravScale);
 
-	void SetJumpAllowedState(bool JumpState);
+    void SetJumpAllowedState(bool JumpState);
 
     UFUNCTION()
     void SetNormalMaxJumpCount(int32 MaxJumps);
@@ -192,7 +191,10 @@ public:
     float FallDeepVelocityZ = -2500.f;
 
     UPROPERTY(EditAnywhere, Category = "Falling")
-    float FallToDeathVelocityZ = -5000.f;
+    float FallToDeathVelocityZ = -3700.f;
+
+    UPROPERTY(EditAnywhere, Category = "Falling")
+    float FallingMoveRightMultiplier = 0.35f;
 
     FTimerHandle Timerhandle_CoyoteTime;
 
@@ -232,6 +234,6 @@ private:
 
     bool bClimbUpAllowed;
 
-	// Every other MovementTestingStuff put here:
-	FRyuMovementProperties MovementState;
+    // Every other MovementTestingStuff put here:
+    FRyuMovementProperties MovementState;
 };

@@ -65,7 +65,9 @@ void URyuCharacterJumpState::Update(ARyuBaseCharacter* Character)
         }
 
         float MoveRightInput = MainChar->GetMoveRightInput();
-        MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput);
+		MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f),
+			MoveRightInput / MainChar->GetFallingMoveRightMultiplier());
+        //MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput);
 
 		
         // TODO: !!! JumpeEnd / Jump wuith Velocity < 0 will become Falling and FallingEndstate / Edit the yEd !

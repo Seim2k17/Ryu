@@ -8,6 +8,7 @@ enum class ERyuCharacterState : uint8
 {
     Idle,
     Run,
+	Walk,
     Sprint,
     Sneak,
     Duck,

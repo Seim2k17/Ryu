@@ -83,7 +83,7 @@ void ARyuBaseCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 
-    if ((CharacterState != nullptr) && (CheckCharacterEnumValue())
+    if ((CharacterState != nullptr) //&& (CheckCharacterEnumValue())
         && (CharacterState->GetInputPressedState() != ERyuInputState::None))
     {
         CharacterState->Update(this);

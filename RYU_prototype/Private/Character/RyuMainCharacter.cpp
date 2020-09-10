@@ -466,6 +466,11 @@ float ARyuMainCharacter::GetMoveUpInput()
     return MoveUpInput;
 }
 
+float ARyuMainCharacter::GetFallingMoveRightMultiplier()
+{
+	return(GetRyuCharacterMovement()->FallingMoveRightMultiplier);
+}
+
 bool ARyuMainCharacter::GetSneakActive()
 {
     return bSneakIsPressed;

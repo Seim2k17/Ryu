@@ -56,7 +56,7 @@ URyuCharacterState* URyuCharacterRunState::HandleInput(ARyuBaseCharacter* Charac
         }
         default:
         {
-            UE_LOG(LogRyu, Log, TEXT("DEFAULT@RUNSTATE."));
+           // UE_LOG(LogRyu, Log, TEXT("DEFAULT@RUNSTATE."));
             return Super::HandleInput(Character, Input);
             break;
         }
@@ -71,7 +71,17 @@ void URyuCharacterRunState::Update(ARyuBaseCharacter* Character)
     {
         float MoveRightInput = MainChar->GetMoveRightInput();
         //UE_LOG(LogRyu, Log, TEXT("RunState: AddMovementInput: %f"), MoveRightInput);
-        MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput);
+		if (FMath::Abs(MoveRightInput) < 0.5f)
+		{
+			//walking?: Character->SetCharacterMovementState(ERyuMovementState::Sneaking);
+			CharacterState = ERyuCharacterState::Walk;
+		}
+		else
+		{
+			CharacterState = ERyuCharacterState::Run;
+		}
+		MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput);
+		
         //MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), 1.0f);
 
         //UE_LOG(LogRyu, Log, TEXT("Character runs with %s "), *Character->GetVelocity().ToString());
