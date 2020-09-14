@@ -28,7 +28,7 @@ public:
 
     void Jump() override;
 
-	void PostInitializeComponents() override;
+    void PostInitializeComponents() override;
 
     void ResetCollisionAndGravity();
 
@@ -49,13 +49,16 @@ public:
     UFUNCTION(BlueprintPure, Category = "Movement")
     float GetMoveUpInput();
 
-	UFUNCTION()
-	float GetFallingMoveRightMultiplier();
+    UFUNCTION()
+    float GetFallingMoveRightMultiplier();
 
     bool GetSneakActive();
 
     UFUNCTION()
     FHitResult GetHitResult();
+
+    UFUNCTION()
+    void SetLoadedCheckpointPosition(FVector CheckpointPosition);
 
 protected:
     // really protected ?
@@ -106,6 +109,9 @@ private:
     // everyLineTracing Activity from MainChar will be gathered here
     void StartLineTracing();
 
+    UFUNCTION()
+    void BindToCheckpointLoaded(FVector CheckpointPosition);
+
 public:
     // most need to be moved in components
 
@@ -145,5 +151,5 @@ private:
 
     bool bSneakIsPressed;
 
-	float SneakMultiplierValue;
+    float SneakMultiplierValue;
 };

@@ -10,9 +10,8 @@
 class ARyuCheckpoint;
 class USaveGame;
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameLoadedDelegate, FVector, CheckpointPosition);
+
 UCLASS()
 class RYU_PROTOTYPE_API URyuGameInstance : public UGameInstance
 {
@@ -40,5 +39,7 @@ public:
 
     UPROPERTY()
     URyuGameInstance* SaveGameSuccesPointer;
-    ;
+
+    UPROPERTY()
+    FOnGameLoadedDelegate OnGameLoaded;
 };

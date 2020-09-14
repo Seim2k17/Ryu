@@ -5,8 +5,10 @@
 #include "Components/RyuDebugComponent.h"
 #include "Components/RyuMovementComponent.h"
 #include "Components/RyuTimelineComponent.h"
+#include "Core/RyuGameInstance.h"
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuMovementState.h"
+#include "Savegame/RyuSaveGame.h"
 #include "States/RyuCharacterIdleState.h"
 #include "Utilities/RyuStaticFunctionLibrary.h"
 #include "RYUClimbingActor.h"
@@ -165,6 +167,11 @@ void ARyuMainCharacter::StartLineTracing()
     }
 }
 
+void ARyuMainCharacter::BindToCheckpointLoaded(FVector CheckpointPosition)
+{
+    UE_LOG(LogRyu, Error, TEXT("We have a winner at: %s"), *CheckpointPosition.ToString());
+}
+
 void ARyuMainCharacter::BeginPlay()
 {
     Super::BeginPlay();
@@ -176,6 +183,12 @@ void ARyuMainCharacter::BeginPlay()
         this, &ARyuMainCharacter::HandleSphereColliderBeginOverlap);
     SphereTracer->OnComponentEndOverlap.AddDynamic(
         this, &ARyuMainCharacter::HandleSphereColliderEndOverlap);
+
+    if (auto GameInstance =
+            Cast<URyuGameInstance>(UGameplayStatics::GetGameInstance(this)))
+    {
+        GameInstance->OnGameLoaded.AddDynamic(this, &ARyuMainCharacter::BindToCheckpointLoaded);
+    }
 
     CharacterState = NewObject<URyuCharacterIdleState>();
 
@@ -468,7 +481,7 @@ float ARyuMainCharacter::GetMoveUpInput()
 
 float ARyuMainCharacter::GetFallingMoveRightMultiplier()
 {
-	return(GetRyuCharacterMovement()->FallingMoveRightMultiplier);
+    return (GetRyuCharacterMovement()->FallingMoveRightMultiplier);
 }
 
 bool ARyuMainCharacter::GetSneakActive()
@@ -479,6 +492,11 @@ bool ARyuMainCharacter::GetSneakActive()
 FHitResult ARyuMainCharacter::GetHitResult()
 {
     return CharHitResult;
+}
+
+void ARyuMainCharacter::SetLoadedCheckpointPosition(FVector CheckpointPosition)
+{
+    UE_LOG(LogRyu, Warning, TEXT("Position loaded: *s"), *(CheckpointPosition).ToString());
 }
 
 void ARyuMainCharacter::SneakPressed()

@@ -18,6 +18,7 @@ void URyuGameInstance::SaveGame(ERyuCharacterState CharacterStateToSave,
         // Set up the (optional) delegate.
         FAsyncSaveGameToSlotDelegate SavedDelegate;
         // USomeUObjectClass::SaveGameDelegateFunction is a void function that takes the following parameters: const FString& SlotName, const int32 UserIndex, bool bSuccess
+        // TODO: why this no work
         SavedDelegate.BindUObject(SaveGameSuccesPointer,
                                   &URyuGameInstance::SaveGameSuccessCallback);
 
@@ -50,7 +51,9 @@ void URyuGameInstance::LoadGame()
             Cast<URyuSaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0)))
     {
         // The operation was successful, so LoadedGame now contains the data we saved earlier.
-        UE_LOG(LogTemp, Warning, TEXT("LOADED: %s"), *LoadedGame->PlayerName);
+        UE_LOG(LogTemp, Warning, TEXT("LOADED: %s at %s"), *LoadedGame->PlayerName,
+               *(LoadedGame->Checkpoint->GetActorLocation()).ToString());
+        OnGameLoaded.Broadcast(LoadedGame->Checkpoint->GetActorLocation());
     }
 }
 

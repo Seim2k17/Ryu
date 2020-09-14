@@ -8,9 +8,6 @@
 #include "CoreMinimal.h"
 #include "RyuSaveGame.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class RYU_PROTOTYPE_API URyuSaveGame : public USaveGame
 {
@@ -32,4 +29,6 @@ public:
 
     UPROPERTY(VisibleAnywhere, Category = Basic)
     uint32 UserIndex;
+
+private:
 };
