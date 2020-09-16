@@ -27,7 +27,7 @@ URyuCharacterState* URyuCharacterFallingEndState::HandleInput(ARyuBaseCharacter*
             // 		if (Character->GetMoveRightAxisState() == ERyuMoveRightAxisInputState::Inactive)
             // 		{
             //Character->ResetJumpStartValues();
-            //UE_LOG(LogRyu, Error, TEXT("FallingEndState: CharacterStops."));
+            UE_LOG(LogRyu, Error, TEXT("FallingEndState: CharacterStops."));
             Character->JumpToAnimInstanceNode(Character->IdleNodeName);
             return NewObject<URyuCharacterIdleState>();
 
@@ -52,17 +52,20 @@ void URyuCharacterFallingEndState::Update(ARyuBaseCharacter* Character)
         case ERyuCharacterState::FallingNormal:
         {
             CharacterState = ERyuCharacterState::FallingNormalEnd;
+            //Character->SetLastCharacterState(ERyuCharacterState::FallingNormalEnd);
             break;
         }
         case ERyuCharacterState::FallingDeep:
         {
             CharacterState = ERyuCharacterState::FallingDeepEnd;
+            //Character->SetLastCharacterState(ERyuCharacterState::FallingDeepEnd);
             break;
         }
 
         case ERyuCharacterState::FallingDeath:
         {
             Character->HandleInput(ERyuInputState::InputFallingDeath);
+            //Character->SetLastCharacterState(ERyuCharacterState::FallingDeath);
             break;
         }
         case ERyuCharacterState::Run:
@@ -72,6 +75,7 @@ void URyuCharacterFallingEndState::Update(ARyuBaseCharacter* Character)
         {
             //CharacterState = ERyuCharacterState::Death;
             CharacterState = ERyuCharacterState::FallingEnd;
+            //Character->SetLastCharacterState(ERyuCharacterState::FallingEnd);
             break;
         }
 
@@ -87,12 +91,13 @@ void URyuCharacterFallingEndState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterFallingEndState::Enter(ARyuBaseCharacter* Character)
 {
-	Character->SetJumpAllowed(false);
+    Character->SetJumpAllowed(false);
     Character->ResetFallingTimer();
 }
 
 void URyuCharacterFallingEndState::Exit(ARyuBaseCharacter* Character)
 {
     Super::Exit(Character);
-	Character->SetJumpAllowed(true);
+    Character->SetJumpAllowed(true);
+    Character->SetLastCharacterState(ERyuCharacterState::None);
 }

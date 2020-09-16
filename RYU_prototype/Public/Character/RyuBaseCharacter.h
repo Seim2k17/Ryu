@@ -154,6 +154,7 @@ public:
 
     ERyuInteractionStatus GetInteractionStatus();
 
+    UFUNCTION(BlueprintCallable, Category = "RyuState")
     ERyuCharacterState GetLastCharacterState();
 
     FJumpStartValues GetJumpStartValues();
@@ -300,6 +301,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
     FName RunNodeName = TEXT("ToRun");
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
+    FName WalkNodeName = TEXT("ToWalk");
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
     FName FallinghNodeName = TEXT("ToFalling");

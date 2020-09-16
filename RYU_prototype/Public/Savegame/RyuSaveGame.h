@@ -25,6 +25,9 @@ public:
     ARyuCheckpoint* Checkpoint;
 
     UPROPERTY(VisibleAnywhere, Category = Basic)
+    FVector CheckpointLocation;
+
+    UPROPERTY(VisibleAnywhere, Category = Basic)
     FString SaveSlotName;
 
     UPROPERTY(VisibleAnywhere, Category = Basic)

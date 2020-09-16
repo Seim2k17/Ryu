@@ -25,7 +25,8 @@ void URyuGameInstance::SaveGame(ERyuCharacterState CharacterStateToSave,
         // Set data on the savegame object.
         SaveGameInstance->CharacterState = CharacterStateToSave;
         SaveGameInstance->Checkpoint = CheckpointToSave;
-        SaveGameInstance->PlayerName = TEXT("RyuDude");
+        SaveGameInstance->CheckpointLocation = CheckpointToSave->GetActorLocation();
+        SaveGameInstance->PlayerName = TEXT("Ryudude");
 
         // Start async save process.
         UGameplayStatics::AsyncSaveGameToSlot(SaveGameInstance, SaveGameInstance->SaveSlotName,
@@ -52,8 +53,8 @@ void URyuGameInstance::LoadGame()
     {
         // The operation was successful, so LoadedGame now contains the data we saved earlier.
         UE_LOG(LogTemp, Warning, TEXT("LOADED: %s at %s"), *LoadedGame->PlayerName,
-               *(LoadedGame->Checkpoint->GetActorLocation()).ToString());
-        OnGameLoaded.Broadcast(LoadedGame->Checkpoint->GetActorLocation());
+               *(LoadedGame->CheckpointLocation).ToString());
+        OnGameLoaded.Broadcast(LoadedGame->CheckpointLocation);
     }
 }
 

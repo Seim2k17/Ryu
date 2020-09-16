@@ -5,6 +5,7 @@
 #include "Enums/ERyuMovementState.h"
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
+#include "RyuMainCharacter.h"
 #include "RyuCharacterDuckState.h"
 #include "RyuCharacterIdleState.h"
 #include "RyuCharacterOnGroundState.h"
@@ -39,6 +40,14 @@ URyuCharacterState* URyuCharacterSneakState::HandleInput(ARyuBaseCharacter* Char
 
 void URyuCharacterSneakState::Update(ARyuBaseCharacter* Character)
 {
+	Super::Update(Character);
+
+	if (auto* MainChar = Cast<ARyuMainCharacter>(Character))
+	{
+		float MoveRightInput = MainChar->GetMoveRightInput();
+		//UE_LOG(LogRyu, Log, TEXT("RunState: AddMovementInput: %f"), MoveRightInput);
+		MainChar->AddMovementInput(FVector(MainChar->GetSneakMultiplier(), 0.0f, 0.0f), MoveRightInput);
+	}
 }
 
 void URyuCharacterSneakState::Enter(ARyuBaseCharacter* Character)
@@ -48,6 +57,8 @@ void URyuCharacterSneakState::Enter(ARyuBaseCharacter* Character)
     CharacterState = ERyuCharacterState::Sneak;
     Character->SetCharacterMovementState(ERyuMovementState::Sneaking);
     // Set IdleGraphics or other Asset related stuff
+
+	Character->JumpToAnimInstanceNode(Character->WalkNodeName);
 }
 
 void URyuCharacterSneakState::Exit(ARyuBaseCharacter* Character)

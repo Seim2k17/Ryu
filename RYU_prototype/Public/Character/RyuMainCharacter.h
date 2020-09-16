@@ -52,13 +52,15 @@ public:
     UFUNCTION()
     float GetFallingMoveRightMultiplier();
 
+	float GetSneakMultiplier();
+
     bool GetSneakActive();
 
     UFUNCTION()
     FHitResult GetHitResult();
 
     UFUNCTION()
-    void SetLoadedCheckpointPosition(FVector CheckpointPosition);
+    void RestartCharacterAtCheckpoint(FVector& CheckpointPosition);
 
 protected:
     // really protected ?
@@ -110,7 +112,7 @@ private:
     void StartLineTracing();
 
     UFUNCTION()
-    void BindToCheckpointLoaded(FVector CheckpointPosition);
+    void BindToCheckpointLoaded(FVector& CheckpointPosition);
 
 public:
     // most need to be moved in components

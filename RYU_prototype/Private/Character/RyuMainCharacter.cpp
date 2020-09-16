@@ -167,9 +167,10 @@ void ARyuMainCharacter::StartLineTracing()
     }
 }
 
-void ARyuMainCharacter::BindToCheckpointLoaded(FVector CheckpointPosition)
+void ARyuMainCharacter::BindToCheckpointLoaded(FVector& CheckpointPosition)
 {
     UE_LOG(LogRyu, Error, TEXT("We have a winner at: %s"), *CheckpointPosition.ToString());
+    RestartCharacterAtCheckpoint(CheckpointPosition);
 }
 
 void ARyuMainCharacter::BeginPlay()
@@ -184,8 +185,7 @@ void ARyuMainCharacter::BeginPlay()
     SphereTracer->OnComponentEndOverlap.AddDynamic(
         this, &ARyuMainCharacter::HandleSphereColliderEndOverlap);
 
-    if (auto GameInstance =
-            Cast<URyuGameInstance>(UGameplayStatics::GetGameInstance(this)))
+    if (auto GameInstance = Cast<URyuGameInstance>(UGameplayStatics::GetGameInstance(this)))
     {
         GameInstance->OnGameLoaded.AddDynamic(this, &ARyuMainCharacter::BindToCheckpointLoaded);
     }
@@ -484,6 +484,11 @@ float ARyuMainCharacter::GetFallingMoveRightMultiplier()
     return (GetRyuCharacterMovement()->FallingMoveRightMultiplier);
 }
 
+float ARyuMainCharacter::GetSneakMultiplier()
+{
+    return SneakMultiplierValue;
+}
+
 bool ARyuMainCharacter::GetSneakActive()
 {
     return bSneakIsPressed;
@@ -494,9 +499,15 @@ FHitResult ARyuMainCharacter::GetHitResult()
     return CharHitResult;
 }
 
-void ARyuMainCharacter::SetLoadedCheckpointPosition(FVector CheckpointPosition)
+void ARyuMainCharacter::RestartCharacterAtCheckpoint(FVector& CheckpointPosition)
 {
-    UE_LOG(LogRyu, Warning, TEXT("Position loaded: *s"), *(CheckpointPosition).ToString());
+    UE_LOG(LogRyu, Warning, TEXT("Position loaded: %s"), *(CheckpointPosition).ToString());
+    this->SetActorLocation(CheckpointPosition);
+    CharacterState->ConditionalBeginDestroy();
+    CharacterState = nullptr;
+    SetLastCharacterState(ERyuCharacterState::None);
+    CharacterState = NewObject<URyuCharacterIdleState>();
+    CharacterState->Enter(this);
 }
 
 void ARyuMainCharacter::SneakPressed()
@@ -504,13 +515,16 @@ void ARyuMainCharacter::SneakPressed()
     SneakMultiplierValue = RyuMovementComponent->GetSneakMultiplier();
     bSneakIsPressed = true;
     SetCharacterMovementState(ERyuMovementState::Sneaking);
+	HandleInput(ERyuInputState::PressSneakRight);
 }
 
 void ARyuMainCharacter::SneakReleased()
 {
     SneakMultiplierValue = 1.0f;
     bSneakIsPressed = false;
-    SetCharacterMovementState(ERyuMovementState::Standing);
+	// this is the "correct" way to exit sneakmode
+	SetCharacterMovementState(ERyuMovementState::Standing);
+	HandleInput(ERyuInputState::ReleaseSneakRight);
 }
 
 void ARyuMainCharacter::SprintPressed()
