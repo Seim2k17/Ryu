@@ -234,6 +234,11 @@ public:
 
     void SetMoveRightAxisState(ERyuMoveRightAxisInputState RightAxisState);
 
+	void StartJump();
+
+	UFUNCTION()
+	void StartJumpingTimer();
+
     void StopJumping() override;
 
     void SetLookDirection(ERyuLookDirection Direction);

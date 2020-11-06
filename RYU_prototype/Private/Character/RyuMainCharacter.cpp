@@ -255,7 +255,7 @@ void ARyuMainCharacter::Jump()
         if (!bJumpJustStarted)
         {
             UE_LOG(LogRyu, Warning, TEXT("Jump from MainChar called."));
-            bPressedJump = true;
+            //bPressedJump = true;
             bJumpJustStarted = true;
             // just for testing deactivate JumpCSM, to recheck if everything BASIC works!
             ARyuBaseCharacter::HandleInput(ERyuInputState::PressJump);
@@ -515,16 +515,16 @@ void ARyuMainCharacter::SneakPressed()
     SneakMultiplierValue = RyuMovementComponent->GetSneakMultiplier();
     bSneakIsPressed = true;
     SetCharacterMovementState(ERyuMovementState::Sneaking);
-	HandleInput(ERyuInputState::PressSneakRight);
+    HandleInput(ERyuInputState::PressSneakRight);
 }
 
 void ARyuMainCharacter::SneakReleased()
 {
     SneakMultiplierValue = 1.0f;
     bSneakIsPressed = false;
-	// this is the "correct" way to exit sneakmode
-	SetCharacterMovementState(ERyuMovementState::Standing);
-	HandleInput(ERyuInputState::ReleaseSneakRight);
+    // this is the "correct" way to exit sneakmode
+    SetCharacterMovementState(ERyuMovementState::Standing);
+    HandleInput(ERyuInputState::ReleaseSneakRight);
 }
 
 void ARyuMainCharacter::SprintPressed()

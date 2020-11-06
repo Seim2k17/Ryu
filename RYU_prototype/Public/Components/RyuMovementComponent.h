@@ -167,6 +167,12 @@ public:
     bool CoyoteTimeActive;
 
     /*
+	Timer after the Unreal Jump starts to move the Character
+	*/
+    UPROPERTY(EditAnywhere, Category = "Jumping")
+    float TimerStartJump = 0.840f;
+
+    /*
 	Time after a complete Jump is resetted to IDLE-State, this is a Fallback and can also be used for a short pause after landing. The Timer Should not be shorter than the JumpEnd-Animation !
 	*/
     UPROPERTY(EditAnywhere, Category = "Jumping")
@@ -197,6 +203,8 @@ public:
     float FallingMoveRightMultiplier = 0.35f;
 
     FTimerHandle Timerhandle_CoyoteTime;
+
+    FTimerHandle Timerhandle_BeginJump;
 
     UPROPERTY(BlueprintAssignable, Category = "Climbing")
     FOnCanClimbLedgeStartedSignature OnCanClimbLedge;

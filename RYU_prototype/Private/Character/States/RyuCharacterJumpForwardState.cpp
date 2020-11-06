@@ -66,6 +66,8 @@ void URyuCharacterJumpForwardState::Enter(ARyuBaseCharacter* Character)
         }
     }
 
+    Character->StartJump();
+
     if (auto* RyuMovementComponent = Character->FindComponentByClass<URyuMovementComponent>())
     {
         UE_LOG(LogRyu, Warning, TEXT("Call JumpForward from MovementComponent."));

@@ -594,6 +594,19 @@ float ARyuBaseCharacter::GetFallToDeathVelocityZ()
     return GetRyuCharacterMovement()->FallToDeathVelocityZ;
 }
 
+void ARyuBaseCharacter::StartJumpingTimer()
+{
+	UE_LOG(LogTemp, Warning, TEXT("JumpTimer started"));
+	GetWorldTimerManager().SetTimer(GetRyuCharacterMovement()->Timerhandle_BeginJump, this, &ARyuBaseCharacter::StartJump,
+		GetRyuCharacterMovement()->TimerStartJump, false);
+}
+
+void ARyuBaseCharacter::StartJump()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Jump executed"));
+	bPressedJump = true;
+}
+
 void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
 {
     bHandleInput = true;

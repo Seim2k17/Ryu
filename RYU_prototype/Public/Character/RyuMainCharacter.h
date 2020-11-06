@@ -32,7 +32,7 @@ public:
 
     void ResetCollisionAndGravity();
 
-    void StopJumping() override;
+	void StopJumping() override;
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     void TurnRunFlipBookFinished();
