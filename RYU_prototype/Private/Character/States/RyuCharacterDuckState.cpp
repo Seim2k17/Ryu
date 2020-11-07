@@ -42,9 +42,9 @@ void URyuCharacterDuckState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterDuckState::Enter(ARyuBaseCharacter* Character)
 {
-    CharacterState = ERyuCharacterState::Duck;
 
-    // Set IdleGraphics or other Asset related stuff
+    CharacterState = ERyuCharacterState::Duck;
+    // Todo: set capsule half height to 20 / z-position to 15 or st.
 }
 
 void URyuCharacterDuckState::Exit(ARyuBaseCharacter* Character)

@@ -359,6 +359,46 @@ void ARyuMainCharacter::MoveUp(float Value)
 {
     //Class-global MoveUpAxis Input to use in several Methods inside the MainCharClass
     MoveUpInput = Value;
+
+    if (MoveUpInput < 0.0f)
+    {
+		if (ARyuBaseCharacter::GetMoveUpAxisState()
+			!= ERyuMoveUpAxisInputState::PressDownAxisKey)
+		{
+			ARyuBaseCharacter::HandleInput(ERyuInputState::PressDown);
+		}
+    }
+    else
+    {
+        if (MoveUpInput > 0.0f)
+        {
+			if (ARyuBaseCharacter::GetMoveUpAxisState()
+				!= ERyuMoveUpAxisInputState::PressUpAxisKey)
+			{
+				ARyuBaseCharacter::HandleInput(ERyuInputState::PressUp);
+			}
+        }
+        else
+        {
+            if (ARyuBaseCharacter::GetMoveUpAxisState() != ERyuMoveUpAxisInputState::Inactive)
+            {
+                if (ARyuBaseCharacter::GetMoveUpAxisState()
+                    == ERyuMoveUpAxisInputState::PressUpAxisKey)
+                {
+                    ARyuBaseCharacter::HandleInput(ERyuInputState::ReleaseUp);
+                }
+
+                if (ARyuBaseCharacter::GetMoveUpAxisState()
+                    == ERyuMoveUpAxisInputState::PressDownAxisKey)
+                {
+                    ARyuBaseCharacter::HandleInput(ERyuInputState::ReleaseDown);
+                }
+
+            }
+        }
+
+    }
+
 }
 
 // TODO see if still needed here when CSTM is established !

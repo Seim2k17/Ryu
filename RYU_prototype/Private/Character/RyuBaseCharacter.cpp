@@ -562,6 +562,11 @@ ERyuMoveRightAxisInputState ARyuBaseCharacter::GetMoveRightAxisState()
     return MoveRightAxisState;
 }
 
+ERyuMoveUpAxisInputState ARyuBaseCharacter::GetMoveUpAxisState()
+{
+    return MoveUpAxisState;
+}
+
 URyuMovementComponent* ARyuBaseCharacter::GetRyuCharacterMovement()
 {
     if (auto* MovementComp = Cast<URyuMovementComponent>(GetCharacterMovement()))
@@ -611,20 +616,44 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
 {
     bHandleInput = true;
 
-    if (Input == ERyuInputState::PressLeft)
-    {
-        MoveRightAxisState = ERyuMoveRightAxisInputState::PressLeftAxisKey;
-    }
 
-    if (Input == ERyuInputState::PressRight)
+    switch (Input)
     {
-        MoveRightAxisState = ERyuMoveRightAxisInputState::PressRightAxisKey;
+        case ERyuInputState::PressLeft:
+        {
+            MoveRightAxisState = ERyuMoveRightAxisInputState::PressLeftAxisKey;
+            break;
+        }
+        case ERyuInputState::PressRight:
+        {
+            MoveRightAxisState = ERyuMoveRightAxisInputState::PressRightAxisKey;
+            break;
+        }
+        case ERyuInputState::ReleaseLeft:
+        case ERyuInputState::ReleaseRight:
+        {
+            MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
+        }
+        case ERyuInputState::PressDown:
+        {
+            MoveUpAxisState = ERyuMoveUpAxisInputState::PressDownAxisKey;
+            break;
+        }
+		case ERyuInputState::PressUp:
+		{
+			MoveUpAxisState = ERyuMoveUpAxisInputState::PressUpAxisKey;
+			break;
+		}
+		case ERyuInputState::ReleaseUp:
+		case ERyuInputState::ReleaseDown:
+        {
+			MoveUpAxisState = ERyuMoveUpAxisInputState::Inactive;
+			break;
+        }
+        default:
+            break;
     }
-
-    if ((Input == ERyuInputState::ReleaseLeft) || (Input == ERyuInputState::ReleaseRight))
-    {
-        MoveRightAxisState = ERyuMoveRightAxisInputState::Inactive;
-    }
+    
 
     if ((CharacterState == nullptr) || (Input == ERyuInputState::None))
     {
@@ -640,8 +669,8 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
     // Mainly due AnimationEndedInput this needs to be implemented here in the BaseClass
     //URyuCharacterState* state = nullptr;
 
-    //UE_LOG(LogRyu, Error, TEXT("RYUBASE: HANDLEINPUT: %s"),
-    //       *URyuStaticFunctionLibrary::InputStateToString(Input));
+    UE_LOG(LogRyu, Error, TEXT("RYUBASE: HANDLEINPUT: %s"),
+           *URyuStaticFunctionLibrary::InputStateToString(Input));
     // TODO Possible fix for crash ?  check if everyhandleInput returns a NEW State OR the current one! not nullptr !!! --> memory leak
     URyuCharacterState* state = CharacterState->HandleInput(this, Input);
 

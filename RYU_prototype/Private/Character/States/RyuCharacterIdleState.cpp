@@ -202,7 +202,7 @@ URyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Ch
             return NewObject<URyuCharacterJumpBackwardState>();
         case ERyuInputState::PressJumpForward:
             return NewObject<URyuCharacterJumpForwardState>();
-        default:
+		default:
             return this;
             break;
     }

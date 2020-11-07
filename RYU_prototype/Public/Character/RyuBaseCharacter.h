@@ -10,6 +10,7 @@
 #include "Enums/ERyuInteractionStatus.h"
 #include "Enums/ERyuLookDirection.h"
 #include "Enums/ERyuMoveRightAxisInputState.h"
+#include "Enums/ERyuMoveUpAxisInputState.h"
 #include "Enums/ERyuMovementState.h"
 #include "IO/RyuBaseCommand.h"
 #include "RYU2DENUM_ClimbingMode.h"
@@ -162,6 +163,8 @@ public:
     ERyuLookDirection GetLookDirection();
 
     ERyuMoveRightAxisInputState GetMoveRightAxisState();
+
+    ERyuMoveUpAxisInputState GetMoveUpAxisState();
 
     URyuMovementComponent* GetRyuCharacterMovement();
 
@@ -398,6 +401,8 @@ private:
     FInputCounterparts* PressedState;
 
     ERyuMoveRightAxisInputState MoveRightAxisState;
+
+    ERyuMoveUpAxisInputState MoveUpAxisState;
 
     bool bHandleInput = false;
 

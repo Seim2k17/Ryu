@@ -38,10 +38,25 @@ URyuCharacterState* URyuCharacterDuckMoveState::HandleInput(ARyuBaseCharacter* C
 
 void URyuCharacterDuckMoveState::Update(ARyuBaseCharacter* Character)
 {
+	Super::Update(Character);
+
+	if (auto* MainChar = Cast<ARyuMainCharacter>(Character))
+	{
+		float MoveRightInput = MainChar->GetMoveRightInput();
+		//UE_LOG(LogRyu, Log, TEXT("RunState: AddMovementInput: %f"), MoveRightInput);
+		
+        CharacterState = ERyuCharacterState::DuckMove;
+		
+		MainChar->AddMovementInput(FVector(1.0f, 0.0f, 0.0f), MoveRightInput * 0.5f);
+
+	}
 }
 
 void URyuCharacterDuckMoveState::Enter(ARyuBaseCharacter* Character)
 {
+    Super::FlipCharacter(Character);
+
+    
     CharacterState = ERyuCharacterState::DuckMove;
     // Set IdleGraphics or other Asset related stuff
 }
