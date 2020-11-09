@@ -1,12 +1,13 @@
 // Copyright 2019 80k Games, All Rights Reserved.
 
 #include "RyuStaticFunctionLibrary.h"
+#include "Enums/ERyuCharacterPossibility.h"
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuMoveRightAxisInputState.h"
 #include "Enums/ERyuMovementState.h"
-#include "RyuMainCharacter.h"
 #include "RYU_prototype.h"
+#include "RyuMainCharacter.h"
 #include <Components/ActorComponent.h>
 
 URyuStaticFunctionLibrary::URyuStaticFunctionLibrary(const FObjectInitializer& Objectinitializer)
@@ -46,9 +47,15 @@ FString URyuStaticFunctionLibrary::RightAxisInputStateToString(
                         TEXT("ERyuMoveRightAxisInputState::Invalid"));
 }
 
+FString URyuStaticFunctionLibrary::CharacterPossibilityToString(
+    const ERyuCharacterPossibility Possibility)
+{
+    return EnumToString(TEXT("ERyuCharacterPossibility"), Possibility,
+                        TEXT("ERyuCharacterPossibility::Invalid"));
+}
 
 // TODO: StaticLog
-void URyuStaticFunctionLibrary::Log(FString Message, FName Category )
+void URyuStaticFunctionLibrary::Log(FString Message, FName Category)
 {
-	UE_LOG(LogRyu, Log,  TEXT(""));
+    UE_LOG(LogRyu, Log, TEXT(""));
 }

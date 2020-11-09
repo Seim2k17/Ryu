@@ -6,6 +6,7 @@
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterDuckMoveState.h"
 #include "RyuCharacterIdleState.h"
+#include "RyuMainCharacter.h"
 
 URyuCharacterDuckState::URyuCharacterDuckState()
 {
@@ -42,11 +43,14 @@ void URyuCharacterDuckState::Update(ARyuBaseCharacter* Character)
 
 void URyuCharacterDuckState::Enter(ARyuBaseCharacter* Character)
 {
-
     CharacterState = ERyuCharacterState::Duck;
     // Todo: set capsule half height to 20 / z-position to 15 or st.
+    Character->GetSprite()->SetRelativeLocation(Character->DuckSpriteRelativePosition);
+    //MainChar->Set
+    Character->GetCapsuleComponent()->SetCapsuleHalfHeight(Character->DuckCapsuleHeight);
 }
 
 void URyuCharacterDuckState::Exit(ARyuBaseCharacter* Character)
 {
+    
 }

@@ -2,11 +2,12 @@
 
 #pragma once
 
+#include "Enums/ERyuCharacterPossibility.h"
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
+#include "Enums/ERyuLogCategory.h"
 #include "Enums/ERyuMoveRightAxisInputState.h"
 #include "Enums/ERyuMovementState.h"
-#include "Enums/ERyuLogCategory.h"
 #include "RyuStaticFunctionLibrary.generated.h"
 
 class ARyuMainCharacter;
@@ -48,5 +49,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Debug")
     static FString RightAxisInputStateToString(const ERyuMoveRightAxisInputState State);
 
-	static void Log(FString Message, FName Category);
+    UFUNCTION(BlueprintCallable, Category = "Debug")
+    static FString CharacterPossibilityToString(const ERyuCharacterPossibility Possibility);
+
+    static void Log(FString Message, FName Category);
 };

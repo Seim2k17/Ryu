@@ -567,6 +567,11 @@ ERyuMoveUpAxisInputState ARyuBaseCharacter::GetMoveUpAxisState()
     return MoveUpAxisState;
 }
 
+ERyuCharacterPossibility ARyuBaseCharacter::GetCharacterPossibility()
+{
+    return CharacterPosibility;
+}
+
 URyuMovementComponent* ARyuBaseCharacter::GetRyuCharacterMovement()
 {
     if (auto* MovementComp = Cast<URyuMovementComponent>(GetCharacterMovement()))
@@ -601,21 +606,21 @@ float ARyuBaseCharacter::GetFallToDeathVelocityZ()
 
 void ARyuBaseCharacter::StartJumpingTimer()
 {
-	UE_LOG(LogTemp, Warning, TEXT("JumpTimer started"));
-	GetWorldTimerManager().SetTimer(GetRyuCharacterMovement()->Timerhandle_BeginJump, this, &ARyuBaseCharacter::StartJump,
-		GetRyuCharacterMovement()->TimerStartJump, false);
+    UE_LOG(LogTemp, Warning, TEXT("JumpTimer started"));
+    GetWorldTimerManager().SetTimer(GetRyuCharacterMovement()->Timerhandle_BeginJump, this,
+                                    &ARyuBaseCharacter::StartJump,
+                                    GetRyuCharacterMovement()->TimerStartJump, false);
 }
 
 void ARyuBaseCharacter::StartJump()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Jump executed"));
-	bPressedJump = true;
+    UE_LOG(LogTemp, Warning, TEXT("Jump executed"));
+    bPressedJump = true;
 }
 
 void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
 {
     bHandleInput = true;
-
 
     switch (Input)
     {
@@ -639,21 +644,20 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
             MoveUpAxisState = ERyuMoveUpAxisInputState::PressDownAxisKey;
             break;
         }
-		case ERyuInputState::PressUp:
-		{
-			MoveUpAxisState = ERyuMoveUpAxisInputState::PressUpAxisKey;
-			break;
-		}
-		case ERyuInputState::ReleaseUp:
-		case ERyuInputState::ReleaseDown:
+        case ERyuInputState::PressUp:
         {
-			MoveUpAxisState = ERyuMoveUpAxisInputState::Inactive;
-			break;
+            MoveUpAxisState = ERyuMoveUpAxisInputState::PressUpAxisKey;
+            break;
+        }
+        case ERyuInputState::ReleaseUp:
+        case ERyuInputState::ReleaseDown:
+        {
+            MoveUpAxisState = ERyuMoveUpAxisInputState::Inactive;
+            break;
         }
         default:
             break;
     }
-    
 
     if ((CharacterState == nullptr) || (Input == ERyuInputState::None))
     {
@@ -878,8 +882,10 @@ void ARyuBaseCharacter::BeginPlay()
         this, &ARyuBaseCharacter::OnHandleCapsuleBeginOverlap);
     GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(
         this, &ARyuBaseCharacter::OnHandleCapsuleEndOverlap);
-
     InitInputCounterparts();
+
+    IdleCapsuleHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    IdleSpriteRelativePosition = GetSprite()->GetRelativeLocation();
 }
 
 void ARyuBaseCharacter::ConfigurePlayer_Implementation(UPaperZDAnimPlayer* Player)
@@ -897,7 +903,7 @@ void ARyuBaseCharacter::Jump()
 
 void ARyuBaseCharacter::SetJumpAllowed(bool JumpState)
 {
-	GetRyuCharacterMovement()->SetJumpAllowedState(JumpState);
+    GetRyuCharacterMovement()->SetJumpAllowedState(JumpState);
 }
 
 void ARyuBaseCharacter::StopJumping()

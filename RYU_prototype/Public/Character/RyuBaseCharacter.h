@@ -12,6 +12,7 @@
 #include "Enums/ERyuMoveRightAxisInputState.h"
 #include "Enums/ERyuMoveUpAxisInputState.h"
 #include "Enums/ERyuMovementState.h"
+#include "Enums/ERyuCharacterPossibility.h"
 #include "IO/RyuBaseCommand.h"
 #include "RYU2DENUM_ClimbingMode.h"
 #include "RYU2DENUM_Movement.h"
@@ -166,6 +167,8 @@ public:
 
     ERyuMoveUpAxisInputState GetMoveUpAxisState();
 
+    ERyuCharacterPossibility GetCharacterPossibility();
+
     URyuMovementComponent* GetRyuCharacterMovement();
 
     float GetFallVelocityZFromJump();
@@ -237,10 +240,10 @@ public:
 
     void SetMoveRightAxisState(ERyuMoveRightAxisInputState RightAxisState);
 
-	void StartJump();
+    void StartJump();
 
-	UFUNCTION()
-	void StartJumpingTimer();
+    UFUNCTION()
+    void StartJumpingTimer();
 
     void StopJumping() override;
 
@@ -300,12 +303,24 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     ERYU2DAnimationState CharAnimation2DState;
 
-    // TODO make a Map out of it
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
-    FName JumpNodeName = TEXT("Jumping");
+    FVector DuckSpriteRelativePosition;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
+    float DuckCapsuleHeight = 20.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
+    float IdleCapsuleHeight;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
+    FVector IdleSpriteRelativePosition;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
     FName IdleNodeName = TEXT("ToIdle");
+
+    // TODO make a Map out of it
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
+    FName JumpNodeName = TEXT("Jumping");
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
     FName RunNodeName = TEXT("ToRun");
@@ -354,6 +369,8 @@ protected:
     UPROPERTY()
     //IRyuCharacterState* CharacterState;
     URyuCharacterState* CharacterState;
+
+    ERyuCharacterPossibility CharacterPosibility;
 
     UPROPERTY()
     //IRyuCharacterState* EquipmentState;

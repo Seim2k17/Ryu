@@ -270,6 +270,14 @@ void ARyuMainCharacter::HandleSphereColliderBeginOverlap(UPrimitiveComponent* Ov
                                                          const FHitResult& SweepResult)
 {
     //TODO: needed ?
+    if (OtherActor->GetClass() == GetRyuCharacterMovement()->LadderClass)
+    {
+        SphereOverlappedActor = OtherActor;
+        // TODO check how to enum ladder up/down or both
+        CharacterPosibility = ERyuCharacterPossibility::CanClimbLadderUp;
+        UE_LOG(LogRyu, Log, TEXT("RyuMainCharacter: BeginSphereOverlap: %s , %s"),
+               *OtherActor->GetName(), *OtherComp->GetName());
+    }
 }
 
 void ARyuMainCharacter::HandleSphereColliderEndOverlap(UPrimitiveComponent* OverlappedComponent,
@@ -277,7 +285,15 @@ void ARyuMainCharacter::HandleSphereColliderEndOverlap(UPrimitiveComponent* Over
                                                        UPrimitiveComponent* OtherComp,
                                                        int32 OtherBodyIndex)
 {
-    //TODO: needed ?
+    //TODO: find another cool way to trigger if we are at a climbable object 
+    // (we lost the climbableactor when one edge of the triggersphere left the climbable object (see stay in the middle of a ladder)
+    if (OtherActor->GetClass() == GetRyuCharacterMovement()->LadderClass)
+    {
+        UE_LOG(LogRyu, Log, TEXT("RyuMainCharacter: EndSphereOverlap. %s , %s"),
+               *OtherActor->GetName(), *OtherComp->GetName());
+        SphereOverlappedActor = nullptr;
+        CharacterPosibility = ERyuCharacterPossibility::None;
+    }
 }
 
 void ARyuMainCharacter::StopJumping()
@@ -362,21 +378,19 @@ void ARyuMainCharacter::MoveUp(float Value)
 
     if (MoveUpInput < 0.0f)
     {
-		if (ARyuBaseCharacter::GetMoveUpAxisState()
-			!= ERyuMoveUpAxisInputState::PressDownAxisKey)
-		{
-			ARyuBaseCharacter::HandleInput(ERyuInputState::PressDown);
-		}
+        if (ARyuBaseCharacter::GetMoveUpAxisState() != ERyuMoveUpAxisInputState::PressDownAxisKey)
+        {
+            ARyuBaseCharacter::HandleInput(ERyuInputState::PressDown);
+        }
     }
     else
     {
         if (MoveUpInput > 0.0f)
         {
-			if (ARyuBaseCharacter::GetMoveUpAxisState()
-				!= ERyuMoveUpAxisInputState::PressUpAxisKey)
-			{
-				ARyuBaseCharacter::HandleInput(ERyuInputState::PressUp);
-			}
+            if (ARyuBaseCharacter::GetMoveUpAxisState() != ERyuMoveUpAxisInputState::PressUpAxisKey)
+            {
+                ARyuBaseCharacter::HandleInput(ERyuInputState::PressUp);
+            }
         }
         else
         {
@@ -393,12 +407,9 @@ void ARyuMainCharacter::MoveUp(float Value)
                 {
                     ARyuBaseCharacter::HandleInput(ERyuInputState::ReleaseDown);
                 }
-
             }
         }
-
     }
-
 }
 
 // TODO see if still needed here when CSTM is established !

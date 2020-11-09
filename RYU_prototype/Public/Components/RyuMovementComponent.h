@@ -155,6 +155,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
     FVector AfterJumpTreshold;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Climbing")
+    TSubclassOf<AActor> LadderClass;
+
     /** Velocity added after Jump ends (if StartedVelocity > AfterJumpTreshold)*/
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement (Customization)")
     FVector VelocityAfterJumping;

@@ -62,6 +62,9 @@ void URyuDebugComponent::DrawDebugInfosOnScreen()
     {
         return;
     }
+
+    ERyuCharacterPossibility CharPossibility = CharOwner->GetCharacterPossibility();
+
     ERyuCharacterState CharState = CharOwner->GetCharacterStateEnum();
 
     CharStateMode = URyuStaticFunctionLibrary::CharacterStateToString(CharState);
@@ -71,7 +74,8 @@ void URyuDebugComponent::DrawDebugInfosOnScreen()
     ERyuMoveRightAxisInputState RightAxisInput = CharOwner->GetMoveRightAxisState();
 
     GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red,
-                                     FString::Printf(TEXT("CharStateMode: %s"), *CharStateMode), false);
+                                     FString::Printf(TEXT("CharStateMode: %s"), *CharStateMode),
+                                     false);
 
     auto* ClimbingComp = GetOwner()->FindComponentByClass<URyuClimbingComponent>();
 
@@ -79,6 +83,12 @@ void URyuDebugComponent::DrawDebugInfosOnScreen()
         -1, 0.0f, FColor::Red,
         FString::Printf(TEXT("MoveRightAxisState: %s"),
                         *URyuStaticFunctionLibrary::RightAxisInputStateToString(RightAxisInput)),
+        false);
+
+    GEngine->AddOnScreenDebugMessage(
+        -1, 0.0f, FColor::Blue,
+        FString::Printf(TEXT("CharacterPossibility: %s"),
+                        *URyuStaticFunctionLibrary::CharacterPossibilityToString(CharPossibility)),
         false);
 
     GEngine->AddOnScreenDebugMessage(-1, 0.0f, FColor::Red,

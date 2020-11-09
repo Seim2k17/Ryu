@@ -35,18 +35,21 @@ void URyuCharacterIdleState::Enter(ARyuBaseCharacter* Character)
     Character->SetCharacterMovementState(ERyuMovementState::Standing);
     Character->JumpToAnimInstanceNode(Character->IdleNodeName);
     // Set IdleGraphics or other Asset related stuff
+
+    Character->GetSprite()->SetRelativeLocation(Character->IdleSpriteRelativePosition);
+    Character->GetCapsuleComponent()->SetCapsuleHalfHeight(Character->IdleCapsuleHeight);
 }
 
 void URyuCharacterIdleState::Exit(ARyuBaseCharacter* Character)
 {
-	this->ConditionalBeginDestroy();
+    this->ConditionalBeginDestroy();
 }
 
 URyuCharacterState* URyuCharacterIdleState::HandleInput(ARyuBaseCharacter* Character,
                                                         const ERyuInputState Input)
 {
-    // only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input, 
-	// just walk up in the hierarchy
+    // only make special call when Input occurs which is not in the Baseclass, otherwise we don´t need to handle Input,
+    // just walk up in the hierarchy
     switch (Input)
     {
         case ERyuInputState::PressLeft:
@@ -191,10 +194,10 @@ URyuCharacterState* URyuCharacterIdleState::InputPressInteract(ARyuBaseCharacter
 
 URyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Character)
 {
-//     UE_LOG(LogRyu, Error, TEXT("FromCharIdleState: Inputpressed: %s"),
-//            *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
+    //     UE_LOG(LogRyu, Error, TEXT("FromCharIdleState: Inputpressed: %s"),
+    //            *URyuStaticFunctionLibrary::InputStateToString(InputPressed));
     switch (InputPressed)
-    {	// TODO: appr. dist. btw. jumpup/fwd/fwd_fast
+    { // TODO: appr. dist. btw. jumpup/fwd/fwd_fast
         case ERyuInputState::PressJump:
         case ERyuInputState::PressJumpUp:
             return NewObject<URyuCharacterJumpUpwardState>();
@@ -202,7 +205,7 @@ URyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Ch
             return NewObject<URyuCharacterJumpBackwardState>();
         case ERyuInputState::PressJumpForward:
             return NewObject<URyuCharacterJumpForwardState>();
-		default:
+        default:
             return this;
             break;
     }
@@ -227,11 +230,11 @@ URyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Char
 
 void URyuCharacterIdleState::Update(ARyuBaseCharacter* Character)
 {
-	Super::Update(Character);
+    Super::Update(Character);
     // LOG(LogRyu, Log, TEXT("Idle-State Updating."));
     // check if MoveRightLeft is still pressed, when entering this State:
-    // DO WE NEED TO CALL THIS IN UPDATE ??? -> everytime HandleInput os called A new State is created !!! 
-	// -> unnecessa. StateDestroy & Creation (it´s the same State each frame!)
+    // DO WE NEED TO CALL THIS IN UPDATE ??? -> everytime HandleInput os called A new State is created !!!
+    // -> unnecessa. StateDestroy & Creation (it´s the same State each frame!)
     if (auto MainChar = URyuStaticFunctionLibrary::GetMainChar(Character))
     {
         switch (MainChar->GetMoveRightAxisState())
