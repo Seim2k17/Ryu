@@ -4,6 +4,7 @@
 
 #include "Character/RYU2DENUM_AnimationState.h"
 #include "Enums/ERyuButtonType.h"
+#include "Enums/ERyuCharacterPossibility.h"
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuCharacterStatus.h"
 #include "Enums/ERyuInputState.h"
@@ -12,7 +13,6 @@
 #include "Enums/ERyuMoveRightAxisInputState.h"
 #include "Enums/ERyuMoveUpAxisInputState.h"
 #include "Enums/ERyuMovementState.h"
-#include "Enums/ERyuCharacterPossibility.h"
 #include "IO/RyuBaseCommand.h"
 #include "RYU2DENUM_ClimbingMode.h"
 #include "RYU2DENUM_Movement.h"
@@ -330,6 +330,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
     FName FallinghNodeName = TEXT("ToFalling");
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "PaperZD")
+    FName ClimbinghNodeName = TEXT("ToClimbing");
 
     /** Side view camera */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera,

@@ -11,6 +11,7 @@
 #include "RYU_prototype.h"
 #include "RyuBaseCharacter.h"
 #include "RyuCharacterAbilityState.h"
+#include "RyuCharacterClimbLadderState.h"
 #include "RyuCharacterClimbState.h"
 #include "RyuCharacterCloseState.h"
 #include "RyuCharacterDuckState.h"
@@ -213,7 +214,14 @@ URyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Ch
 
 URyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Character)
 {
+    if (Character->GetCharacterPossibility() == ERyuCharacterPossibility::CanClimbLadderUp)
+    {
+        return NewObject<URyuCharacterClimbLadderState>();
+    }
+
     // if Climbing is possible we want to climb up
+    /* TODO Refactor hard */
+    /*
     if (auto* ClimbingComp = Character->FindComponentByClass<URyuClimbingComponent>())
     {
         if (Character->CheckOverlapClimbableActors()
@@ -225,6 +233,7 @@ URyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Char
             return NewObject<URyuCharacterClimbState>();
         }
     }
+    */
     return Super::HandleInput(Character, ERyuInputState::PressUp);
 }
 

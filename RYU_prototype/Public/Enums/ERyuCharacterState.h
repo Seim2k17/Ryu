@@ -1,6 +1,8 @@
 // Copyright 2019 80k Games, All Rights Reserved.
-
 #pragma once
+#include "CoreMinimal.h"
+#include "ERyuCharacterState.generated.h"
+
 
 UENUM(BlueprintType)
 
@@ -26,6 +28,10 @@ enum class ERyuCharacterState : uint8
 	FallingNormalEnd,
 	FallingDeepEnd,
 	FallingDeath,
+    ClimbUpLadder,
+    ClimbDownLadder,
+    EnterLadder,
+    ExitLadder,
     ClimbLedge,
     ClimbObstacle,
 	IdleMoveObject,

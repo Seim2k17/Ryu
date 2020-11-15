@@ -2,6 +2,7 @@
 
 #include "RyuMovementComponent.h"
 #include "RyuBaseCharacter.h"
+#include "RyuMainCharacter.h"
 #include <PaperFlipbookComponent.h>
 #include <Components/CapsuleComponent.h>
 #include <Components/SphereComponent.h>
@@ -77,10 +78,29 @@ void URyuMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovement
 
     UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): Movement Mode changed ..."));
 
-    ARYU2D_CharacterBase* MyChar = Cast<ARYU2D_CharacterBase>(CharacterOwner);
+    ARyuMainCharacter* MainChar = Cast<ARyuMainCharacter>(CharacterOwner);
 
+    /* ? */
     bDoStuffOnce = false;
 
+    switch (MainChar->GetCharacterPossibility())
+    {
+        case ERyuCharacterPossibility::CanClimbLadderUp:
+        {
+            MainChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            MainChar->SphereTracer->SetEnableGravity(false);
+            MainChar->GetSprite()->SetEnableGravity(false);
+            //NoMesh in 2D Dude
+            //MainChar->GetMesh()->SetEnableGravity(false);
+            MainChar->GetCapsuleComponent()->SetEnableGravity(false);
+            UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): ... to Custom::ClimbingLadder"));
+            break;
+        }
+        default:
+            break;
+    }
+
+    /*
     switch (CustomMovementMode)
     {
         case ERYUClimbingMode::CLIMBUPLEDGE:
@@ -91,7 +111,7 @@ void URyuMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovement
             SetNoCollisionCharacterPrefs();
             MyChar->PlayerMovement = EPlayerMovement::CLIMBING;
             MyChar->RYUClimbingMode = ERYUClimbingMode::CLIMBUPLEDGE;
-            UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): ... to CLIMB-UP LEDGE"));
+            UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): ... to CLIMB- LEDGE"));
             OnMoveModeChanged.Broadcast(EPlayerMovement::CLIMBING);
             break;
         }
@@ -136,6 +156,7 @@ void URyuMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovement
         default:
             break;
     }
+    */
 
     /**FallBack , just use Flying */
     switch (MovementMode)
@@ -144,12 +165,12 @@ void URyuMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovement
         {
             //	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
             //UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
-            MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-            MyChar->SphereTracer->SetEnableGravity(false);
-            MyChar->GetSprite()->SetEnableGravity(false);
+            MainChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            MainChar->SphereTracer->SetEnableGravity(false);
+            MainChar->GetSprite()->SetEnableGravity(false);
             //NoMesh in 2D Dude
-            //MyChar->GetMesh()->SetEnableGravity(false);
-            MyChar->GetCapsuleComponent()->SetEnableGravity(false);
+            //MainChar->GetMesh()->SetEnableGravity(false);
+            MainChar->GetCapsuleComponent()->SetEnableGravity(false);
             UE_LOG(LogTemp, Log, TEXT("OnMovementModeChanged(): ... to FLYING"));
             break;
         }
@@ -170,14 +191,17 @@ void URyuMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
 
     switch (CustomMovementMode)
     {
-        case ERYUClimbingMode::CLIMBUPLEDGE:
+        case ERyuCharacterState::ClimbUpLadder:
             if (!bDoStuffOnce)
             {
                 bDoStuffOnce = true;
-                UE_LOG(LogTemp, Log, TEXT("PhysCustom(): I´m climbing up the ledge!"));
+                UE_LOG(LogTemp, Log, TEXT("PhysCustom(): I´m climbing up !"));
             }
-            //PhysClimbingLedge(deltaTime, Iterations);
+            PhysClimbingLadder(deltaTime, Iterations);
+
             break;
+
+            /* TODO Cast to ne CharacterStateEnum*/
         case ERYUClimbingMode::CLIMBDOWNLEDGE:
             if (!bDoStuffOnce)
             {
@@ -209,12 +233,6 @@ void URyuMovementComponent::PhysCustom(float deltaTime, int32 Iterations)
                 bDoStuffOnce = true;
                 UE_LOG(LogTemp, Log, TEXT("PhysCustom(): I´m Jumping to the ledge!"));
             }
-        case ERYUClimbingMode::CLIMBLADDERUP:
-            PhysClimbingLadder(deltaTime, Iterations);
-            break;
-        case ERYUClimbingMode::CLIMBLADDERDOWN:
-            PhysClimbingLadder(deltaTime, Iterations);
-            break;
     }
 }
 
@@ -275,6 +293,14 @@ void URyuMovementComponent::PhysFallingLedge(float deltaTime, int32 Iterations)
 
 void URyuMovementComponent::PhysClimbingLadder(float deltaTime, int32 Iterations)
 {
+
+    if (auto MainChar = Cast<ARyuMainCharacter>(GetOwner()))
+    {
+        auto CurrentPos = MainChar->GetActorLocation();
+        FVector PosiUp = FVector(0.0f, 0.0f, MainChar->GetMoveUpInput());
+        MainChar->SetActorLocation(CurrentPos + PosiUp);
+    }
+
 }
 
 void URyuMovementComponent::SetGravityScaleMaximum(float GravScale)
@@ -283,7 +309,7 @@ void URyuMovementComponent::SetGravityScaleMaximum(float GravScale)
 
 void URyuMovementComponent::SetJumpAllowedState(bool JumpState)
 {
-	MovementState.bCanJump = JumpState;
+    MovementState.bCanJump = JumpState;
 }
 
 bool URyuMovementComponent::DoJump(bool bReplayingMoves)
@@ -304,12 +330,6 @@ bool URyuMovementComponent::DoJump(bool bReplayingMoves)
         }
     }
 
-    //TODO Princespecific Stuff // use jumping for climbing up ? --> maybe NO
-    ARYU2D_CharacterPrince* MyChar = Cast<ARYU2D_CharacterPrince>(CharacterOwner);
-    if (MyChar && (MyChar->RYUClimbingMode == ERYUClimbingMode::CANCLIMBUPLEDGE))
-    {
-        MyChar->Climb(1.0f);
-    }
     return false;
 }
 
@@ -389,7 +409,7 @@ float URyuMovementComponent::GetSneakMultiplier()
 
 FRyuMovementProperties URyuMovementComponent::GetRyuMovementState()
 {
-	return MovementState;
+    return MovementState;
 }
 
 void URyuMovementComponent::IncreaseFallingVelocity()
@@ -406,7 +426,7 @@ void URyuMovementComponent::IncreaseFallingVelocity()
 
 bool URyuMovementComponent::IsAllowedToJump()
 {
-	return MovementState.bCanJump;
+    return MovementState.bCanJump;
 }
 
 void URyuMovementComponent::SetAllowClimbUpTrue()

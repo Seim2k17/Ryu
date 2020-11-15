@@ -262,6 +262,7 @@ void ARyuBaseCharacter::IncreaseFallingVelocity()
 
 void ARyuBaseCharacter::JumpToAnimInstanceNode(FName Node)
 {
+    UE_LOG(LogRyu, Error, TEXT("Jump to Node: %s"), *Node.ToString());
     auto* AnimationInstance = GetOrCreateAnimInstance();
     AnimationInstance->JumpToNode(Node);
 }

@@ -2,18 +2,23 @@
 
 #pragma once
 
-#include "Character/RyuBaseCharacter.h"
 #include "Character/States/RyuCharacterClimbState.h"
 #include "Enums/ERyuInputState.h"
-#include "RyuCharacterClimbState.h"
-#include "RyuCharacterClimbLedgeState.generated.h"
+#include "CoreMinimal.h"
+#include "RyuCharacterClimbLadderState.generated.h"
 
+class URyuCharacterState;
+class ARyuBaseCharacter;
+
+/**
+ * 
+ */
 UCLASS()
-class RYU_PROTOTYPE_API URyuCharacterClimbLedgeState : public URyuCharacterClimbState
+class RYU_PROTOTYPE_API URyuCharacterClimbLadderState : public URyuCharacterClimbState
 {
     GENERATED_BODY()
-public:
-    URyuCharacterClimbLedgeState();
+
+    URyuCharacterClimbLadderState();
 
     //virtual IRyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
     virtual URyuCharacterState* HandleInput(ARyuBaseCharacter* Character,
