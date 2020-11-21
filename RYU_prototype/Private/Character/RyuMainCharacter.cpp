@@ -148,7 +148,52 @@ void ARyuMainCharacter::StartLineTracing()
 {
     // DrawDebugSphere(TheWorld, GetActorLocation(), 10.0f, 10, FColor::Red, false, 1.f, 0, 2.f);
     TraceStart = this->GetActorLocation();
-    TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
+
+    if (GetMoveUpAxisState() == ERyuMoveUpAxisInputState::PressUpAxisKey)
+    {
+        TraceEnd = TraceStart + (LengthLineTrace * this->GetActorUpVector());
+    }
+    else
+    {
+        TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
+    }
+
+    if ((GetMoveRightAxisState() == ERyuMoveRightAxisInputState::PressLeftAxisKey)
+        || ((GetMoveRightAxisState() == ERyuMoveRightAxisInputState::PressRightAxisKey)))
+    {
+        TraceEnd = TraceStart + LengthLineTrace * this->GetActorForwardVector();
+    }
+
+    if (GetMoveUpInput() == 0.0f && GetMoveRightInput() == 0.0f)
+    {
+        // TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
+    }
+    else
+    {
+        if (GetMoveRightInput() > 0.0f)
+        {
+            //   TraceEnd = TraceStart + (LengthLineTrace * this->GetActorUpVector())
+            //            + (LengthLineTrace * this->GetActorRightVector());
+        }
+        else
+        {
+            //  TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
+            //TraceEnd = TraceStart - (LengthLineTrace * this->GetActorForwardVector());
+        }
+
+        /*
+		if (GetMoveUpInput() > 0.0f)
+		{
+			TraceEnd = TraceStart + (LengthLineTrace * this->GetActorUpVector());
+			//+ (LengthLineTrace * this->GetActorUpVector());
+		}
+		else
+		{
+			TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
+		}
+        */
+    }
+
     FCollisionShape HitSphere = FCollisionShape::MakeSphere(this->HitSphereRaduis);
 
     //TraceEnd = TraceStart - (LengthLineTrace * (-1.f) * this->GetActorForwardVector());
@@ -285,7 +330,7 @@ void ARyuMainCharacter::HandleSphereColliderEndOverlap(UPrimitiveComponent* Over
                                                        UPrimitiveComponent* OtherComp,
                                                        int32 OtherBodyIndex)
 {
-    //TODO: find another cool way to trigger if we are at a climbable object 
+    //TODO: find another cool way to trigger if we are at a climbable object
     // (we lost the climbableactor when one edge of the triggersphere left the climbable object (see stay in the middle of a ladder)
     if (OtherActor->GetClass() == GetRyuCharacterMovement()->LadderClass)
     {

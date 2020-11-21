@@ -3,6 +3,7 @@
 #include "RyuCharacterClimbLadderState.h"
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
+#include "GameWorld/Interactibles/RyuLadderBase.h"
 #include "States/RyuCharacterIdleState.h"
 #include "RyuMainCharacter.h"
 
@@ -75,6 +76,16 @@ void URyuCharacterClimbLadderState::Enter(ARyuBaseCharacter* Character)
 
     if (auto MainChar = Cast<ARyuMainCharacter>(Character))
     {
+        auto Ladder = Cast<ARyuLadderBase>(MainChar->GetOverlappedActor());
+        auto WorldLadderTransform = Ladder->ActorToWorld();
+        FVector LadderPos = WorldLadderTransform.GetLocation();
+        // TODO: different axis alignments of the actors^^ solve it ?
+        // X-axis of climb-position == y-axis of actor, y-axis === x-axis / rotation around -90° z-axis of the ladder
+        FVector StartClimb = Ladder->StartClimbingPosition;
+        FVector ClimbPos = LadderPos - (LadderPos.ForwardVector * StartClimb.X)
+                           + (LadderPos.RightVector * StartClimb.Y);
+        MainChar->SetActorLocation(ClimbPos); // +));
+
         Character->JumpToAnimInstanceNode(Character->ClimbinghNodeName);
         //set customMovementMode to flying or custom mode
         MainChar->GetRyuCharacterMovement()->SetMovementMode(

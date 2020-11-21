@@ -605,6 +605,11 @@ float ARyuBaseCharacter::GetFallToDeathVelocityZ()
     return GetRyuCharacterMovement()->FallToDeathVelocityZ;
 }
 
+AActor* ARyuBaseCharacter::GetOverlappedActor()
+{
+    return SphereOverlappedActor;
+}
+
 void ARyuBaseCharacter::StartJumpingTimer()
 {
     UE_LOG(LogTemp, Warning, TEXT("JumpTimer started"));

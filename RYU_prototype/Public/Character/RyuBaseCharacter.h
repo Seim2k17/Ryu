@@ -179,6 +179,8 @@ public:
 
     float GetFallToDeathVelocityZ();
 
+    AActor* GetOverlappedActor();
+
     /** Returns SideViewCameraComponent subobject **/
     FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const
     {
