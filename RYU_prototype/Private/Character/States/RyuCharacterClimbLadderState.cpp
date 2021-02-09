@@ -5,6 +5,7 @@
 #include "Enums/ERyuInputState.h"
 #include "GameWorld/Interactibles/RyuLadderBase.h"
 #include "States/RyuCharacterIdleState.h"
+#include "States/RyuCharacterRunState.h"
 #include "RyuMainCharacter.h"
 
 URyuCharacterClimbLadderState::URyuCharacterClimbLadderState()
@@ -28,6 +29,7 @@ URyuCharacterState* URyuCharacterClimbLadderState::HandleInput(ARyuBaseCharacter
             {
                 UE_LOG(LogRyu, Log, TEXT("Character ClimbsUp Ladder."));
                 CharacterState = ERyuCharacterState::ClimbUpLadder;
+                ClimbOutState = ELadderClimboutState::Top;
                 return this;
             }
 
@@ -37,6 +39,7 @@ URyuCharacterState* URyuCharacterClimbLadderState::HandleInput(ARyuBaseCharacter
         {
             UE_LOG(LogRyu, Log, TEXT("Character ClimbsDown Ladder."));
             CharacterState = ERyuCharacterState::ClimbDownLadder;
+            ClimbOutState = ELadderClimboutState::Bottom;
             return this;
             break;
         }
@@ -49,9 +52,11 @@ URyuCharacterState* URyuCharacterClimbLadderState::HandleInput(ARyuBaseCharacter
             break;
         }
         case ERyuInputState::AnimationEnded:
+        case ERyuInputState::InputEndClimbing:
         {
             return NewObject<URyuCharacterIdleState>();
         }
+
         default:
         {
             return Super::HandleInput(Character, Input);
@@ -77,14 +82,48 @@ void URyuCharacterClimbLadderState::Enter(ARyuBaseCharacter* Character)
     if (auto MainChar = Cast<ARyuMainCharacter>(Character))
     {
         auto Ladder = Cast<ARyuLadderBase>(MainChar->GetOverlappedActor());
+
+        /*
         auto WorldLadderTransform = Ladder->ActorToWorld();
         FVector LadderPos = WorldLadderTransform.GetLocation();
         // TODO: different axis alignments of the actors^^ solve it ?
         // X-axis of climb-position == y-axis of actor, y-axis === x-axis / rotation around -90° z-axis of the ladder
-        FVector StartClimb = Ladder->StartClimbingPosition;
+        FVector StartClimb = Ladder->ClimbingDownLocation;
         FVector ClimbPos = LadderPos - (LadderPos.ForwardVector * StartClimb.X)
                            + (LadderPos.RightVector * StartClimb.Y);
-        MainChar->SetActorLocation(ClimbPos); // +));
+                           */
+        if (Ladder != nullptr)
+        {
+            FVector ClimbPos;
+            // TODO the distances (where to teleport when climb out) needs to be adjustable acc. to the climbout - animation
+            // --> into the ladderBaseActor !!! -> according to the direction where to climbout !
+            ClimbOutBtm = Ladder->ClimbingBottomLocation - FVector(50, 0, -50);
+            ClimbOutTop = Ladder->ClimbingTopLocation + FVector(50, 0, 100);
+            ClimbOutBtm.Y = MainChar->CharacterYPosition;
+            ClimbOutTop.Y = MainChar->CharacterYPosition;
+
+            if (MainChar->GetCharacterPossibility() == ERyuCharacterPossibility::CanClimbLadderUp)
+            {
+                ClimbPos = Ladder->ClimbingBottomLocation;
+            }
+
+            if (MainChar->GetCharacterPossibility() == ERyuCharacterPossibility::CanClimbLadderDown)
+            {
+                ClimbPos = Ladder->ClimbingTopLocation;
+            }
+
+            if (MainChar->GetCharacterPossibility()
+                == ERyuCharacterPossibility::CanClimbLadderUpDown)
+            {
+                ClimbPos = Character->GetActorLocation();
+            }
+
+            ClimbPos.X = (Ladder->ClimbingBottomLocation.X + Ladder->ClimbingTopLocation.X
+                          + Ladder->LadderBorderThickness)
+                         / 2;
+            ClimbPos.Y = MainChar->CharacterYPosition;
+            MainChar->SetActorLocation(ClimbPos); // +));
+        }
 
         Character->JumpToAnimInstanceNode(Character->ClimbinghNodeName);
         //set customMovementMode to flying or custom mode
@@ -97,4 +136,28 @@ void URyuCharacterClimbLadderState::Enter(ARyuBaseCharacter* Character)
 void URyuCharacterClimbLadderState::Exit(ARyuBaseCharacter* Character)
 {
     // TODO: set Character to LadderObject top or DownPosition
+    if (auto MainChar = Cast<ARyuMainCharacter>(Character))
+    {
+        switch (ClimbOutState)
+        {
+            case ELadderClimboutState::Top:
+            {
+                MainChar->SetActorLocation(ClimbOutTop);
+                UE_LOG(LogRyu, Log, TEXT("Character SetOnTop at: %s"), *ClimbOutTop.ToString());
+                break;
+            }
+
+            case ELadderClimboutState::Bottom:
+            {
+                MainChar->SetActorLocation(ClimbOutBtm);
+                UE_LOG(LogRyu, Log, TEXT("Character SetOnBtm at: %s"), *ClimbOutBtm.ToString());
+                break;
+            }
+            default:
+                break;
+        }
+
+        Character->JumpToAnimInstanceNode(Character->IdleNodeName);
+        MainChar->GetRyuCharacterMovement()->ResetClimbingState();
+    }
 }

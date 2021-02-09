@@ -88,7 +88,7 @@ void URyuMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovement
         case ERyuCharacterPossibility::CanClimbLadderUp:
         {
             MainChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-            MainChar->SphereTracer->SetEnableGravity(false);
+            MainChar->BoxTracer->SetEnableGravity(false);
             MainChar->GetSprite()->SetEnableGravity(false);
             //NoMesh in 2D Dude
             //MainChar->GetMesh()->SetEnableGravity(false);
@@ -166,7 +166,7 @@ void URyuMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovement
             //	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
             //UE_LOG(LogTemp, Log, TEXT("Col: %s"),*CapCol.ToString());
             MainChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-            MainChar->SphereTracer->SetEnableGravity(false);
+            MainChar->BoxTracer->SetEnableGravity(false);
             MainChar->GetSprite()->SetEnableGravity(false);
             //NoMesh in 2D Dude
             //MainChar->GetMesh()->SetEnableGravity(false);
@@ -336,17 +336,15 @@ bool URyuMovementComponent::DoJump(bool bReplayingMoves)
 // TODO in climbingcomp ?
 void URyuMovementComponent::ResetClimbingState()
 {
-    ARYU2D_CharacterBase* MyChar = Cast<ARYU2D_CharacterBase>(CharacterOwner);
-
-    if (MyChar)
+    if (auto MainChar = Cast<ARyuMainCharacter>(CharacterOwner))
     {
         //	ECollisionEnabled CapCol = MyChar->GetCapsuleComponent()->GetCollisionEnabled();
         //UE_LOG(LogTemp, Log, TEXT("ResetClimbingState() Col: %s"),*CapCol.ToString());
         UE_LOG(LogTemp, Log, TEXT("ResetClimbingState(): ClimbReset."));
-        MyChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-        MyChar->SphereTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-        MyChar->SphereTracer->SetEnableGravity(true);
-        MyChar->GetCapsuleComponent()->SetEnableGravity(true);
+        MainChar->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        //MainChar->SphereTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+        //MainChar->SphereTracer->SetEnableGravity(true);
+        MainChar->GetCapsuleComponent()->SetEnableGravity(true);
 
         //SetAllowClimbUpFalse();
 
@@ -354,7 +352,7 @@ void URyuMovementComponent::ResetClimbingState()
 
         ResetDoOnceClimbInput();
 
-        MyChar->CheckOverlappingActors();
+        //MainChar->CheckOverlappingActors();
     }
 }
 

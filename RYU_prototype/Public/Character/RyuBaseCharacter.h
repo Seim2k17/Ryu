@@ -341,9 +341,15 @@ public:
               meta = (AllowPrivateAccess = "true"))
     class UCameraComponent* SideViewCameraComponent;
 
-    /** To look for ledges to Climb and other Stuff in front of the Character*/
+    /** To look for ledges to Climb and other Stuff near of the Character*/
     UPROPERTY(VisibleAnywhere, Category = "Components")
-    USphereComponent* SphereTracer;
+    UBoxComponent* BoxTracer;
+
+    UPROPERTY(EditAnywhere, Category = " Climbing")
+    FVector BoxTracerRelativeLocation{0, 0, 0};
+
+    UPROPERTY(EditAnywhere, Category = " Climbing")
+        FVector BoxTracerExtend; // {20.0f, 40.0f, 20.0f};
 
     UPROPERTY(BlueprintReadOnly, Category = "Movement")
     bool bJumpJustStarted;
@@ -359,7 +365,7 @@ public:
     TArray<AActor*> CapsuleOverlappedActors;
 
 protected:
-    AActor* SphereOverlappedActor;
+    AActor* BoxOverlappedActor;
 
     UPrimitiveComponent* SphereOverlappedComponent;
 

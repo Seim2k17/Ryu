@@ -28,6 +28,7 @@ enum class ERyuInputState : uint8
 	InputFallingDeep,
 	InputFallingDeath,
 	InputEndFalling,
+    InputEndClimbing,
     PressInteract,
     PressSneakLeft,
     ReleaseSneakLeft,

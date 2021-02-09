@@ -155,6 +155,12 @@ URyuCharacterState* URyuCharacterIdleState::InputPressDown(ARyuBaseCharacter* Ch
         }
     }
 
+    if ((Character->GetCharacterPossibility() == ERyuCharacterPossibility::CanClimbLadderDown)
+        || (Character->GetCharacterPossibility() == ERyuCharacterPossibility::CanClimbLadderUpDown))
+    {
+        return NewObject<URyuCharacterClimbLadderState>();
+    }
+
     // we later decide what we move to the BaseClass
     // return Super::HandleInput(Character, ERyuInputState::PressDown);
     return NewObject<URyuCharacterDuckState>();
@@ -214,7 +220,8 @@ URyuCharacterState* URyuCharacterIdleState::InputPressJump(ARyuBaseCharacter* Ch
 
 URyuCharacterState* URyuCharacterIdleState::InputPressUp(ARyuBaseCharacter* Character)
 {
-    if (Character->GetCharacterPossibility() == ERyuCharacterPossibility::CanClimbLadderUp)
+    if ((Character->GetCharacterPossibility() == ERyuCharacterPossibility::CanClimbLadderUp)
+        || (Character->GetCharacterPossibility() == ERyuCharacterPossibility::CanClimbLadderUpDown))
     {
         return NewObject<URyuCharacterClimbLadderState>();
     }

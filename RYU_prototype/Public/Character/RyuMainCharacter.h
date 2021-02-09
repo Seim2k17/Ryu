@@ -56,6 +56,8 @@ public:
 
     bool GetSneakActive();
 
+    ERyuCharacterState GetCharacterState();
+
     UFUNCTION()
     FHitResult GetHitResult();
 
@@ -75,15 +77,15 @@ protected:
     void MoveUp(float Value);
 
     UFUNCTION()
-    void HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent,
-                                          AActor* OtherActor, UPrimitiveComponent* OtherComp,
-                                          int32 OtherBodyIndex, bool bFromSweep,
-                                          const FHitResult& SweepResult);
+    void HandleBoxColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
+                                       bool bFromSweep, const FHitResult& SweepResult);
 
     UFUNCTION()
-    void HandleSphereColliderEndOverlap(UPrimitiveComponent* OverlappedComponent,
-                                        AActor* OtherActor, UPrimitiveComponent* OtherComp,
-                                        int32 OtherBodyIndex);
+    void HandleBoxColliderEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+    void SetClimbPossibility(ERyuCharacterPossibility& ClimbPossibility);
 
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -128,6 +130,9 @@ public:
 
     UPROPERTY(EditAnywhere, Category = "Falling")
     float HitSphereRaduis = 20.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Preferences")
+    float CharacterYPosition = 10.0f;
 
 protected:
     UPROPERTY(VisibleAnywhere, Category = "Components")

@@ -53,4 +53,7 @@ public:
     static FString CharacterPossibilityToString(const ERyuCharacterPossibility Possibility);
 
     static void Log(FString Message, FName Category);
+
+    template <typename T>
+    static bool CheckIfActorIsInSet(T&, TSet<AActor*>&);
 };

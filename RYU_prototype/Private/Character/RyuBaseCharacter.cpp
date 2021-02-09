@@ -57,13 +57,13 @@ ARyuBaseCharacter::ARyuBaseCharacter(const class FObjectInitializer& ObjectIniti
     SideViewCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("SideViewCamera"));
     SideViewCameraComponent->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 
-    SphereTracer = CreateDefaultSubobject<USphereComponent>(TEXT("SphereTracer"));
-    SphereTracer->SetupAttachment(RootComponent);
+    BoxTracer = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxTracer"));
+    BoxTracer->SetupAttachment(RootComponent);
 
-    SphereTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-    SphereTracer->SetCollisionResponseToAllChannels(ECR_Overlap);
-    SphereTracer->SetRelativeLocation(FVector(60, 0, 0));
-    SphereTracer->SetSphereRadius(60);
+    BoxTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    BoxTracer->SetCollisionResponseToAllChannels(ECR_Overlap);
+    BoxTracer->SetRelativeLocation(this->BoxTracerRelativeLocation);
+    BoxTracer->SetBoxExtent(BoxTracerExtend);
 
     bSphereTracerOverlap = false;
 
@@ -212,7 +212,7 @@ void ARyuBaseCharacter::OnSphereTracerCheckOverlap(AActor* OtherActor,
         (!IgnoredActor_1))
     {
         //double Set when calling from OnHandleCapsuleEndOverlap, But WHO CARES ?
-        SphereOverlappedActor = OtherActor;
+        BoxOverlappedActor = OtherActor;
         SphereOverlappedComponent = OtherComp;
 
         bSphereTracerOverlap = true;
@@ -607,7 +607,7 @@ float ARyuBaseCharacter::GetFallToDeathVelocityZ()
 
 AActor* ARyuBaseCharacter::GetOverlappedActor()
 {
-    return SphereOverlappedActor;
+    return BoxOverlappedActor;
 }
 
 void ARyuBaseCharacter::StartJumpingTimer()

@@ -6,6 +6,7 @@
 #include "Components/RyuMovementComponent.h"
 #include "Components/RyuTimelineComponent.h"
 #include "Core/RyuGameInstance.h"
+#include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
 #include "Enums/ERyuMovementState.h"
 #include "Savegame/RyuSaveGame.h"
@@ -14,6 +15,7 @@
 #include "RYUClimbingActor.h"
 #include "RYU_prototype.h"
 #include "RyuCharacterState.h"
+#include "RyuLadderBase.h"
 #include <DrawDebugHelpers.h>
 #include <PaperFlipbookComponent.h>
 #include <Camera/CameraComponent.h>
@@ -146,52 +148,60 @@ void ARyuMainCharacter::SetDebuggedCharacter()
 
 void ARyuMainCharacter::StartLineTracing()
 {
-    // DrawDebugSphere(TheWorld, GetActorLocation(), 10.0f, 10, FColor::Red, false, 1.f, 0, 2.f);
     TraceStart = this->GetActorLocation();
 
-    if (GetMoveUpAxisState() == ERyuMoveUpAxisInputState::PressUpAxisKey)
+    auto Ladder = Cast<ARyuLadderBase>(BoxOverlappedActor);
+
+    switch (GetCharacterState())
     {
-        TraceEnd = TraceStart + (LengthLineTrace * this->GetActorUpVector());
-    }
-    else
-    {
-        TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
+        //TODO: weiter set ClimbUp / down position here in ++ atm its set in BP at BeginPlay / LadderBP
+        case ERyuCharacterState::ClimbUpLadder:
+        {
+            if (Ladder != nullptr)
+            {
+                TraceEnd = Ladder->ClimbingTopLocation;
+
+                UE_LOG(LogRyu, Log, TEXT("DistToTop: %f "), FVector::Dist(TraceStart, TraceEnd))
+                if (FVector::Dist(TraceStart, TraceEnd) < Ladder->GetClimboutTreshold())
+                {
+                    HandleInput(ERyuInputState::InputEndClimbing);
+                }
+            }
+            break;
+        }
+
+        case ERyuCharacterState::ClimbDownLadder:
+        {
+            if (Ladder != nullptr)
+            {
+                TraceEnd = Ladder->ClimbingBottomLocation;
+                UE_LOG(LogRyu, Log, TEXT("DistToDown: %f "), FVector::Dist(TraceStart, TraceEnd))
+                if (FVector::Dist(TraceStart, TraceEnd) < Ladder->GetClimboutTreshold())
+                {
+                    HandleInput(ERyuInputState::InputEndClimbing);
+                }
+            }
+            break;
+        }
+
+        default:
+        {
+            if (GetMoveUpAxisState() == ERyuMoveUpAxisInputState::PressUpAxisKey)
+            {
+                TraceEnd = TraceStart + (LengthLineTrace * this->GetActorUpVector());
+            }
+            else
+            {
+                TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
+            }
+            break;
+        }
     }
 
     if ((GetMoveRightAxisState() == ERyuMoveRightAxisInputState::PressLeftAxisKey)
         || ((GetMoveRightAxisState() == ERyuMoveRightAxisInputState::PressRightAxisKey)))
     {
         TraceEnd = TraceStart + LengthLineTrace * this->GetActorForwardVector();
-    }
-
-    if (GetMoveUpInput() == 0.0f && GetMoveRightInput() == 0.0f)
-    {
-        // TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
-    }
-    else
-    {
-        if (GetMoveRightInput() > 0.0f)
-        {
-            //   TraceEnd = TraceStart + (LengthLineTrace * this->GetActorUpVector())
-            //            + (LengthLineTrace * this->GetActorRightVector());
-        }
-        else
-        {
-            //  TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
-            //TraceEnd = TraceStart - (LengthLineTrace * this->GetActorForwardVector());
-        }
-
-        /*
-		if (GetMoveUpInput() > 0.0f)
-		{
-			TraceEnd = TraceStart + (LengthLineTrace * this->GetActorUpVector());
-			//+ (LengthLineTrace * this->GetActorUpVector());
-		}
-		else
-		{
-			TraceEnd = TraceStart - (LengthLineTrace * this->GetActorUpVector());
-		}
-        */
     }
 
     FCollisionShape HitSphere = FCollisionShape::MakeSphere(this->HitSphereRaduis);
@@ -208,7 +218,7 @@ void ARyuMainCharacter::StartLineTracing()
     {
         DrawDebugSphere(TheWorld, TraceEnd, HitSphere.GetSphereRadius(), 10, FColor::Green, false,
                         0.1f);
-        // DrawDebugLine(TheWorld, TraceStart, TraceEnd, FColor::Red, false, -1.f, 0, 2.0f);
+        DrawDebugLine(TheWorld, TraceStart, TraceEnd, FColor::Red, false, -1.f, 0, 2.0f);
     }
 }
 
@@ -225,10 +235,10 @@ void ARyuMainCharacter::BeginPlay()
     //do we still need it
     //GetSprite()->OnFinishedPlaying.AddDynamic(this, &ARYU2D_CharacterPrince::FlipbookFinishedPlaying);
 
-    SphereTracer->OnComponentBeginOverlap.AddDynamic(
-        this, &ARyuMainCharacter::HandleSphereColliderBeginOverlap);
-    SphereTracer->OnComponentEndOverlap.AddDynamic(
-        this, &ARyuMainCharacter::HandleSphereColliderEndOverlap);
+    BoxTracer->OnComponentBeginOverlap.AddDynamic(
+        this, &ARyuMainCharacter::HandleBoxColliderBeginOverlap);
+    BoxTracer->OnComponentEndOverlap.AddDynamic(this,
+                                                &ARyuMainCharacter::HandleBoxColliderEndOverlap);
 
     if (auto GameInstance = Cast<URyuGameInstance>(UGameplayStatics::GetGameInstance(this)))
     {
@@ -308,36 +318,82 @@ void ARyuMainCharacter::Jump()
     }
 }
 
-void ARyuMainCharacter::HandleSphereColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent,
-                                                         AActor* OtherActor,
-                                                         UPrimitiveComponent* OtherComp,
-                                                         int32 OtherBodyIndex, bool bFromSweep,
-                                                         const FHitResult& SweepResult)
+void ARyuMainCharacter::HandleBoxColliderBeginOverlap(UPrimitiveComponent* OverlappedComponent,
+                                                      AActor* OtherActor,
+                                                      UPrimitiveComponent* OtherComp,
+                                                      int32 OtherBodyIndex, bool bFromSweep,
+                                                      const FHitResult& SweepResult)
 {
     //TODO: needed ?
     if (OtherActor->GetClass() == GetRyuCharacterMovement()->LadderClass)
     {
-        SphereOverlappedActor = OtherActor;
+        BoxOverlappedActor = OtherActor;
         // TODO check how to enum ladder up/down or both
-        CharacterPosibility = ERyuCharacterPossibility::CanClimbLadderUp;
-        UE_LOG(LogRyu, Log, TEXT("RyuMainCharacter: BeginSphereOverlap: %s , %s"),
+        SetClimbPossibility(CharacterPosibility);
+        UE_LOG(LogRyu, Log, TEXT("RyuMainCharacter: BeginBoxOverlap: %s , %s"),
                *OtherActor->GetName(), *OtherComp->GetName());
     }
 }
 
-void ARyuMainCharacter::HandleSphereColliderEndOverlap(UPrimitiveComponent* OverlappedComponent,
-                                                       AActor* OtherActor,
-                                                       UPrimitiveComponent* OtherComp,
-                                                       int32 OtherBodyIndex)
+void ARyuMainCharacter::HandleBoxColliderEndOverlap(UPrimitiveComponent* OverlappedComponent,
+                                                    AActor* OtherActor,
+                                                    UPrimitiveComponent* OtherComp,
+                                                    int32 OtherBodyIndex)
 {
     //TODO: find another cool way to trigger if we are at a climbable object
     // (we lost the climbableactor when one edge of the triggersphere left the climbable object (see stay in the middle of a ladder)
     if (OtherActor->GetClass() == GetRyuCharacterMovement()->LadderClass)
     {
-        UE_LOG(LogRyu, Log, TEXT("RyuMainCharacter: EndSphereOverlap. %s , %s"),
-               *OtherActor->GetName(), *OtherComp->GetName());
-        SphereOverlappedActor = nullptr;
-        CharacterPosibility = ERyuCharacterPossibility::None;
+        TSet<AActor*> OverlappedActors;
+        this->BoxTracer->GetOverlappingActors(OverlappedActors,
+                                              GetRyuCharacterMovement()->LadderClass);
+        // check if still collided with Ladder / or interactibles (make parentclass for this things!...
+        //.. check distance to climb in or climbout point ! -> trigger appr. states
+        if (!URyuStaticFunctionLibrary::CheckIfActorIsInSet(BoxOverlappedActor, OverlappedActors))
+        {
+            UE_LOG(LogRyu, Log, TEXT("RyuMainCharacter: EndBoxOverlap. %s , %s"),
+                   *OtherActor->GetName(), *OtherComp->GetName());
+            BoxOverlappedActor = nullptr;
+            CharacterPosibility = ERyuCharacterPossibility::None;
+        }
+        else
+        {
+            UE_LOG(LogRyu, Log, TEXT("RyuMainCharacter: Still collided with %s"),
+                   *OtherComp->GetName());
+        }
+    }
+}
+
+void ARyuMainCharacter::SetClimbPossibility(ERyuCharacterPossibility& ClimbPossibility)
+{
+    auto Ladder = Cast<ARyuLadderBase>(BoxOverlappedActor);
+    float CharLocationGroundZ = GetActorLocation().Z
+                                - GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    UE_LOG(LogTemp, Warning, TEXT("LadderTop.Z: %f, LadderBtm.Z: %f, CharGround.Z: %f "),
+           Ladder->ClimbingTopLocation.Z, Ladder->ClimbingBottomLocation.Z, CharLocationGroundZ)
+
+    if (Ladder != nullptr)
+    {
+        if ((Ladder->ClimbingBottomLocation.Z > CharLocationGroundZ)
+            && (Ladder->ClimbingTopLocation.Z > CharLocationGroundZ))
+        {
+            ClimbPossibility = ERyuCharacterPossibility::CanClimbLadderUp;
+            return;
+        }
+
+        if ((Ladder->ClimbingBottomLocation.Z < CharLocationGroundZ)
+            && (Ladder->ClimbingTopLocation.Z < CharLocationGroundZ))
+        {
+            ClimbPossibility = ERyuCharacterPossibility::CanClimbLadderDown;
+            return;
+        }
+
+        if ((Ladder->ClimbingBottomLocation.Z < CharLocationGroundZ)
+            && (Ladder->ClimbingTopLocation.Z > CharLocationGroundZ))
+        {
+            ClimbPossibility = ERyuCharacterPossibility::CanClimbLadderUpDown;
+            return;
+        }
     }
 }
 
@@ -347,7 +403,7 @@ void ARyuMainCharacter::StopJumping()
 
     bJumpJustStarted = false;
 
-    // TODO: How To Hndle State ReleaseJump ? ARyuBaseCharacter::HandleInput(ERyuInputState::ReleaseJump);
+    // TODO: How ToHndle State ReleaseJump ? ARyuBaseCharacter::HandleInput(ERyuInputState::ReleaseJump);
 
     Super::ResetJumpState();
 }
@@ -516,7 +572,7 @@ void ARyuMainCharacter::ClimbLedgeFlipBookFinished()
 void ARyuMainCharacter::ResetCollisionAndGravity()
 {
     GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-    SphereTracer->SetEnableGravity(true);
+    BoxTracer->SetEnableGravity(true);
     GetCapsuleComponent()->SetEnableGravity(true);
     RyuMovementComponent->SetMovementMode(MOVE_Walking);
     CheckOverlapClimbableActors();
@@ -590,6 +646,16 @@ bool ARyuMainCharacter::GetSneakActive()
     return bSneakIsPressed;
 }
 
+ERyuCharacterState ARyuMainCharacter::GetCharacterState()
+{
+    if (auto ParentChar = Cast<ARyuBaseCharacter>(this))
+    {
+        return ParentChar->GetCharacterStateEnum();
+    }
+
+    return ERyuCharacterState::None;
+}
+
 FHitResult ARyuMainCharacter::GetHitResult()
 {
     return CharHitResult;
@@ -640,7 +706,7 @@ void ARyuMainCharacter::SprintReleased()
     }
 }
 
-/** CHaracter State Machine Prep from Gollum
+/** CHaracter State Machine Prep from Gol.
 
 void ARyuMainCharacter::TickStates(float DeltaTime)
 {

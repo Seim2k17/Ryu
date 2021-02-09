@@ -59,3 +59,19 @@ void URyuStaticFunctionLibrary::Log(FString Message, FName Category)
 {
     UE_LOG(LogRyu, Log, TEXT(""));
 }
+
+template <typename T>
+bool URyuStaticFunctionLibrary::CheckIfActorIsInSet(T& Actor, TSet<AActor*>& Datastructure)
+{
+    bool isInside = false;
+    for (auto actor : Datastructure)
+    {
+        if (actor == Actor)
+        {
+            isInside = true;
+            break;
+        }
+    }
+
+    return isInside;
+}
