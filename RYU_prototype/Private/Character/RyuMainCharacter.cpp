@@ -164,6 +164,7 @@ void ARyuMainCharacter::StartLineTracing()
                 UE_LOG(LogRyu, Log, TEXT("DistToTop: %f "), FVector::Dist(TraceStart, TraceEnd))
                 if (FVector::Dist(TraceStart, TraceEnd) < Ladder->GetClimboutTreshold())
                 {
+                    UE_LOG(LogRyu, Log, TEXT("MainChar: StartLineTracing: CLIMBING END: "));
                     HandleInput(ERyuInputState::InputEndClimbing);
                 }
             }

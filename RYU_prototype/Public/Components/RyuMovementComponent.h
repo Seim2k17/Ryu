@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Character/RYUENUM_LedgePos.h"
+#include "Character/RyuBaseCharacter.h"
 #include "RYU2DENUM_Movement.h"
 #include <CoreMinimal.h>
 #include <Components/ActorComponent.h>

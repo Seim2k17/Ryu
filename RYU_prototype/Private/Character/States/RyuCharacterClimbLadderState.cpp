@@ -182,9 +182,5 @@ void URyuCharacterClimbLadderState::Exit(ARyuBaseCharacter* Character)
             default:
                 break;
         }
-
-        //Character->JumpToAnimInstanceNode(Character->IdleNodeName);
-        CharacterState = ERyuCharacterState::ExitLadder;
-        //MainChar->GetRyuCharacterMovement()->ResetClimbingState();
     }
 }

@@ -679,7 +679,7 @@ void ARyuBaseCharacter::HandleInput(ERyuInputState Input)
     // Mainly due AnimationEndedInput this needs to be implemented here in the BaseClass
     //URyuCharacterState* state = nullptr;
 
-    UE_LOG(LogRyu, Error, TEXT("RYUBASE: HANDLEINPUT: %s"),
+    UE_LOG(LogRyu, Error, TEXT("RYUBASECHAR: HANDLEINPUT: %s"),
            *URyuStaticFunctionLibrary::InputStateToString(Input));
     // TODO Possible fix for crash ?  check if everyhandleInput returns a NEW State OR the current one! not nullptr !!! --> memory leak
     URyuCharacterState* state = CharacterState->HandleInput(this, Input);
