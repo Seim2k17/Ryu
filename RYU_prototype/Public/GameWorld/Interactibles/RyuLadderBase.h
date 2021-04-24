@@ -30,9 +30,35 @@ public:
               Meta = (MakeEditWidget = true))
     FVector ClimbingTopLocation;
 
+    /* distance btw. ClimbingTopLocation & top-left position of the character*/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Positions",
+              Meta = (MakeEditWidget = true))
+    FVector ClimbOutTopLeftOffset;
+
+    /* distance btw. ClimbingTopLocation & top-right position of the character*/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Positions",
+              Meta = (MakeEditWidget = true))
+    FVector ClimbOutTopRightOffset;
+
+    /* distance btw. ClimbingBottomLocation & bottom-left position of the character*/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Positions",
+              Meta = (MakeEditWidget = true))
+    FVector ClimbOutBottomLeftOffset;
+
+    /* distance btw. ClimbingBottomLocation & bottom-right position of the character*/
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Positions",
+              Meta = (MakeEditWidget = true))
+    FVector ClimbOutBottomRightOffset;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Positions")
     float LadderBorderThickness;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Positions")
     float ClimbOutTreshold;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Positions")
+    bool ClimbTopOutLeft;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Positions")
+    bool ClimbBottomOutLeft;
 };

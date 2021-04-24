@@ -4,6 +4,7 @@
 #include "Enums/ERyuCharacterState.h"
 #include "Enums/ERyuInputState.h"
 #include "GameWorld/Interactibles/RyuLadderBase.h"
+#include "States/RyuCharacterEndClimbState.h"
 #include "States/RyuCharacterIdleState.h"
 #include "States/RyuCharacterRunState.h"
 #include "RyuMainCharacter.h"
@@ -51,8 +52,13 @@ URyuCharacterState* URyuCharacterClimbLadderState::HandleInput(ARyuBaseCharacter
             return this;
             break;
         }
-        case ERyuInputState::AnimationEnded:
+        /* HANDLEINPUT NEEDS TO RETURN A NEW STATE ! */
         case ERyuInputState::InputEndClimbing:
+        {
+            return NewObject<URyuCharacterEndClimbState>();
+        }
+
+        case ERyuInputState::AnimationEnded:
         {
             return NewObject<URyuCharacterIdleState>();
         }
@@ -97,8 +103,28 @@ void URyuCharacterClimbLadderState::Enter(ARyuBaseCharacter* Character)
             FVector ClimbPos;
             // TODO the distances (where to teleport when climb out) needs to be adjustable acc. to the climbout - animation
             // --> into the ladderBaseActor !!! -> according to the direction where to climbout !
-            ClimbOutBtm = Ladder->ClimbingBottomLocation - FVector(50, 0, -50);
-            ClimbOutTop = Ladder->ClimbingTopLocation + FVector(50, 0, 100);
+            if (Ladder->ClimbBottomOutLeft)
+            {
+                ClimbOutBtm = Ladder->ClimbingBottomLocation
+                              - Ladder->ClimbOutBottomLeftOffset; //FVector(50, 0, -50);
+            }
+            else
+            {
+                ClimbOutBtm = Ladder->ClimbingBottomLocation
+                              + Ladder->ClimbOutBottomRightOffset; //FVector(150, 0, 50);
+            }
+
+            if (Ladder->ClimbTopOutLeft)
+            {
+                ClimbOutTop = Ladder->ClimbingTopLocation
+                              - Ladder->ClimbOutTopLeftOffset; //FVector(150, 0, -100);
+            }
+            else
+            {
+                ClimbOutTop = Ladder->ClimbingTopLocation
+                              + Ladder->ClimbOutTopRightOffset; //FVector(100, 0, 100);
+            }
+
             ClimbOutBtm.Y = MainChar->CharacterYPosition;
             ClimbOutTop.Y = MainChar->CharacterYPosition;
 
@@ -157,7 +183,8 @@ void URyuCharacterClimbLadderState::Exit(ARyuBaseCharacter* Character)
                 break;
         }
 
-        Character->JumpToAnimInstanceNode(Character->IdleNodeName);
-        MainChar->GetRyuCharacterMovement()->ResetClimbingState();
+        //Character->JumpToAnimInstanceNode(Character->IdleNodeName);
+        CharacterState = ERyuCharacterState::ExitLadder;
+        //MainChar->GetRyuCharacterMovement()->ResetClimbingState();
     }
 }
