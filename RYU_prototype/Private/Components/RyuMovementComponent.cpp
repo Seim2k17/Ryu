@@ -293,14 +293,16 @@ void URyuMovementComponent::PhysFallingLedge(float deltaTime, int32 Iterations)
 
 void URyuMovementComponent::PhysClimbingLadder(float deltaTime, int32 Iterations)
 {
-
     if (auto MainChar = Cast<ARyuMainCharacter>(GetOwner()))
     {
-        auto CurrentPos = MainChar->GetActorLocation();
-        FVector PosiUp = FVector(0.0f, 0.0f, MainChar->GetMoveUpInput());
-        MainChar->SetActorLocation(CurrentPos + PosiUp);
+        if ((MainChar->GetCharacterState() != ERyuCharacterState::ExitLadder)
+            && (MainChar->GetCharacterState() != ERyuCharacterState::EnterLadder))
+        {
+            auto CurrentPos = MainChar->GetActorLocation();
+            FVector PosiUp = FVector(0.0f, 0.0f, MainChar->GetMoveUpInput());
+            MainChar->SetActorLocation(CurrentPos + PosiUp);
+        }
     }
-
 }
 
 void URyuMovementComponent::SetGravityScaleMaximum(float GravScale)

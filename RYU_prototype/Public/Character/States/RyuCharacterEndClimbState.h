@@ -23,4 +23,10 @@ public:
     virtual void Update(ARyuBaseCharacter* Character) override;
     virtual void Enter(ARyuBaseCharacter* Character) override;
     virtual void Exit(ARyuBaseCharacter* Character) override;
+
+    static URyuCharacterEndClimbState* MAKE(EClimboutState ClimbingOutState, FVector ClimbingOutTop,
+                                            FVector ClimbingOutBtm);
+
+    void SetClimbOutState(EClimboutState ClimbingOutState, FVector ClimbingOutTop,
+                          FVector ClimbingOutBtm);
 };

@@ -14,15 +14,6 @@ class ARyuBaseCharacter;
  * 
  */
 
-UENUM()
-enum class ELadderClimboutState : uint8
-{
-    None,
-    Top,
-    Bottom,
-    JumpOff,
-};
-
 UCLASS()
 class RYU_PROTOTYPE_API URyuCharacterClimbLadderState : public URyuCharacterClimbState
 {
@@ -39,8 +30,5 @@ class RYU_PROTOTYPE_API URyuCharacterClimbLadderState : public URyuCharacterClim
 
 private:
     // TODO here we can include Stuff which is only related to this state (e.g. charging Times)
-    FVector ClimbOutTop;
-    FVector ClimbOutBtm;
-
-    ELadderClimboutState ClimbOutState;
+ 
 };

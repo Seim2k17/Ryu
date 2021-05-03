@@ -30,7 +30,7 @@ URyuCharacterState* URyuCharacterClimbLadderState::HandleInput(ARyuBaseCharacter
             {
                 UE_LOG(LogRyu, Log, TEXT("Character ClimbsUp Ladder."));
                 CharacterState = ERyuCharacterState::ClimbUpLadder;
-                ClimbOutState = ELadderClimboutState::Top;
+                ClimbOutState = EClimboutState::Top;
                 return this;
             }
 
@@ -40,7 +40,7 @@ URyuCharacterState* URyuCharacterClimbLadderState::HandleInput(ARyuBaseCharacter
         {
             UE_LOG(LogRyu, Log, TEXT("Character ClimbsDown Ladder."));
             CharacterState = ERyuCharacterState::ClimbDownLadder;
-            ClimbOutState = ELadderClimboutState::Bottom;
+            ClimbOutState = EClimboutState::Bottom;
             return this;
             break;
         }
@@ -55,7 +55,7 @@ URyuCharacterState* URyuCharacterClimbLadderState::HandleInput(ARyuBaseCharacter
         /* HANDLEINPUT NEEDS TO RETURN A NEW STATE ! */
         case ERyuInputState::InputEndClimbing:
         {
-            return NewObject<URyuCharacterEndClimbState>();
+            return URyuCharacterEndClimbState::MAKE(ClimbOutState, ClimbOutTop, ClimbOutBtm);
         }
 
         case ERyuInputState::AnimationEnded:
@@ -148,7 +148,33 @@ void URyuCharacterClimbLadderState::Enter(ARyuBaseCharacter* Character)
                           + Ladder->LadderBorderThickness)
                          / 2;
             ClimbPos.Y = MainChar->CharacterYPosition;
-            MainChar->SetActorLocation(ClimbPos); // +));
+
+            if (MainChar->GetCharacterPossibility() == ERyuCharacterPossibility::CanClimbLadderUp
+                || MainChar->GetCharacterPossibility()
+                       == ERyuCharacterPossibility::CanClimbLadderUpDown)
+            {
+                MainChar->SetActorLocation(
+                    ClimbPos
+                    + (MainChar->IdleCapsuleHeight + Ladder->CharacterBottomEnterOffset)
+                          * MainChar->GetActorUpVector());
+            }
+            else
+            {
+                MainChar->SetActorLocation(
+                    ClimbPos
+                    - (MainChar->IdleCapsuleHeight + Ladder->CharacterTopEnterOffset)
+                          * MainChar->GetActorUpVector());
+            }
+        }
+
+        // TODO: acc to ladder goout state! due Pixelart / mirrowing reason we need to make sure the character looks right when we need to go out at the top right
+        // if (MainChar->GetLookDirection() == ERyuLookDirection::Left)
+        if ((Ladder->ClimbTopOutLeft == false
+             && MainChar->GetLookDirection() == ERyuLookDirection::Left)
+            || (Ladder->ClimbTopOutLeft == true
+                && MainChar->GetLookDirection() == ERyuLookDirection::Right))
+        {
+            MainChar->FlipCharacter();
         }
 
         Character->JumpToAnimInstanceNode(Character->ClimbinghNodeName);
@@ -161,26 +187,4 @@ void URyuCharacterClimbLadderState::Enter(ARyuBaseCharacter* Character)
 
 void URyuCharacterClimbLadderState::Exit(ARyuBaseCharacter* Character)
 {
-    // TODO: set Character to LadderObject top or DownPosition
-    if (auto MainChar = Cast<ARyuMainCharacter>(Character))
-    {
-        switch (ClimbOutState)
-        {
-            case ELadderClimboutState::Top:
-            {
-                MainChar->SetActorLocation(ClimbOutTop);
-                UE_LOG(LogRyu, Log, TEXT("Character SetOnTop at: %s"), *ClimbOutTop.ToString());
-                break;
-            }
-
-            case ELadderClimboutState::Bottom:
-            {
-                MainChar->SetActorLocation(ClimbOutBtm);
-                UE_LOG(LogRyu, Log, TEXT("Character SetOnBtm at: %s"), *ClimbOutBtm.ToString());
-                break;
-            }
-            default:
-                break;
-        }
-    }
 }

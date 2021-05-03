@@ -9,9 +9,14 @@ ARyuLadderBase::ARyuLadderBase()
     PrimaryActorTick.bCanEverTick = false;
 }
 
-float ARyuLadderBase::GetClimboutTreshold()
+float ARyuLadderBase::GetClimboutTopTreshold()
 {
-    return ClimbOutTreshold;
+    return ClimbOutTopTreshold;
+}
+
+float ARyuLadderBase::GetClimboutBtmTreshold()
+{
+    return ClimbOutBottomTreshold;
 }
 
 // Called when the game starts or when spawned

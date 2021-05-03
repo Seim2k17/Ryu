@@ -64,6 +64,8 @@ public:
     UFUNCTION()
     void RestartCharacterAtCheckpoint(FVector& CheckpointPosition);
 
+    void SetClimbPossibility();
+
 protected:
     // really protected ?
     void BeginPlay() override;
@@ -84,8 +86,6 @@ protected:
     UFUNCTION()
     void HandleBoxColliderEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                      UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-    void SetClimbPossibility(ERyuCharacterPossibility& ClimbPossibility);
 
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 

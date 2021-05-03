@@ -162,7 +162,7 @@ void ARyuMainCharacter::StartLineTracing()
                 TraceEnd = Ladder->ClimbingTopLocation;
 
                 UE_LOG(LogRyu, Log, TEXT("DistToTop: %f "), FVector::Dist(TraceStart, TraceEnd))
-                if (FVector::Dist(TraceStart, TraceEnd) < Ladder->GetClimboutTreshold())
+                if (FVector::Dist(TraceStart, TraceEnd) < Ladder->GetClimboutTopTreshold())
                 {
                     UE_LOG(LogRyu, Log, TEXT("MainChar: StartLineTracing: CLIMBING END: "));
                     HandleInput(ERyuInputState::InputEndClimbing);
@@ -177,7 +177,7 @@ void ARyuMainCharacter::StartLineTracing()
             {
                 TraceEnd = Ladder->ClimbingBottomLocation;
                 UE_LOG(LogRyu, Log, TEXT("DistToDown: %f "), FVector::Dist(TraceStart, TraceEnd))
-                if (FVector::Dist(TraceStart, TraceEnd) < Ladder->GetClimboutTreshold())
+                if (FVector::Dist(TraceStart, TraceEnd) < Ladder->GetClimboutBtmTreshold())
                 {
                     HandleInput(ERyuInputState::InputEndClimbing);
                 }
@@ -330,7 +330,7 @@ void ARyuMainCharacter::HandleBoxColliderBeginOverlap(UPrimitiveComponent* Overl
     {
         BoxOverlappedActor = OtherActor;
         // TODO check how to enum ladder up/down or both
-        SetClimbPossibility(CharacterPosibility);
+        SetClimbPossibility();
         UE_LOG(LogRyu, Log, TEXT("RyuMainCharacter: BeginBoxOverlap: %s , %s"),
                *OtherActor->GetName(), *OtherComp->GetName());
     }
@@ -365,16 +365,18 @@ void ARyuMainCharacter::HandleBoxColliderEndOverlap(UPrimitiveComponent* Overlap
     }
 }
 
-void ARyuMainCharacter::SetClimbPossibility(ERyuCharacterPossibility& ClimbPossibility)
+void ARyuMainCharacter::SetClimbPossibility()
 {
     auto Ladder = Cast<ARyuLadderBase>(BoxOverlappedActor);
-    float CharLocationGroundZ = GetActorLocation().Z
-                                - GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    float CharLocationGroundZ =
+        FMath::Abs(GetActorLocation().Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
     UE_LOG(LogTemp, Warning, TEXT("LadderTop.Z: %f, LadderBtm.Z: %f, CharGround.Z: %f "),
            Ladder->ClimbingTopLocation.Z, Ladder->ClimbingBottomLocation.Z, CharLocationGroundZ)
 
+    // ToDo Rework: how to decide what type of LadderClimbing !
     if (Ladder != nullptr)
     {
+        /*
         if ((Ladder->ClimbingBottomLocation.Z > CharLocationGroundZ)
             && (Ladder->ClimbingTopLocation.Z > CharLocationGroundZ))
         {
@@ -394,6 +396,24 @@ void ARyuMainCharacter::SetClimbPossibility(ERyuCharacterPossibility& ClimbPossi
         {
             ClimbPossibility = ERyuCharacterPossibility::CanClimbLadderUpDown;
             return;
+        }
+        */
+
+        if (CharLocationGroundZ < FMath::Abs(Ladder->ClimbingTopLocation.Z))
+        {
+            CharacterPosibility = ERyuCharacterPossibility::CanClimbLadderDown;
+        }
+        else
+        {
+            if (FVector::Dist(GetActorLocation(), Ladder->ClimbingBottomLocation)
+                < Ladder->GetClimboutBtmTreshold())
+            {
+                CharacterPosibility = ERyuCharacterPossibility::CanClimbLadderUp;
+            }
+            else
+            {
+                CharacterPosibility = ERyuCharacterPossibility::CanClimbLadderUpDown;
+            }
         }
     }
 }

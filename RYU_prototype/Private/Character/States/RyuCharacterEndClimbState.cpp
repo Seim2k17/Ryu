@@ -16,6 +16,36 @@ URyuCharacterState* URyuCharacterEndClimbState::HandleInput(ARyuBaseCharacter* C
     {
         case ERyuInputState::AnimationEnded:
         {
+            UE_LOG(LogRyu, Log, TEXT("ClimbingEndState: AnimationEnded, jump to Idle: "));
+            UE_LOG(LogRyu, Log, TEXT("ClimbingEndState: Character SetOnLocation: "));
+            // TODO: set Character to LadderObject top or DownPosition
+            if (auto MainChar = Cast<ARyuMainCharacter>(Character))
+            {
+                switch (ClimbOutState)
+                {
+                    case EClimboutState::Top:
+                    {
+                        MainChar->SetActorLocation(ClimbOutTop);
+                        UE_LOG(LogRyu, Log, TEXT("ClimbingEndState: OnTop at: %s"),
+                               *ClimbOutTop.ToString());
+                        break;
+                    }
+
+                    case EClimboutState::Bottom:
+                    {
+                        MainChar->SetActorLocation(ClimbOutBtm);
+                        UE_LOG(LogRyu, Log, TEXT("ClimbingEndState: OnBtm at: %s"),
+                               *ClimbOutBtm.ToString());
+                        break;
+                    }
+                    default:
+                        break;
+                }
+
+                MainChar->GetRyuCharacterMovement()->ResetClimbingState();
+                MainChar->SetClimbPossibility();
+            }
+
             return NewObject<URyuCharacterIdleState>();
         }
 
@@ -37,10 +67,6 @@ void URyuCharacterEndClimbState::Enter(ARyuBaseCharacter* Character)
     CharacterState = ERyuCharacterState::ExitLadder;
 
     //Character->JumpToAnimInstanceNode(Character->IdleNodeName);
-    if (auto MainChar = Cast<ARyuMainCharacter>(Character))
-    {
-        MainChar->GetRyuCharacterMovement()->ResetClimbingState();
-    }
 
     /* ToDo: Check which Climbing-Type end shere !
     switch (CharacterState)
@@ -60,4 +86,21 @@ void URyuCharacterEndClimbState::Enter(ARyuBaseCharacter* Character)
 
 void URyuCharacterEndClimbState::Exit(ARyuBaseCharacter* Character)
 {
+}
+
+URyuCharacterEndClimbState* URyuCharacterEndClimbState::MAKE(EClimboutState ClimbingOutState,
+                                                             FVector ClimbingOutTop,
+                                                             FVector ClimbingOutBtm)
+{
+    URyuCharacterEndClimbState* obj = NewObject<URyuCharacterEndClimbState>();
+    obj->SetClimbOutState(ClimbingOutState, ClimbingOutTop, ClimbingOutBtm);
+    return obj;
+}
+
+void URyuCharacterEndClimbState::SetClimbOutState(EClimboutState ClimbingOutState,
+                                                  FVector ClimbingOutTop, FVector ClimbingOutBtm)
+{
+    ClimbOutState = ClimbingOutState;
+    ClimbOutTop = ClimbingOutTop;
+    ClimbOutBtm = ClimbingOutBtm;
 }
